@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TimeRiot | ისტორია ცოცხლდება</title>
+    
+    <meta property="og:title" content="TimeRiot | ისტორია ცოცხლდება - ნიკ სიარგ">
+    <meta property="og:description" content="მოემზადე ისტორიის გამოცდებისთვის თსუ-ს კურსდამთავრებულთან ერთად. ინოვაციური მიდგომა და შედეგი.">
+    <meta property="og:image" content="timeriot_og_image.jpg"> <meta property="og:type" content="website">
+
+    <link rel="stylesheet" href="timeriot.css">
+    <link href="https://fonts.googleapis.com/css2?family=Fira+GO:wght@400;700&display=swap" rel="stylesheet">
+</head>
+<body>
+
+    <header>
+        <div class="logo">Time<span>Riot</span></div>
+        <nav>
+            <ul>
+                <li><a href="#home">მთავარი</a></li>
+                <li><a href="#course">ლექციები</a></li>
+                <li><a href="#masterclass">მასტერკლასი</a></li>
+                <li><a href="#contact">კონტაქტი</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main id="home">
+        <section class="hero">
+            <div class="hero-content">
+                <div class="teacher-card">
+                    <div class="profile-container">
+                        <img src="me.jpg" alt="ნიკ სიარგ" class="profile-img">
+                        <div class="status-badge">✓</div>
+                    </div>
+                    <div class="profile-info">
+                        <span class="profile-name">ნიკ სიარგ</span>
+                        <p class="university-tag">თსუ-ს კურსდამთავრებული</p>
+                        <p class="experience-tag">სამეცნიერო კონფერენციების მონაწილე</p>
+                        <p class="brand-tag">TimeRiot-ის დამფუძნებელი</p>
+                    </div>
+                </div>
+
+                <h1>ისტორია, რომელიც <br><span>ცოცხლდება</span></h1>
+                <p>აკადემიური ცოდნა და სწავლების თანამედროვე მეთოდები. მოემზადე ეროვნული გამოცდებისთვის თსუ-ს გუნდთან ერთად.</p>
+                <div class="hero-btns">
+                    <a href="#course" class="btn-primary">დაიწყე სწავლა</a>
+                    <a href="#contact" class="btn-secondary">კონტაქტი</a>
+                </div>
+            </div>
+            <div class="video-box" onclick="openModal()">
+                <div class="play-button">▶</div>
+                <p>გაიცანი შენი რეპეტიტორი</p>
+            </div>
+        </section>
+
+        <section id="course" class="materials">
+            <h2>უფასო მასალები</h2>
+            <div class="lesson-grid">
+                <div class="card">
+                    <div class="card-badge">ლექცია 1</div>
+                    <h3>ქვისა და ბრინჯაოს ხანა</h3>
+                    <p>გაიგე ყველაფერი პირველყოფილი ეპოქიდან რკინის ხანამდე.</p>
+                    <button class="btn-card" onclick="openModal()">გახსნა</button>
+                </div>
+                <div class="card masterclass-card" id="masterclass">
+                    <div class="card-badge">LIVE</div>
+                    <h3>უფასო მასტერკლასი</h3>
+                    <p>დარეგისტრირდი და გაიგე, როგორ ჩააბარო ისტორია უმაღლეს ქულაზე.</p>
+                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSfHENJtzGcRiiKEJBMvTzNbbv3ch5yu-q1nfrFXnd-D49zFIQ/viewform?usp=header" target="_blank" class="btn-card" style="text-decoration:none">რეგისტრაცია</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <div id="lessonModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal()">&times;</span>
+            <div class="modal-header">
+                <h2>ქვისა და ბრინჯაოს ხანა საქართველოში</h2>
+                <p class="subtitle">სრული მიმოხილვა: პალეოლითიდან რკინის ხანამდე</p>
+            </div>
+
+            <div class="lesson-layout">
+                <div class="lesson-video">
+                    <div class="video-placeholder">
+                        <span style="color: #555;">🎥 ვიდეო მალე დაემატება</span>
+                    </div>
+                    <div class="timeline-brief">
+                        <h4>⏳ პერიოდიზაცია:</h4>
+                        <ul style="list-style: none; padding: 0;">
+                            <li>• პალეოლითი: 2.5 მლნ - ძვ.წ. 10.000 წ.</li>
+                            <li>• მეზოლითი: ძვ.წ. 10.000 - 9.000 წ.</li>
+                            <li>• ნეოლითი: ძვ.წ. 8.000 - 7.000 წ.</li>
+                            <li>• ენეოლითი: ძვ.წ. VI - IV ათასწ.</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="lesson-text">
+                    <h3>📖 გაკვეთილის შინაარსი:</h3>
+                    <p>პირველყოფილი ადამიანების უძველესი ნაშთები აღმოჩენილია დმანისში (1.7-1.8 მლნ წელი).</p>
+                    <p>ზედა პალეოლითში ჩნდება გვარები. წამყვანი იყო ქალი (მატრიარქატი).</p>
+                    <p>ნეოლითში ადამიანი გახდა მწარმოებელი (მიწათმოქმედება, მესაქონლეობა).</p>
+                    <div class="download-box">
+                        <a href="lecture1.docx.docx" download class="btn-card" style="background: #2b5797; color: white; border: none; padding: 10px 20px; display: inline-block; text-decoration: none; border-radius: 5px;">📥 ჩამოტვირთე სრული ტექსტი (Word)</a>
+                    </div>
+                </div>
+            </div>
+
+            <hr>
+
+            <div class="test-section">
+                <h4>📝 თვითშემოწმება (4 ვარიანტი):</h4>
+                
+                <div class="test-item" style="margin-bottom: 20px;">
+                    <p>1. რამდენი წლისაა დმანისში აღმოჩენილი უძველესი ჰომინიდების ნაშთები?</p>
+                    <label><input type="radio" name="q1" value="wrong"> 1.5 მილიონი წელი</label><br>
+                    <label><input type="radio" name="q1" value="correct"> 1.8 მილიონი წელი</label><br>
+                    <label><input type="radio" name="q1" value="wrong"> 2.0 მილიონი წელი</label><br>
+                    <label><input type="radio" name="q1" value="wrong"> 800 ათასი წელი</label>
+                </div>
+
+                <div class="test-item" style="margin-bottom: 20px;">
+                    <p>2. რა ეწოდება ეპოქას, როდესაც საზოგადოებაში წამყვანი როლი ქალს ეკუთვნოდა?</p>
+                    <label><input type="radio" name="q1_2" value="wrong"> პატრიარქატი</label><br>
+                    <label><input type="radio" name="q1_2" value="wrong"> თემი</label><br>
+                    <label><input type="radio" name="q1_2" value="correct"> მატრიარქატი</label><br>
+                    <label><input type="radio" name="q1_2" value="wrong"> ჯოგური წყობილება</label>
+                </div>
+
+                <div class="test-item" style="margin-bottom: 20px;">
+                    <p>3. რა არის "ნეოლითური რევოლუციის" მთავარი შედეგი?</p>
+                    <label><input type="radio" name="q1_3" value="wrong"> ცეცხლის მოპოვება</label><br>
+                    <label><input type="radio" name="q1_3" value="wrong"> რკინის იარაღების შექმნა</label><br>
+                    <label><input type="radio" name="q1_3" value="correct"> გადასვლა მწარმოებელ მეურნეობაზე</label><br>
+                    <label><input type="radio" name="q1_3" value="wrong"> დამწერლობის შექმნა</label>
+                </div>
+                
+                <button class="btn-primary" onclick="checkDetailedTest()">შედეგის შემოწმება</button>
+                <p id="test-result" style="margin-top: 15px; font-weight: bold;"></p>
+            </div>
+        </div>
+    </div>
+
+    <footer id="contact">
+        <h3>TimeRiot - ისტორიის ჰაბი</h3>
+        <p>ტელეფონი: <a href="tel:+995558551052" style="color:#ff4d4d; text-decoration:none;">+995 558 55 10 52</a></p>
+        <div class="socials">
+            <a href="https://www.instagram.com/nik_syarg/" target="_blank" style="color: #E1306C; font-weight: bold;">Instagram</a> | 
+            <a href="https://www.facebook.com/nik.syarg.1" target="_blank" style="color: #4267B2; font-weight: bold;">Facebook</a> | 
+            <a href="https://api.whatsapp.com/send?phone=995558551052&text=გამარჯობა!%20ისტორიაში%20მომზადება%20მსურს" target="_blank" style="color: #25D366; font-weight: bold;">WhatsApp</a>
+        </div>
+    </footer>
+
+    <script src="timeriot.js"></script>
+</body>
+</html>
