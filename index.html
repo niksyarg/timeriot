@@ -3,198 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TimeRiot | სასწავლო პლატფორმა</title>
+    <title>TimeRiot | მთავარი</title>
     <style>
-        body { font-family: 'Helvetica', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; background-color: #f4f4f4; padding: 20px; }
-        
-        .btn-home { padding: 12px 25px; background: #333; color: white; text-decoration: none; border-radius: 8px; margin-bottom: 20px; font-weight: bold; transition: 0.3s; }
-        .btn-home:hover { background: #555; }
-
-        .main-wrapper { display: flex; width: 100%; max-width: 1000px; gap: 20px; align-items: flex-start; }
-
-        /* Список лекций слева */
-        .sidebar { width: 30%; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        .sidebar h3 { margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; text-align: center; }
-        .lecture-link { display: block; padding: 12px; margin-bottom: 10px; background: #f9f9f9; border-radius: 8px; cursor: pointer; color: #333; font-weight: bold; transition: 0.3s; text-align: left; }
-        .lecture-link:hover { background: #673ab7; color: white; }
-        .lecture-link.active { background: #673ab7; color: white; }
-
-        /* Контент лекции справа */
-        .content-area { width: 70%; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: left; min-height: 500px; }
-        
-        .download-btn { display: inline-block; color: #e67e22; font-weight: bold; text-decoration: none; border: 2px solid #e67e22; padding: 10px 15px; border-radius: 8px; margin: 20px 0; transition: 0.3s; }
-        .download-btn:hover { background: #e67e22; color: white; }
-
-        .test-section { margin-top: 30px; padding-top: 20px; border-top: 2px solid #eee; }
-        .question { font-weight: bold; margin-bottom: 10px; display: block; }
-        .option-label { display: block; padding: 10px; border: 1px solid #eee; border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: 0.2s; }
-        .option-label:hover { background: #f0f0f0; }
-
-        .check-btn { width: 100%; padding: 15px; background: #27ae60; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 15px; }
-        .check-btn:hover { background: #2ecc71; }
-
-        #result-box { margin-top: 20px; padding: 15px; display: none; border-radius: 8px; text-align: center; font-weight: bold; font-size: 18px; }
-        .correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
-        .wrong { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
-
-        @media (max-width: 768px) { .main-wrapper { flex-direction: column; } .sidebar, .content-area { width: 100%; } }
+        body { font-family: 'Helvetica', sans-serif; text-align: center; margin: 0; padding: 50px 20px; background-color: #f4f4f4; }
+        .card { max-width: 400px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); }
+        .btn { display: block; padding: 15px; margin: 15px 0; border-radius: 10px; text-decoration: none; font-weight: bold; color: white; transition: 0.3s; }
+        .btn-lectures { background: #673ab7; }
+        .btn-whatsapp { background: #25d366; }
+        .btn-instagram { background: #e1306c; }
+        .btn:hover { opacity: 0.8; transform: translateY(-3px); }
     </style>
 </head>
 <body>
-
-    <a href="timeriot.html" class="btn-home">მთავარი</a>
-
-    <div class="main-wrapper">
-        <div class="sidebar">
-            <h3>ლექციები</h3>
-            <div id="list-container"></div>
-        </div>
-
-        <div class="content-area" id="lecture-display">
-            <h2 id="l-title">აირჩიეთ ლექცია</h2>
-            <div id="l-content-body">
-                გთხოვთ, აირჩიოთ სასურველი ლექცია მარცხენა მენიუდან.
-            </div>
-            
-            <div id="test-container" class="test-section" style="display:none;">
-                <h3>📝 თვითშემოწმება</h3>
-                <div id="questions-box"></div>
-                <button class="check-btn" onclick="checkTest()">შედეგის შემოწმება</button>
-                <div id="result-box"></div>
-            </div>
-        </div>
+    <div class="card">
+        <h1>TimeRiot</h1>
+        <p>აირჩიეთ სასურველი მოქმედება:</p>
+        <a href="lectures.html" class="btn btn-lectures">📖 გადასვლა ლექციებზე</a>
+        <a href="https://wa.me/твой_номер" class="btn btn-whatsapp">WhatsApp კონსულტაცია</a>
+        <a href="https://instagram.com/твой_ник" class="btn btn-instagram">ჩვენი Instagram</a>
     </div>
-
-    <script>
-        // БАЗА ДАННЫХ ЛЕКЦИЙ
-        const lectures = {
-            1: {
-                title: "ქვისა და ბრინჯაოს ხანა საქართველოში",
-                description: `სრული მიმოხილვა: პალეოლითიდან რკინის ხანამდე <br><br>
-                              ⏳ პერიოდიზაცია: <br>
-                              • პალეოლითი: 2.5 მლნ - ძვ.წ. 10.000 წ. <br>
-                              • მეზოლითი: ძვ.წ. 10.000 - 9.000 წ. <br>
-                              • ნეოლითი: ძვ.წ. 8.000 - 7.000 წ. <br>
-                              • ენეოლითი: ძვ.წ. VI - IV ათასწ. <br><br>
-                              📖 გაკვეთილის შინაარსი: <br>
-                              პირველყოფილი ადამიანების უძველესი ნაშთები აღმოჩენილია დმანისში (1.7-1.8 მლნ წელი). <br>
-                              ზედა პალეოლითში ჩნდება გვარები. წამყვანი იყო ქალი (მატრიარქატი). <br>
-                              ნეოლითში ადამიანი გახდა მწარმოებელი.`,
-                wordFile: "lecture1.docx.docx", 
-                questions: [
-                    { 
-                        q: "რამდენი წლისაა დმანისში აღმოჩენილი უძველესი ჰომინიდების ნაშთები?", 
-                        a: ["1.5 მილიონი წელი", "1.8 მილიონი წელი", "2.0 მილიონი წელი", "800 ათასი წელი"], 
-                        correct: 1 
-                    },
-                    { 
-                        q: "რა ეწოდება ეპოქას, როდესაც საზოგადოებაში წამყვანი როლი ქალს ეკუთვნოდა?", 
-                        a: ["პატრიარქატი", "თემი", "მატრიარქატი", "ჯოგური წყობილება"], 
-                        correct: 2 
-                    },
-                    { 
-                        q: "რა არის 'ნეოლითური რევოლუციის' მთავარი შედეგი?", 
-                        a: ["ცეცხლის მოპოვება", "რკინის იარაღების შექმნა", "გადასვლა მწარმოებელ მეურნეობაზე", "დამწერლობის შექმნა"], 
-                        correct: 2 
-                    }
-                ]
-            },
-            2: {
-                title: "შუმერი და ბაბილონი",
-                description: `📖 <b>გაკვეთილის შინაარსი:</b> <br><br>
-                              მდინარეებს ეფრატსა და ტიგროსს შორის არსებულ ტერიტორიას <b>შუამდინარეთს (მესოპოტამიას)</b> უწოდებდნენ. <br>
-                              შუმერებმა შექმნეს დიდი ცივილიზაცია: გამოიგონეს ბორბალი, ეტლი და შექმნეს პირველი <b>ლურსმული დამწერლობა</b>. <br><br>
-                              ბაბილონის აღზევება უკავშირდება მეფე <b>ხამურაბის</b> (ძვ.წ. XVIII ს.), რომელმაც შექმნა 282 მუხლისგან შემდგარი კანონთა კრებული. <br>
-                              მოგვიანებით, ბაბილონი განსაკუთრებით გაძლიერდა <b>ნაბუქოდონოსარის</b> დროს, რომელმაც ააგო ბაბილონის გოდოლი. <br><br>
-                              შუმერულ ტაძრებს <b>ზიკურატები</b> ეწოდებოდა, ხოლო ბაბილონის მფარველი ღვთაება იყო <b>მარდუქი</b>.`,
-                wordFile: "lecture2.docx.docx", 
-                questions: [
-                    { 
-                        q: "რა ეწოდებოდა შუმერების მიერ შექმნილ დამწერლობას?", 
-                        a: ["იეროგლიფური", "ანბანური", "ლურსმული (პიქტოგრაფიული)", "ხაზოვანი B"], 
-                        correct: 2 
-                    },
-                    { 
-                        q: "რამდენი მუხლისგან შედგებოდა ხამურაბის კანონთა კრებული?", 
-                        a: ["100", "282", "365", "150"], 
-                        correct: 1 
-                    },
-                    { 
-                        q: "ვის დროს აიგო ბაბილონის გოდოლი და დაკიდული ბაღები?", 
-                        a: ["სარგონის", "ხამურაბის", "ნაბუქოდონოსარის", "კიროსის"], 
-                        correct: 2 
-                    }
-                ]
-            }
-        };
-
-        let currentLectureId = null;
-
-        function createList() {
-            const listContainer = document.getElementById('list-container');
-            listContainer.innerHTML = ""; 
-            for (let id in lectures) {
-                let div = document.createElement('div');
-                div.className = 'lecture-link';
-                div.innerText = id + ". " + lectures[id].title;
-                div.onclick = () => showLecture(id);
-                listContainer.appendChild(div);
-            }
-        }
-
-        function showLecture(id) {
-            currentLectureId = id;
-            const data = lectures[id];
-            
-            document.getElementById('l-title').innerText = data.title;
-            
-            let html = `<p>${data.description}</p>`;
-            html += `<a href="${data.wordFile}" download class="download-btn">📥 ჩამოტვირთე სრული ტექსტი (Word)</a>`;
-            
-            document.getElementById('l-content-body').innerHTML = html;
-            document.getElementById('test-container').style.display = 'block';
-            document.getElementById('result-box').style.display = 'none';
-            
-            let qHtml = "";
-            data.questions.forEach((item, index) => {
-                qHtml += `<div style="margin-bottom:20px;">
-                            <span class="question">${index + 1}. ${item.q}</span>`;
-                item.a.forEach((ans, i) => {
-                    qHtml += `<label class="option-label">
-                                <input type="radio" name="q${index}" value="${i}"> ${ans}
-                              </label>`;
-                });
-                qHtml += `</div>`;
-            });
-            document.getElementById('questions-box').innerHTML = qHtml;
-
-            document.querySelectorAll('.lecture-link').forEach((el, idx) => {
-                el.classList.toggle('active', (idx + 1) == id);
-            });
-        }
-
-        function checkTest() {
-            if (!currentLectureId) return;
-            const data = lectures[currentLectureId];
-            let score = 0;
-
-            data.questions.forEach((item, index) => {
-                const selected = document.querySelector(`input[name="q${index}"]:checked`);
-                if (selected && selected.value == item.correct) {
-                    score++;
-                }
-            });
-
-            const resBox = document.getElementById('result-box');
-            resBox.style.display = "block";
-            resBox.innerText = "თქვენი შედეგი: " + score + " / " + data.questions.length;
-            resBox.className = (score === data.questions.length) ? "correct" : "wrong";
-        }
-
-        window.onload = () => {
-            createList();
-            showLecture(1);
-        };
-    </script>
 </body>
 </html>
