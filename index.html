@@ -3,158 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TimeRiot | ისტორია ცოცხლდება</title>
-    
-    <meta property="og:title" content="TimeRiot | ისტორია ცოცხლდება - ნიკ სიარგ">
-    <meta property="og:description" content="მოემზადე ისტორიის გამოცდებისთვის თსუ-ს კურსდამთავრებულთან ერთად. ინოვაციური მიდგომა და შედეგი.">
-    <meta property="og:image" content="timeriot_og_image.jpg"> <meta property="og:type" content="website">
+    <title>TimeRiot | სასწავლო პლატფორმა</title>
+    <style>
+        body { font-family: 'Helvetica', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; background-color: #f4f4f4; padding: 20px; }
+        
+        .btn-home { padding: 12px 25px; background: #333; color: white; text-decoration: none; border-radius: 8px; margin-bottom: 20px; font-weight: bold; transition: 0.3s; }
+        .btn-home:hover { background: #555; }
 
-    <link rel="stylesheet" href="timeriot.css">
-    <link href="https://fonts.googleapis.com/css2?family=Fira+GO:wght@400;700&display=swap" rel="stylesheet">
+        .main-wrapper { display: flex; width: 100%; max-width: 1000px; gap: 20px; align-items: flex-start; }
+
+        /* Список лекций слева */
+        .sidebar { width: 30%; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .sidebar h3 { margin-top: 0; border-bottom: 2px solid #eee; padding-bottom: 10px; text-align: center; }
+        .lecture-link { display: block; padding: 12px; margin-bottom: 10px; background: #f9f9f9; border-radius: 8px; cursor: pointer; color: #333; font-weight: bold; transition: 0.3s; text-align: left; }
+        .lecture-link:hover { background: #673ab7; color: white; }
+        .lecture-link.active { background: #673ab7; color: white; }
+
+        /* Контент лекции справа */
+        .content-area { width: 70%; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: left; min-height: 500px; }
+        
+        .download-btn { display: inline-block; color: #e67e22; font-weight: bold; text-decoration: none; border: 2px solid #e67e22; padding: 10px 15px; border-radius: 8px; margin: 20px 0; transition: 0.3s; }
+        .download-btn:hover { background: #e67e22; color: white; }
+
+        .test-section { margin-top: 30px; padding-top: 20px; border-top: 2px solid #eee; }
+        .question { font-weight: bold; margin-bottom: 10px; display: block; }
+        .option-label { display: block; padding: 10px; border: 1px solid #eee; border-radius: 8px; margin-bottom: 8px; cursor: pointer; transition: 0.2s; }
+        .option-label:hover { background: #f0f0f0; }
+
+        .check-btn { width: 100%; padding: 15px; background: #27ae60; color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer; font-size: 16px; margin-top: 15px; }
+        .check-btn:hover { background: #2ecc71; }
+
+        #result-box { margin-top: 20px; padding: 15px; display: none; border-radius: 8px; text-align: center; font-weight: bold; font-size: 18px; }
+        .correct { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .wrong { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+        @media (max-width: 768px) { .main-wrapper { flex-direction: column; } .sidebar, .content-area { width: 100%; } }
+    </style>
 </head>
 <body>
 
-    <header>
-        <div class="logo">Time<span>Riot</span></div>
-        <nav>
-            <ul>
-                <li><a href="#home">მთავარი</a></li>
-                <li><a href="#course">ლექციები</a></li>
-                <li><a href="#masterclass">მასტერკლასი</a></li>
-                <li><a href="#contact">კონტაქტი</a></li>
-            </ul>
-        </nav>
-    </header>
+    <a href="timeriot.html" class="btn-home">მთავარი</a>
 
-    <main id="home">
-        <section class="hero">
-            <div class="hero-content">
-                <div class="teacher-card">
-                    <div class="profile-container">
-                        <img src="me.jpg" alt="ნიკ სიარგ" class="profile-img">
-                        <div class="status-badge">✓</div>
-                    </div>
-                    <div class="profile-info">
-                        <span class="profile-name">ნიკ სიარგ</span>
-                        <p class="university-tag">თსუ-ს კურსდამთავრებული</p>
-                        <p class="experience-tag">სამეცნიერო კონფერენციების მონაწილე</p>
-                        <p class="brand-tag">TimeRiot-ის დამფუძნებელი</p>
-                    </div>
-                </div>
+    <div class="main-wrapper">
+        <div class="sidebar">
+            <h3>ლექციები</h3>
+            <div id="list-container"></div>
+        </div>
 
-                <h1>ისტორია, რომელიც <br><span>ცოცხლდება</span></h1>
-                <p>აკადემიური ცოდნა და სწავლების თანამედროვე მეთოდები. მოემზადე ეროვნული გამოცდებისთვის თსუ-ს გუნდთან ერთად.</p>
-                <div class="hero-btns">
-                    <a href="#course" class="btn-primary">დაიწყე სწავლა</a>
-                    <a href="#contact" class="btn-secondary">კონტაქტი</a>
-                </div>
+        <div class="content-area" id="lecture-display">
+            <h2 id="l-title">აირჩიეთ ლექცია</h2>
+            <div id="l-content-body">
+                გთხოვთ, აირჩიოთ სასურველი ლექცია მარცხენა მენიუდან.
             </div>
-            <div class="video-box" onclick="openModal()">
-                <div class="play-button">▶</div>
-                <p>გაიცანი შენი რეპეტიტორი</p>
-            </div>
-        </section>
-
-        <section id="course" class="materials">
-            <h2>უფასო მასალები</h2>
-            <div class="lesson-grid">
-                <div class="card">
-                    <div class="card-badge">ლექცია 1</div>
-                    <h3>ქვისა და ბრინჯაოს ხანა</h3>
-                    <p>გაიგე ყველაფერი პირველყოფილი ეპოქიდან რკინის ხანამდე.</p>
-                    <button class="btn-card" onclick="openModal()">გახსნა</button>
-                </div>
-                <div class="card masterclass-card" id="masterclass">
-                    <div class="card-badge">LIVE</div>
-                    <h3>უფასო მასტერკლასი</h3>
-                    <p>დარეგისტრირდი და გაიგე, როგორ ჩააბარო ისტორია უმაღლეს ქულაზე.</p>
-                    <a href="https://docs.google.com/forms/d/e/1FAIpQLSfHENJtzGcRiiKEJBMvTzNbbv3ch5yu-q1nfrFXnd-D49zFIQ/viewform?usp=header" target="_blank" class="btn-card" style="text-decoration:none">რეგისტრაცია</a>
-                </div>
-            </div>
-        </section>
-    </main>
-
-    <div id="lessonModal" class="modal">
-        <div class="modal-content">
-            <span class="close" onclick="closeModal()">&times;</span>
-            <div class="modal-header">
-                <h2>ქვისა და ბრინჯაოს ხანა საქართველოში</h2>
-                <p class="subtitle">სრული მიმოხილვა: პალეოლითიდან რკინის ხანამდე</p>
-            </div>
-
-            <div class="lesson-layout">
-                <div class="lesson-video">
-                    <div class="video-placeholder">
-                    </div>
-                    <div class="timeline-brief">
-                        <h4>⏳ პერიოდიზაცია:</h4>
-                        <ul style="list-style: none; padding: 0;">
-                            <li>• პალეოლითი: 2.5 მლნ - ძვ.წ. 10.000 წ.</li>
-                            <li>• მეზოლითი: ძვ.წ. 10.000 - 9.000 წ.</li>
-                            <li>• ნეოლითი: ძვ.წ. 8.000 - 7.000 წ.</li>
-                            <li>• ენეოლითი: ძვ.წ. VI - IV ათასწ.</li>
-                        </ul>
-                    </div>
-                </div>
-
-                <div class="lesson-text">
-                    <h3>📖 გაკვეთილის შინაარსი:</h3>
-                    <p>პირველყოფილი ადამიანების უძველესი ნაშთები აღმოჩენილია დმანისში (1.7-1.8 მლნ წელი).</p>
-                    <p>ზედა პალეოლითში ჩნდება გვარები. წამყვანი იყო ქალი (მატრიარქატი).</p>
-                    <p>ნეოლითში ადამიანი გახდა მწარმოებელი (მიწათმოქმედება, მესაქონლეობა).</p>
-                    <div class="download-box">
-                        <a href="lecture1.docx.docx" download class="btn-card" style="background: #2b5797; color: white; border: none; padding: 10px 20px; display: inline-block; text-decoration: none; border-radius: 5px;">📥 ჩამოტვირთე სრული ტექსტი (Word)</a>
-                    </div>
-                </div>
-            </div>
-
-            <hr>
-
-            <div class="test-section">
-                <h4>📝 თვითშემოწმება :</h4>
-                
-                <div class="test-item" style="margin-bottom: 20px;">
-                    <p>1. რამდენი წლისაა დმანისში აღმოჩენილი უძველესი ჰომინიდების ნაშთები?</p>
-                    <label><input type="radio" name="q1" value="wrong"> 1.5 მილიონი წელი</label><br>
-                    <label><input type="radio" name="q1" value="correct"> 1.8 მილიონი წელი</label><br>
-                    <label><input type="radio" name="q1" value="wrong"> 2.0 მილიონი წელი</label><br>
-                    <label><input type="radio" name="q1" value="wrong"> 800 ათასი წელი</label>
-                </div>
-
-                <div class="test-item" style="margin-bottom: 20px;">
-                    <p>2. რა ეწოდება ეპოქას, როდესაც საზოგადოებაში წამყვანი როლი ქალს ეკუთვნოდა?</p>
-                    <label><input type="radio" name="q1_2" value="wrong"> პატრიარქატი</label><br>
-                    <label><input type="radio" name="q1_2" value="wrong"> თემი</label><br>
-                    <label><input type="radio" name="q1_2" value="correct"> მატრიარქატი</label><br>
-                    <label><input type="radio" name="q1_2" value="wrong"> ჯოგური წყობილება</label>
-                </div>
-
-                <div class="test-item" style="margin-bottom: 20px;">
-                    <p>3. რა არის "ნეოლითური რევოლუციის" მთავარი შედეგი?</p>
-                    <label><input type="radio" name="q1_3" value="wrong"> ცეცხლის მოპოვება</label><br>
-                    <label><input type="radio" name="q1_3" value="wrong"> რკინის იარაღების შექმნა</label><br>
-                    <label><input type="radio" name="q1_3" value="correct"> გადასვლა მწარმოებელ მეურნეობაზე</label><br>
-                    <label><input type="radio" name="q1_3" value="wrong"> დამწერლობის შექმნა</label>
-                </div>
-                
-                <button class="btn-primary" onclick="checkDetailedTest()">შედეგის შემოწმება</button>
-                <p id="test-result" style="margin-top: 15px; font-weight: bold;"></p>
+            
+            <div id="test-container" class="test-section" style="display:none;">
+                <h3>📝 თვითშემოწმება</h3>
+                <div id="questions-box"></div>
+                <button class="check-btn" onclick="checkTest()">შედეგის შემოწმება</button>
+                <div id="result-box"></div>
             </div>
         </div>
     </div>
 
-    <footer id="contact">
-        <h3>TimeRiot - ისტორიის ჰაბი</h3>
-        <p>ტელეფონი: <a href="tel:+995558551052" style="color:#ff4d4d; text-decoration:none;">+995 558 55 10 52</a></p>
-        <div class="socials">
-            <a href="https://www.instagram.com/nik_syarg/" target="_blank" style="color: #E1306C; font-weight: bold;">Instagram</a> | 
-            <a href="https://www.facebook.com/profile.php?id=61586823821806" target="_blank" style="color: #4267B2; font-weight: bold;">Facebook</a> | 
-            <a href="https://api.whatsapp.com/send?phone=995558551052&text=გამარჯობა!%20ისტორიაში%20მომზადება%20მსურს" target="_blank" style="color: #25D366; font-weight: bold;">WhatsApp</a>
-        </div>
-    </footer>
+    <script>
+        // БАЗА ДАННЫХ ЛЕКЦИЙ
+        const lectures = {
+            1: {
+                title: "ქვისა და ბრინჯაოს ხანა საქართველოში",
+                description: `სრული მიმოხილვა: პალეოლითიდან რკინის ხანამდე <br><br>
+                              ⏳ პერიოდიზაცია: <br>
+                              • პალეოლითი: 2.5 მლნ - ძვ.წ. 10.000 წ. <br>
+                              • მეზოლითი: ძვ.წ. 10.000 - 9.000 წ. <br>
+                              • ნეოლითი: ძვ.წ. 8.000 - 7.000 წ. <br>
+                              • ენეოლითი: ძვ.წ. VI - IV ათასწ. <br><br>
+                              📖 გაკვეთილის შინაარსი: <br>
+                              პირველყოფილი ადამიანების უძველესი ნაშთები აღმოჩენილია დმანისში (1.7-1.8 მლნ წელი). <br>
+                              ზედა პალეოლითში ჩნდება გვარები. წამყვანი იყო ქალი (მატრიარქატი). <br>
+                              ნეოლითში ადამიანი გახდა მწარმოებელი.`,
+                wordFile: "lecture1.docx.docx", 
+                questions: [
+                    { 
+                        q: "რამდენი წლისაა დმანისში აღმოჩენილი უძველესი ჰომინიდების ნაშთები?", 
+                        a: ["1.5 მილიონი წელი", "1.8 მილიონი წელი", "2.0 მილიონი წელი", "800 ათასი წელი"], 
+                        correct: 1 
+                    },
+                    { 
+                        q: "რა ეწოდება ეპოქას, როდესაც საზოგადოებაში წამყვანი როლი ქალს ეკუთვნოდა?", 
+                        a: ["პატრიარქატი", "თემი", "მატრიარქატი", "ჯოგური წყობილება"], 
+                        correct: 2 
+                    },
+                    { 
+                        q: "რა არის 'ნეოლითური რევოლუციის' მთავარი შედეგი?", 
+                        a: ["ცეცხლის მოპოვება", "რკინის იარაღების შექმნა", "გადასვლა მწარმოებელ მეურნეობაზე", "დამწერლობის შექმნა"], 
+                        correct: 2 
+                    }
+                ]
+            },
+            2: {
+                title: "შუმერი და ბაბილონი",
+                description: `📖 <b>გაკვეთილის შინაარსი:</b> <br><br>
+                              მდინარეებს ეფრატსა და ტიგროსს შორის არსებულ ტერიტორიას <b>შუამდინარეთს (მესოპოტამიას)</b> უწოდებდნენ. <br>
+                              შუმერებმა შექმნეს დიდი ცივილიზაცია: გამოიგონეს ბორბალი, ეტლი და შექმნეს პირველი <b>ლურსმული დამწერლობა</b>. <br><br>
+                              ბაბილონის აღზევება უკავშირდება მეფე <b>ხამურაბის</b> (ძვ.წ. XVIII ს.), რომელმაც შექმნა 282 მუხლისგან შემდგარი კანონთა კრებული. <br>
+                              მოგვიანებით, ბაბილონი განსაკუთრებით გაძლიერდა <b>ნაბუქოდონოსარის</b> დროს, რომელმაც ააგო ბაბილონის გოდოლი. <br><br>
+                              შუმერულ ტაძრებს <b>ზიკურატები</b> ეწოდებოდა, ხოლო ბაბილონის მფარველი ღვთაება იყო <b>მარდუქი</b>.`,
+                wordFile: "lecture2.docx.docx", 
+                questions: [
+                    { 
+                        q: "რა ეწოდებოდა შუმერების მიერ შექმნილ დამწერლობას?", 
+                        a: ["იეროგლიფური", "ანბანური", "ლურსმული (პიქტოგრაფიული)", "ხაზოვანი B"], 
+                        correct: 2 
+                    },
+                    { 
+                        q: "რამდენი მუხლისგან შედგებოდა ხამურაბის კანონთა კრებული?", 
+                        a: ["100", "282", "365", "150"], 
+                        correct: 1 
+                    },
+                    { 
+                        q: "ვის დროს აიგო ბაბილონის გოდოლი და დაკიდული ბაღები?", 
+                        a: ["სარგონის", "ხამურაბის", "ნაბუქოდონოსარის", "კიროსის"], 
+                        correct: 2 
+                    }
+                ]
+            }
+        };
 
-    <script src="timeriot.js"></script>
+        let currentLectureId = null;
+
+        function createList() {
+            const listContainer = document.getElementById('list-container');
+            listContainer.innerHTML = ""; 
+            for (let id in lectures) {
+                let div = document.createElement('div');
+                div.className = 'lecture-link';
+                div.innerText = id + ". " + lectures[id].title;
+                div.onclick = () => showLecture(id);
+                listContainer.appendChild(div);
+            }
+        }
+
+        function showLecture(id) {
+            currentLectureId = id;
+            const data = lectures[id];
+            
+            document.getElementById('l-title').innerText = data.title;
+            
+            let html = `<p>${data.description}</p>`;
+            html += `<a href="${data.wordFile}" download class="download-btn">📥 ჩამოტვირთე სრული ტექსტი (Word)</a>`;
+            
+            document.getElementById('l-content-body').innerHTML = html;
+            document.getElementById('test-container').style.display = 'block';
+            document.getElementById('result-box').style.display = 'none';
+            
+            let qHtml = "";
+            data.questions.forEach((item, index) => {
+                qHtml += `<div style="margin-bottom:20px;">
+                            <span class="question">${index + 1}. ${item.q}</span>`;
+                item.a.forEach((ans, i) => {
+                    qHtml += `<label class="option-label">
+                                <input type="radio" name="q${index}" value="${i}"> ${ans}
+                              </label>`;
+                });
+                qHtml += `</div>`;
+            });
+            document.getElementById('questions-box').innerHTML = qHtml;
+
+            document.querySelectorAll('.lecture-link').forEach((el, idx) => {
+                el.classList.toggle('active', (idx + 1) == id);
+            });
+        }
+
+        function checkTest() {
+            if (!currentLectureId) return;
+            const data = lectures[currentLectureId];
+            let score = 0;
+
+            data.questions.forEach((item, index) => {
+                const selected = document.querySelector(`input[name="q${index}"]:checked`);
+                if (selected && selected.value == item.correct) {
+                    score++;
+                }
+            });
+
+            const resBox = document.getElementById('result-box');
+            resBox.style.display = "block";
+            resBox.innerText = "თქვენი შედეგი: " + score + " / " + data.questions.length;
+            resBox.className = (score === data.questions.length) ? "correct" : "wrong";
+        }
+
+        window.onload = () => {
+            createList();
+            showLecture(1);
+        };
+    </script>
 </body>
 </html>
-
-
