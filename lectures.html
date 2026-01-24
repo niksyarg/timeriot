@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TimeRiot | ლექციები</title>
+    <style>
+        body { font-family: 'Helvetica', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; background: #f4f4f4; padding: 20px; }
+        .btn-home { padding: 10px 20px; background: #333; color: white; text-decoration: none; border-radius: 8px; margin-bottom: 20px; font-weight: bold; }
+        .main-wrapper { display: flex; width: 100%; max-width: 1000px; gap: 20px; }
+        .sidebar { width: 30%; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .lecture-link { display: block; padding: 12px; margin-bottom: 10px; background: #f9f9f9; border-radius: 8px; cursor: pointer; font-weight: bold; text-align: left; transition: 0.3s; }
+        .lecture-link:hover { background: #eee; }
+        .lecture-link.active { background: #673ab7; color: white; }
+        .content-area { width: 70%; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); text-align: left; min-height: 500px; }
+        .download-btn { display: inline-block; color: #e67e22; border: 2px solid #e67e22; padding: 10px 15px; border-radius: 8px; text-decoration: none; margin: 20px 0; font-weight: bold; }
+        .test-section { border-top: 2px solid #eee; margin-top: 25px; padding-top: 20px; }
+        .check-btn { width: 100%; padding: 15px; background: #27ae60; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; }
+        #result-box { margin-top: 15px; padding: 15px; display: none; border-radius: 8px; text-align: center; font-weight: bold; }
+        .correct { background: #d4edda; color: #155724; }
+        .wrong { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <a href="index.html" class="btn-home">მთავარი</a>
+    <div class="main-wrapper">
+        <div class="sidebar">
+            <h3>ლექციები</h3>
+            <div id="list-container"></div>
+        </div>
+        <div class="content-area">
+            <h2 id="l-title">აირჩიეთ ლექცია</h2>
+            <div id="l-body"></div>
+            <div id="test-container" class="test-section" style="display:none;">
+                <h3>📝 თვითშემოწმება</h3>
+                <div id="questions-box"></div>
+                <button class="check-btn" onclick="checkTest()">შედეგის შემოწმება</button>
+                <div id="result-box"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const lectures = {
+            1: {
+                title: "ქვისა და ბრინჯაოს ხანა საქართველოში",
+                text: "პირველყოფილი ადამიანების უძველესი ნაშთები აღმოჩენილია დმანისში (1.7-1.8 მლნ წელი). ნეოლითში ადამიანი გახდა მწარმოებელი.",
+                file: "lecture1.docx",
+                questions: [
+                    { q: "რამდენი წლისაა დმანისის ნაშთები?", a: ["1.5 მლნ", "1.8 მლნ", "2.0 მლნ", "800 ათასი"], correct: 1 },
+                    { q: "რა ეწოდება ეპოქას, სადაც ქალი იყო წამყვანი?", a: ["პატრიარქატი", "თემი", "მატრიარქატი", "ჯოგური"], correct: 2 },
+                    { q: "რა არის ნეოლითური რევოლუციის შედეგი?", a: ["ცეცხლი", "რკინა", "წარმოება", "დამწერლობა"], correct: 2 }
+                ]
+            },
+            2: {
+                title: "შუმერი და ბაბილონი",
+                text: "შუმერებმა შექმნეს ლურსმული დამწერლობა. ბაბილონის მეფე ხამურაბიმ შექმნა 282 მუხლისგან შემდგარი კანონთა კრებული.",
+                file: "lecture2.docx",
+                questions: [
+                    { q: "რა დამწერლობა ჰქონდათ შუმერებს?", a: ["ანბანი", "იეროგლიფი", "ლურსმული", "ხაზოვანი"], correct: 2 },
+                    { q: "რამდენი მუხლია ხამურაბის კანონებში?", a: ["100", "282", "300", "50"], correct: 1 },
+                    { q: "ვინ ააგო ბაღები და ბაბილონის გოდოლი?", a: ["სარგონმა", "ხამურაბიმ", "ნაბუქოდონოსარმა", "კიროსმა"], correct: 2 }
+                ]
+            }
+        };
+
+        let currentId = null;
+        function createList() {
+            const cont = document.getElementById('list-container');
+            for(let id in lectures) {
+                let d = document.createElement('div');
+                d.className = 'lecture-link';
+                d.innerText = id + ". " + lectures[id].title;
+                d.onclick = () => show(id);
+                cont.appendChild(d);
+            }
+        }
+        function show(id) {
+            currentId = id;
+            const data = lectures[id];
+            document.getElementById('l-title').innerText = data.title;
+            document.getElementById('l-body').innerHTML = `<p>${data.text}</p><a href="${data.file}" download class="download-btn">📥 ჩამოტვირთე Word</a>`;
+            document.getElementById('test-container').style.display = 'block';
+            document.getElementById('result-box').style.display = 'none';
+            let qH = "";
+            data.questions.forEach((q, i) => {
+                qH += `<p><b>${q.q}</b></p>`;
+                q.a.forEach((a, ai) => { qH += `<label style="display:block; margin-bottom:5px;"><input type="radio" name="q${i}" value="${ai}"> ${a}</label>`; });
+            });
+            document.getElementById('questions-box').innerHTML = qH;
+            document.querySelectorAll('.lecture-link').forEach((el, idx) => el.classList.toggle('active', (idx+1)==id));
+        }
+        function checkTest() {
+            let score = 0;
+            const qs = lectures[currentId].questions;
+            qs.forEach((q, i) => {
+                const sel = document.querySelector(`input[name="q${i}"]:checked`);
+                if(sel && sel.value == q.correct) score++;
+            });
+            const res = document.getElementById('result-box');
+            res.style.display = "block";
+            res.innerText = "შედეგი: " + score + " / " + qs.length;
+            res.className = (score === qs.length) ? "correct" : "wrong";
+        }
+        window.onload = () => { createList(); show(1); };
+    </script>
+</body>
+</html>
