@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TimeRiot | ლექციები</title>
     <style>
-        body { font-family: sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; background: #0d0d0d; color: white; padding: 20px; }
+        body { font-family: 'Fira GO', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; background: #0d0d0d; color: white; padding: 20px; }
         .btn-home { padding: 10px 20px; background: #ff4d4d; color: white; text-decoration: none; border-radius: 8px; margin-bottom: 20px; font-weight: bold; }
         .main-wrapper { display: flex; width: 100%; max-width: 1000px; gap: 20px; }
         .sidebar { width: 30%; background: #1a1a1a; padding: 20px; border-radius: 15px; border: 1px solid #333; }
@@ -19,6 +19,8 @@
         #result-box { margin-top: 15px; padding: 15px; display: none; border-radius: 8px; text-align: center; font-weight: bold; }
         .correct { background: #d4edda; color: #155724; }
         .wrong { background: #f8d7da; color: #721c24; }
+        label { display: block; margin-bottom: 8px; cursor: pointer; padding: 5px; border-radius: 5px; transition: 0.2s; }
+        label:hover { background: #333; }
     </style>
 </head>
 <body>
@@ -29,7 +31,7 @@
             <div id="list-container"></div>
         </div>
         <div class="content-area">
-            <h2 id="l-title">აირჩიეთ ლექცია</h2>
+            <h2 id="l-title" style="color:#ff4d4d">აირჩიეთ ლექცია</h2>
             <div id="l-body"></div>
             <div id="test-container" class="test-section" style="display:none;">
                 <h3>📝 თვითშემოწმება</h3>
@@ -44,20 +46,20 @@
         const lectures = {
             1: {
                 title: "ქვისა და ბრინჯაოს ხანა",
-                text: "პირველყოფილი ადამიანების უძველესი ნაშთები აღმოჩენილია დმანისში (1.8 მლნ წელი)...",
-                file: "lecture1.docx.docx",
+                text: "პირველყოფილი ადამიანების უძველესი ნაშთები აღმოჩენილია დმანისში (1.8 მლნ წელი). ნეოლითში ადამიანი გახდა მწარმოებელი. ბრინჯაოს ხანა საქართველოში იყოფა ადრე, შუა და გვიან პერიოდებად.",
+                file: "lecture1.docx", // ТОЧКА В КОНЦЕ УДАЛЕНА
                 questions: [
                     { q: "რამდენი წლისაა დმანისის ნაშთები?", a: ["1.5 მლნ", "1.8 მლნ", "2.0 მლნ", "800 ათასი"], correct: 1 },
-                    { q: "რა ეწოდება ეპოქას, სადაც ქალი იყო წამყვანი?", a: ["პატრიарქატი", "თემი", "მატრიარქატი", "ჯოგური"], correct: 2 },
+                    { q: "რა ეწოდება ეპოქას, სადაც ქალი იყო წამყვანი?", a: ["პატრიარქატი", "თემი", "მატრიარქატი", "ჯოგური"], correct: 2 },
                     { q: "რა არის ნეოლითური რევოლუციის შედეგი?", a: ["ცეცხლი", "რკინა", "მწარმოებელი მეურნეობა", "დამწერლობა"], correct: 2 }
                 ]
             },
             2: {
                 title: "შუმერი და ბაბილონი",
-                text: "შუმერებმა შექმნეს ლურსმული დამწერლობა. ხამურაბიმ შექმნა 282 კანონი...",
-                file: "lecture2.docx.docx",
+                text: "მესოპოტამიაში შუმერებმა შექმნეს ლურსმული დამწერლობა და გამოიგონეს ბორბალი. ბაბილონის მეფე ხამურაბიმ (ძვ.წ. XVIII ს.) შექმნა 282 მუხლისგან შემდგარი კანონთა კრებული. ნაბუქოდონოსარს მიეწერება დაკიდული ბაღებისა და ბაბილონის გოდოლის აგება.",
+                file: "lecture2.docx", // ТОЧКА В КОНЦЕ УДАЛЕНА
                 questions: [
-                    { q: "რა დამწერლობა ჰქონდათ შუმერებს?", a: ["ანბანი", "იეროგლიфи", "ლურსმული", "ხაზოვანი"], correct: 2 },
+                    { q: "რა დამწერლობა ჰქონდათ შუმერებს?", a: ["ანბანი", "იეროგლიფი", "ლურსმული", "ხაზოვანი"], correct: 2 },
                     { q: "რამდენი მუხლია ხამურაბის კანონებში?", a: ["100", "282", "300", "50"], correct: 1 },
                     { q: "ვინ ააგო ბაბილონის გოდოლი?", a: ["სარგონმა", "ხამურაბიმ", "ნაბუქოდონოსარმა", "კიროსმა"], correct: 2 }
                 ]
@@ -65,8 +67,10 @@
         };
 
         let currentId = null;
+
         function createList() {
             const cont = document.getElementById('list-container');
+            cont.innerHTML = "";
             for(let id in lectures) {
                 let d = document.createElement('div');
                 d.className = 'lecture-link';
@@ -75,22 +79,37 @@
                 cont.appendChild(d);
             }
         }
+
         function show(id) {
             currentId = id;
             const data = lectures[id];
             document.getElementById('l-title').innerText = data.title;
-            document.getElementById('l-body').innerHTML = `<p>${data.text}</p><a href="${data.file}" download class="download-btn">📥 ჩამოტვირთე Word</a>`;
+            
+            // Исправлена ссылка на скачивание (добавлен префикс ./)
+            document.getElementById('l-body').innerHTML = `
+                <p style="line-height:1.6">${data.text}</p>
+                <a href="./${data.file}" download class="download-btn">📥 ჩამოტვირთე სრული ტექსტი (Word)</a>
+            `;
+            
             document.getElementById('test-container').style.display = 'block';
             document.getElementById('result-box').style.display = 'none';
+            
             let qH = "";
             data.questions.forEach((q, i) => {
-                qH += `<p><b>${q.q}</b></p>`;
-                q.a.forEach((a, ai) => { qH += `<label style="display:block; margin-bottom:8px; cursor:pointer;"><input type="radio" name="q${i}" value="${ai}"> ${a}</label>`; });
+                qH += `<p><b>${i+1}. ${q.q}</b></p>`;
+                q.a.forEach((a, ai) => {
+                    qH += `<label><input type="radio" name="q${i}" value="${ai}"> ${a}</label>`;
+                });
             });
             document.getElementById('questions-box').innerHTML = qH;
-            document.querySelectorAll('.lecture-link').forEach((el, idx) => el.classList.toggle('active', (idx+1)==id));
+            
+            document.querySelectorAll('.lecture-link').forEach((el, idx) => {
+                el.classList.toggle('active', (idx + 1) == id);
+            });
         }
+
         function checkTest() {
+            if(!currentId) return;
             let score = 0;
             const qs = lectures[currentId].questions;
             qs.forEach((q, i) => {
@@ -102,7 +121,11 @@
             res.innerText = "შედეგი: " + score + " / " + qs.length;
             res.className = (score === qs.length) ? "correct" : "wrong";
         }
-        window.onload = () => { createList(); show(1); };
+
+        window.onload = () => {
+            createList();
+            show(1);
+        };
     </script>
 </body>
 </html>
