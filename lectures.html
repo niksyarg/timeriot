@@ -9,59 +9,60 @@
         .btn-home { padding: 10px 20px; background: #ff4d4d; color: white; text-decoration: none; border-radius: 8px; margin-bottom: 20px; font-weight: bold; }
         .main-wrapper { display: flex; width: 100%; max-width: 1000px; gap: 20px; }
         .sidebar { width: 30%; background: #1a1a1a; padding: 20px; border-radius: 15px; border: 1px solid #333; }
-        .lecture-link { display: block; padding: 12px; margin-bottom: 10px; background: #262626; border-radius: 8px; cursor: pointer; color: #ccc; font-weight: bold; text-align: left; transition: 0.3s; }
+        .lecture-link { display: block; padding: 12px; margin-bottom: 10px; background: #262626; border-radius: 8px; cursor: pointer; color: #ccc; font-weight: bold; text-align: left; transition: 0.3s; position: relative; }
+        .lecture-link.locked::after { content: '🔒'; position: absolute; right: 10px; }
         .lecture-link:hover { color: #ff4d4d; }
         .lecture-link.active { background: #ff4d4d; color: white; }
         .content-area { width: 70%; background: #1a1a1a; padding: 30px; border-radius: 15px; border: 1px solid #333; text-align: left; min-height: 500px; }
+        
+        /* Стили для защиты доступа */
+        .lock-screen { text-align: center; padding: 40px 20px; }
+        .lock-screen input { padding: 12px; border-radius: 8px; border: 1px solid #ff4d4d; background: #000; color: white; width: 200px; text-align: center; font-size: 16px; }
+        .lock-screen button { padding: 12px 20px; background: #ff4d4d; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        
         .download-btn { display: inline-block; color: #ff4d4d; border: 2px solid #ff4d4d; padding: 10px 15px; border-radius: 8px; text-decoration: none; margin: 20px 0; font-weight: bold; }
         .test-section { border-top: 1px solid #333; margin-top: 25px; padding-top: 20px; }
-        .check-btn { width: 100%; padding: 15px; background: #27ae60; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; }
+        .check-btn { width: 100%; padding: 15px; background: #27ae60; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
         #result-box { margin-top: 15px; padding: 15px; display: none; border-radius: 8px; text-align: center; font-weight: bold; }
         .correct { background: #d4edda; color: #155724; }
         .wrong { background: #f8d7da; color: #721c24; }
-        label { display: block; margin-bottom: 8px; cursor: pointer; padding: 5px; border-radius: 5px; transition: 0.2s; }
-        label:hover { background: #333; }
     </style>
 </head>
 <body>
     <a href="index.html" class="btn-home">მთავარი</a>
     <div class="main-wrapper">
         <div class="sidebar">
-            <h3>ლექციები</h3>
+            <h3 style="color:#ff4d4d">ლექციები</h3>
             <div id="list-container"></div>
         </div>
         <div class="content-area">
-            <h2 id="l-title" style="color:#ff4d4d">აირჩიეთ ლექცია</h2>
-            <div id="l-body"></div>
-            <div id="test-container" class="test-section" style="display:none;">
-                <h3>📝 თვითშემოწმება</h3>
-                <div id="questions-box"></div>
-                <button class="check-btn" onclick="checkTest()">შედეგის შემოწმება</button>
-                <div id="result-box"></div>
+            <div id="lecture-content">
+                <h2 id="l-title">აირჩიეთ ლექცია</h2>
+                <div id="l-body"></div>
             </div>
         </div>
     </div>
 
     <script>
+        // БАЗА ДАННЫХ Лექციების
         const lectures = {
             1: {
                 title: "ქვისა და ბრინჯაოს ხანა",
-                text: "პირველყოფილი ადამიანების უძველესი ნაშთები აღმოჩენილია დმანისში (1.8 მლნ წელი). ნეოლითში ადამიანი გახდა მწარმოებელი. ბრინჯაოს ხანა საქართველოში იყოფა ადრე, შუა და გვიან პერიოდებად.",
-                file: "lecture1.docx", // ТОЧКА В КОНЦЕ УДАЛЕНА
+                text: "პირველყოფილი ადამიანების უძველესი ნაშთები აღმოჩენილია დმანისში (1.8 მლნ წელი).",
+                file: "lecture1.docx",
+                isLocked: false, // ОТКРЫТА ДЛЯ ВСЕХ
                 questions: [
-                    { q: "რამდენი წლისაა დმანისის ნაშთები?", a: ["1.5 მლნ", "1.8 მლნ", "2.0 მლნ", "800 ათასი"], correct: 1 },
-                    { q: "რა ეწოდება ეპოქას, სადაც ქალი იყო წამყვანი?", a: ["პატრიარქატი", "თემი", "მატრიარქატი", "ჯოგური"], correct: 2 },
-                    { q: "რა არის ნეოლითური რევოლუციის შედეგი?", a: ["ცეცხლი", "რკინა", "მწარმოებელი მეურნეობა", "დამწერლობა"], correct: 2 }
+                    { q: "რამდენი წლისაა დმანისის ნაშთები?", a: ["1.5 მლნ", "1.8 მლნ", "2.0 მლნ", "800 ათასი"], correct: 1 }
                 ]
             },
             2: {
                 title: "შუმერი და ბაბილონი",
-                text: "მესოპოტამიაში შუმერებმა შექმნეს ლურსმული დამწერლობა და გამოიგონეს ბორბალი. ბაბილონის მეფე ხამურაბიმ (ძვ.წ. XVIII ს.) შექმნა 282 მუხლისგან შემდგარი კანონთა კრებული. ნაბუქოდონოსარს მიეწერება დაკიდული ბაღებისა და ბაბილონის გოდოლის აგება.",
-                file: "lecture2.docx", // ТОЧКА В КОНЦЕ УДАЛЕНА
+                text: "შუმერებმა შექმნეს ლურსმული დამწერლობა. ბაბილონის მეფე ხამურაბიმ შექმნა 282 კანონი.",
+                file: "lecture2.docx",
+                isLocked: true, // ЗАКРЫТА
+                keyCode: "RIOT1828", // ТВОЙ СЕКРЕТНЫЙ КОД
                 questions: [
-                    { q: "რა დამწერლობა ჰქონდათ შუმერებს?", a: ["ანბანი", "იეროგლიფი", "ლურსმული", "ხაზოვანი"], correct: 2 },
-                    { q: "რამდენი მუხლია ხამურაბის კანონებში?", a: ["100", "282", "300", "50"], correct: 1 },
-                    { q: "ვინ ააგო ბაბილონის გოდოლი?", a: ["სარგონმა", "ხამურაბიმ", "ნაბუქოდონოსარმა", "კიროსმა"], correct: 2 }
+                    { q: "რამდენი მუხლია ხამურაბის კანონებში?", a: ["100", "282", "300", "50"], correct: 1 }
                 ]
             }
         };
@@ -73,7 +74,7 @@
             cont.innerHTML = "";
             for(let id in lectures) {
                 let d = document.createElement('div');
-                d.className = 'lecture-link';
+                d.className = 'lecture-link' + (lectures[id].isLocked ? ' locked' : '');
                 d.innerText = id + ". " + lectures[id].title;
                 d.onclick = () => show(id);
                 cont.appendChild(d);
@@ -83,33 +84,66 @@
         function show(id) {
             currentId = id;
             const data = lectures[id];
-            document.getElementById('l-title').innerText = data.title;
-            
-            // Исправлена ссылка на скачивание (добавлен префикс ./)
-            document.getElementById('l-body').innerHTML = `
-                <p style="line-height:1.6">${data.text}</p>
-                <a href="./${data.file}" download class="download-btn">📥 ჩამოტვირთე სრული ტექსტი (Word)</a>
-            `;
-            
-            document.getElementById('test-container').style.display = 'block';
-            document.getElementById('result-box').style.display = 'none';
-            
-            let qH = "";
-            data.questions.forEach((q, i) => {
-                qH += `<p><b>${i+1}. ${q.q}</b></p>`;
-                q.a.forEach((a, ai) => {
-                    qH += `<label><input type="radio" name="q${i}" value="${ai}"> ${a}</label>`;
-                });
-            });
-            document.getElementById('questions-box').innerHTML = qH;
-            
+            const content = document.getElementById('lecture-content');
+
+            // Проверка доступа
+            if (data.isLocked) {
+                renderLockScreen(data.keyCode);
+            } else {
+                renderLecture(data);
+            }
+
             document.querySelectorAll('.lecture-link').forEach((el, idx) => {
                 el.classList.toggle('active', (idx + 1) == id);
             });
         }
 
+        function renderLockScreen(correctCode) {
+            document.getElementById('lecture-content').innerHTML = `
+                <div class="lock-screen">
+                    <h2 style="color:#ff4d4d">🔒 ლექცია დახურულია</h2>
+                    <p>ამ მასალაზე წვდომისთვის გთხოვთ შეიყვანოთ კოდი:</p>
+                    <input type="text" id="pass-input" placeholder="შეიყვანეთ კოდი">
+                    <br>
+                    <button onclick="checkKey('${correctCode}')">წვდომის მიღება</button>
+                    <p id="lock-error" style="color:red; display:none; margin-top:10px;">არასწორი კოდი!</p>
+                </div>
+            `;
+        }
+
+        function checkKey(correctCode) {
+            const input = document.getElementById('pass-input').value;
+            if (input === correctCode) {
+                lectures[currentId].isLocked = false; // Открываем только на время сессии
+                show(currentId);
+            } else {
+                document.getElementById('lock-error').style.display = 'block';
+            }
+        }
+
+        function renderLecture(data) {
+            let qH = "";
+            data.questions.forEach((q, i) => {
+                qH += `<p><b>${i+1}. ${q.q}</b></p>`;
+                q.a.forEach((a, ai) => {
+                    qH += `<label style="display:block; margin-bottom:8px;"><input type="radio" name="q${i}" value="${ai}"> ${a}</label>`;
+                });
+            });
+
+            document.getElementById('lecture-content').innerHTML = `
+                <h2 id="l-title" style="color:#ff4d4d">${data.title}</h2>
+                <p style="line-height:1.6">${data.text}</p>
+                <a href="./${data.file}" download class="download-btn">📥 ჩამოტვირთე სრული ტექსტი (Word)</a>
+                <div class="test-section">
+                    <h3>📝 თვითშემოწმება</h3>
+                    <div id="questions-box">${qH}</div>
+                    <button class="check-btn" onclick="checkTest()">შედეგის შემოწმება</button>
+                    <div id="result-box"></div>
+                </div>
+            `;
+        }
+
         function checkTest() {
-            if(!currentId) return;
             let score = 0;
             const qs = lectures[currentId].questions;
             qs.forEach((q, i) => {
@@ -122,10 +156,7 @@
             res.className = (score === qs.length) ? "correct" : "wrong";
         }
 
-        window.onload = () => {
-            createList();
-            show(1);
-        };
+        window.onload = () => { createList(); show(1); };
     </script>
 </body>
 </html>
