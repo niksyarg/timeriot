@@ -7,26 +7,32 @@
     <link href="https://fonts.googleapis.com/css2?family=Fira+GO:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Fira GO', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; background: #0d0d0d; color: white; padding: 20px; min-height: 100vh; }
-        .btn-home { padding: 10px 20px; background: #ff4d4d; color: white; text-decoration: none; border-radius: 8px; margin-bottom: 20px; font-weight: bold; }
+        
+        /* СЕКРЕТНЫЙ ЗАГОЛОВОК */
+        .admin-header { cursor: pointer; user-select: none; margin-bottom: 20px; text-align: center; }
+        .admin-header h1 { font-size: 28px; margin: 0; color: white; }
+        .admin-header h1 span { color: #ff4d4d; }
+
+        .btn-home { padding: 10px 20px; background: #333; color: white; text-decoration: none; border-radius: 8px; margin-bottom: 20px; font-weight: bold; transition: 0.3s; }
+        .btn-home:hover { background: #ff4d4d; }
+        
         .main-wrapper { display: flex; width: 100%; max-width: 1100px; gap: 20px; flex: 1; }
         .sidebar { width: 300px; background: #1a1a1a; padding: 20px; border-radius: 15px; border: 1px solid #333; }
         .lecture-link { display: block; padding: 15px; margin-bottom: 10px; background: #262626; border-radius: 8px; cursor: pointer; color: #ccc; font-weight: bold; position: relative; }
         .lecture-link.locked::after { content: '🔒'; position: absolute; right: 15px; }
         .lecture-link.active { background: #ff4d4d; color: white; }
+        
         .content-area { flex: 1; background: #1a1a1a; padding: 35px; border-radius: 15px; border: 1px solid #333; min-height: 600px; }
         
-        /* КРАСНАЯ ПАНЕЛЬ АДМИНА */
-        .admin-footer { margin-top: 50px; padding: 20px; text-align: center; width: 100%; border-top: 1px solid #333; }
-        #admin-trigger { color: #ff4d4d; cursor: pointer; font-size: 14px; font-weight: bold; border: 1px solid #ff4d4d; padding: 5px 10px; border-radius: 5px; opacity: 0.5; }
-        #admin-trigger:hover { opacity: 1; }
-
         .lock-screen { text-align: center; padding: 60px 20px; }
-        .lock-screen input { padding: 12px; border-radius: 8px; border: 1px solid #ff4d4d; background: #000; color: white; width: 200px; text-align: center; font-size: 18px; margin-bottom: 15px; }
+        .lock-screen input { padding: 12px; border-radius: 8px; border: 1px solid #ff4d4d; background: #000; color: white; width: 200px; text-align: center; font-size: 18px; margin-bottom: 15px; text-transform: uppercase; }
         .lock-screen button { padding: 12px 30px; background: #ff4d4d; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
         
         .download-btn { display: inline-block; color: #ff4d4d; border: 2px solid #ff4d4d; padding: 12px 20px; border-radius: 8px; text-decoration: none; margin: 25px 0; font-weight: bold; }
         .test-section { border-top: 1px solid #333; margin-top: 30px; padding-top: 25px; }
-        .option-label { display: block; padding: 12px; background: #262626; border-radius: 8px; margin-bottom: 10px; cursor: pointer; }
+        .option-label { display: block; padding: 12px; background: #262626; border-radius: 8px; margin-bottom: 10px; cursor: pointer; border: 1px solid transparent; }
+        .option-label:hover { border-color: #ff4d4d; }
+        
         .check-btn { width: 100%; padding: 18px; background: #27ae60; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
         #result-box { margin-top: 20px; padding: 20px; display: none; border-radius: 10px; text-align: center; font-weight: bold; }
         .correct { background: #155724; color: #d4edda; }
@@ -35,7 +41,11 @@
 </head>
 <body>
 
-    <a href="index.html" class="btn-home">მთავარი</a>
+    <div class="admin-header" onclick="adminClick()">
+        <h1>Time<span>Riot</span></h1>
+    </div>
+
+    <a href="index.html" class="btn-home">← მთავარზე დაბრუნება</a>
 
     <div class="main-wrapper">
         <div class="sidebar">
@@ -43,12 +53,9 @@
             <div id="list-container"></div>
         </div>
         <div class="content-area" id="lecture-content">
-            <h2 style="color:#ff4d4d">აირჩიეთ ლექცია</h2>
+            <h2 style="color:#ff4d4d">აირჩიეთ სასურველი ლექცია</h2>
+            <p>გამოიყენეთ მარცხენა მენიუ მასალებზე წვდომისთვის.</p>
         </div>
-    </div>
-
-    <div class="admin-footer">
-        <span id="admin-trigger" onclick="adminClick()">ADMIN PANEL | © 2026 TimeRiot</span>
     </div>
 
     <script>
@@ -69,7 +76,7 @@
             },
             2: {
                 title: "შუმერი და ბაბილონი",
-                text: "მესოპოტამიაში შუმერებმა შექმნეს ლურსმული დამწერლობა. ბაბილონის მეფე ხამურაბიმ შექმნა კანონთა კრებული.",
+                text: "მესოპოტამიაში შუმერებმა შექმნეს ლურსმული დამწერლობა. ბაბილონის მეფე ხამურაბიმ შექმნა კანონთა კრებული (282 მუხლი).",
                 file: "lecture2.docx",
                 isLocked: true,
                 questions: [
@@ -83,7 +90,7 @@
         function getDynamicCode() {
             const now = new Date();
             const timeKey = now.getHours() + "-" + Math.floor(now.getMinutes() / 10);
-            const dateKey = now.getDate() + "-" + now.getMonth();
+            const dateKey = now.getDate() + "-" + (now.getMonth() + 1);
             const raw = SECRET_SALT + timeKey + dateKey;
             let hash = 0;
             for (let i = 0; i < raw.length; i++) {
@@ -137,12 +144,12 @@
         }
 
         function checkKey(id) {
-            const input = document.getElementById('pass-input').value.toUpperCase();
+            const input = document.getElementById('pass-input').value.trim().toUpperCase();
             if (input === getDynamicCode()) {
                 lectures[id].isLocked = false;
                 show(id);
             } else {
-                alert("არასწორი კოდი!");
+                alert("არასწორი კოდი ან ვადა ამოიწურა!");
             }
         }
 
@@ -154,11 +161,11 @@
             });
             document.getElementById('lecture-content').innerHTML = `
                 <h2 style="color:#ff4d4d">${data.title}</h2>
-                <p>${data.text}</p>
-                <a href="./${data.file}" download class="download-btn">📥 ჩამოტვირთე Word</a>
+                <p style="line-height:1.6">${data.text}</p>
+                <a href="./${data.file}" download class="download-btn">📥 ჩამოტვირთე Word ვერსია</a>
                 <div class="test-section">
-                    <h3 style="color:#ff4d4d">📝 ტესტი</h3>${qH}
-                    <button class="check-btn" onclick="checkTest(${id})">შემოწმება</button>
+                    <h3 style="color:#ff4d4d">📝 თვითშემოწმება</h3>${qH}
+                    <button class="check-btn" onclick="checkTest(${id})">შედეგის ნახვა</button>
                     <div id="result-box"></div>
                 </div>`;
         }
@@ -172,7 +179,7 @@
             });
             const res = document.getElementById('result-box');
             res.style.display = "block";
-            res.innerText = "შედეგი: " + score + " / " + qs.length;
+            res.innerText = "თქვენი შედეგია: " + score + " / " + qs.length;
             res.className = (score === qs.length) ? "correct" : "wrong";
         }
 
