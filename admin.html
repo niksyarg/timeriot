@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <title>TimeRiot | Admin Panel</title>
+    <style>
+        body { font-family: sans-serif; background: #0d0d0d; color: white; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; }
+        .admin-card { background: #1a1a1a; padding: 40px; border-radius: 20px; border: 2px solid #ff4d4d; text-align: center; box-shadow: 0 0 30px rgba(255, 77, 77, 0.3); }
+        .dynamic-code { font-size: 72px; font-weight: bold; color: #ff4d4d; margin: 20px 0; letter-spacing: 5px; text-shadow: 0 0 10px #ff4d4d; }
+        .timer { font-size: 20px; color: #888; margin-top: 10px; }
+        .btn-back { margin-top: 30px; color: #555; text-decoration: none; font-size: 14px; }
+    </style>
+</head>
+<body>
+
+    <div class="admin-card">
+        <h2 style="color:#ff4d4d">TimeRiot Admin</h2>
+        <p>მიმდინარე კოდი ლექციებისთვის:</p>
+        <div class="dynamic-code" id="code">XXXXX</div>
+        <div class="timer">განახლებამდე: <span id="timer">00:00</span></div>
+    </div>
+
+    <a href="lectures.html" class="btn-back">← დაბრუნება ლექციებზე</a>
+
+    <script>
+        const SECRET_SALT = "NAPOLEON"; // Твоя "соль" для шифра
+
+        function generateCode() {
+            const now = new Date();
+            const timeKey = now.getHours() + "-" + Math.floor(now.getMinutes() / 10);
+            const dateKey = now.getDate() + "-" + (now.getMonth() + 1);
+            const raw = SECRET_SALT + timeKey + dateKey;
+            
+            let hash = 0;
+            for (let i = 0; i < raw.length; i++) {
+                hash = ((hash << 5) - hash) + raw.charCodeAt(i);
+                hash |= 0;
+            }
+            return Math.abs(hash).toString(36).substring(0, 5).toUpperCase();
+        }
+
+        function updateUI() {
+            const now = new Date();
+            const seconds = now.getSeconds();
+            const minutes = now.getMinutes() % 10;
+            const totalSecondsLeft = (10 * 60) - (minutes * 60 + seconds);
+            
+            const m = Math.floor(totalSecondsLeft / 60);
+            const s = totalSecondsLeft % 60;
+            
+            document.getElementById('code').innerText = generateCode();
+            document.getElementById('timer').innerText = 
+                `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        setInterval(updateUI, 1000);
+        updateUI();
+    </script>
+</body>
+</html>
