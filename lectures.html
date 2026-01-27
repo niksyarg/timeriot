@@ -19,6 +19,8 @@
         .main-content { flex: 1; min-width: 300px; background: var(--card); border-radius: 20px; padding: 40px; border: 1px solid #333; min-height: 500px; }
         .btn-download { display: inline-block; color: var(--red); border: 2px solid var(--red); padding: 12px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0; }
         .test-box { margin-top: 40px; padding: 30px; background: #111; border-radius: 15px; border-top: 3px solid var(--red); }
+        .btn-check { background: var(--red); color: white; border: none; padding: 12px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; }
+        .result-msg { margin-top: 20px; padding: 15px; border-radius: 8px; display: none; text-align: center; font-weight: bold; }
         .lock-screen { text-align: center; padding: 50px 20px; }
         .lock-screen input { background: #000; border: 2px solid var(--red); color: white; padding: 12px; border-radius: 8px; font-size: 20px; text-align: center; margin-bottom: 15px; }
         .btn-unlock { background: var(--red); color: white; border: none; padding: 12px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; }
@@ -42,12 +44,12 @@
         </div>
     </div>
 
-    <div class="main-content" id="display">
-        </div>
+    <div class="main-content" id="display"></div>
 </div>
 
 <script>
     let isUnlocked = false;
+    let currentLectureId = 1;
 
     const data = {
         1: {
@@ -73,6 +75,7 @@
     };
 
     function loadLecture(id) {
+        currentLectureId = id;
         const display = document.getElementById('display');
         document.querySelectorAll('.lecture-card').forEach(c => c.classList.remove('active'));
         document.getElementById('card' + id).classList.add('active');
@@ -93,13 +96,15 @@
                 <p>${lecture.content}</p>
                 <a href="${lecture.file}" class="btn-download" download>📥 ჩამოტვირთე მასალა (Word)</a>
                 <div class="test-box">
-                    <h3>📝 ტესტი (3 კითხვა)</h3>
+                    <h3>📝 ტესტი</h3>
                     ${lecture.test.map((t, i) => `
-                        <div style="margin-bottom:15px;">
+                        <div style="margin-bottom:20px;">
                             <p><b>${i+1}. ${t.q}</b></p>
-                            ${t.a.map(ans => `<label style="display:block;"><input type="radio" name="q${i}"> ${ans}</label>`).join('')}
+                            ${t.a.map((ans, ai) => `<label style="display:block; margin-bottom:5px;"><input type="radio" name="q${i}" value="${ai}"> ${ans}</label>`).join('')}
                         </div>
                     `).join('')}
+                    <button class="btn-check" onclick="checkTest()">შემოწმება</button>
+                    <div id="result" class="result-msg"></div>
                 </div>`;
         }
     }
@@ -113,6 +118,37 @@
         } else {
             alert("არასწორი პაროლი!");
         }
+    }
+
+    function checkTest() {
+        const lecture = data[currentLectureId];
+        let score = 0;
+        lecture.test.forEach((t, i) => {
+            const selected = document.querySelector(`input[name="q${i}"]:checked`);
+            if (selected && parseInt(selected.value) === t.c) {
+                score++;
+            }
+        });
+
+        const resultDiv = document.getElementById('result');
+        resultDiv.style.display = "block";
+        
+        let message = "";
+        if (score === 3) {
+            message = `ბრწყინვალეა! 3-დან ${score} სწორია. შენ ნამდვილი ისტორიკოსი ხარ! 🌟`;
+            resultDiv.style.background = "rgba(46, 204, 113, 0.2)";
+            resultDiv.style.color = "#2ecc71";
+        } else if (score > 0) {
+            message = `კარგია! 3-დან ${score} სწორია. ცოტაც და ყველაფერს გაიგებ! 👍`;
+            resultDiv.style.background = "rgba(241, 196, 15, 0.2)";
+            resultDiv.style.color = "#f1c40f";
+        } else {
+            message = `არაუშავს, სცადე თავიდან. ისტორია დიდ მოთმინებას მოითხოვს! 📚`;
+            resultDiv.style.background = "rgba(231, 76, 60, 0.2)";
+            resultDiv.style.color = "#e74c3c";
+        }
+        
+        resultDiv.innerText = message;
     }
 
     loadLecture(1);
