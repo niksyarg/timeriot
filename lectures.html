@@ -4,51 +4,80 @@
     <meta charset="UTF-8">
     <title>TimeRiot | ლექციები</title>
     <script>
-        // Проверка: если не вошел — отправляем на логин
         if (localStorage.getItem('userLoggedIn') !== 'true') {
             window.location.href = "login.html";
         }
     </script>
     <style>
-        body { font-family: sans-serif; background: #0d0d0d; color: white; text-align: center; padding: 20px; }
-        .main-wrapper { display: flex; max-width: 1000px; margin: 0 auto; gap: 20px; }
-        .sidebar { width: 300px; background: #1a1a1a; padding: 20px; border-radius: 15px; text-align: left; }
-        .lecture-link { display: block; padding: 15px; margin-bottom: 10px; background: #262626; border-radius: 8px; cursor: pointer; text-decoration: none; color: white; }
-        .content-area { flex: 1; background: #1a1a1a; padding: 30px; border-radius: 15px; text-align: left; }
-        .btn-logout { background: #333; color: white; padding: 10px; border: none; cursor: pointer; border-radius: 5px; margin-top: 20px; }
+        body { font-family: sans-serif; background: #0d0d0d; color: white; margin: 0; padding: 20px; }
+        .header { display: flex; justify-content: space-between; max-width: 1100px; margin: 0 auto 30px; align-items: center; }
+        .main-container { display: flex; max-width: 1100px; margin: 0 auto; gap: 20px; }
+        .sidebar { width: 280px; background: #1a1a1a; padding: 20px; border-radius: 15px; border: 1px solid #333; }
+        .lecture-btn { display: block; width: 100%; padding: 15px; margin-bottom: 10px; background: #262626; border: none; border-radius: 8px; color: white; text-align: left; cursor: pointer; font-weight: bold; }
+        .lecture-btn.locked { border-right: 4px solid #ff4d4d; }
+        .content { flex: 1; background: #1a1a1a; padding: 30px; border-radius: 15px; border: 1px solid #333; min-height: 400px; }
+        .lock-box { text-align: center; padding: 50px; }
+        input { padding: 10px; border-radius: 5px; border: 1px solid #ff4d4d; background: #000; color: white; text-align: center; font-size: 20px; margin-bottom: 10px; }
+        .btn-unlock { background: #ff4d4d; border: none; padding: 10px 20px; color: white; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
 
-    <div style="display: flex; justify-content: space-between; max-width: 1000px; margin: 0 auto 20px auto;">
-        <h2 style="color:#ff4d4d">TimeRiot Lectures</h2>
-        <button class="btn-logout" onclick="logout()">გამოსვლა</button>
+<div class="header">
+    <h2 style="color:#ff4d4d">TimeRiot</h2>
+    <div>
+        <a href="admin.html" style="color:#333; text-decoration:none; margin-right: 20px;">Admin</a>
+        <button onclick="localStorage.removeItem('userLoggedIn'); location.reload();">გამოსვლა</button>
     </div>
+</div>
 
-    <div class="main-wrapper">
-        <div class="sidebar">
-            <div class="lecture-link" onclick="show(1)">1. ქვისა და ბრინჯაოს ხანა</div>
-            <div class="lecture-link" onclick="show(2)">2. შუმერი და ბაბილონი</div>
-        </div>
-        <div class="content-area" id="content">
-            <h3>აირჩიეთ ლექცია</h3>
-        </div>
+<div class="main-container">
+    <div class="sidebar">
+        <button class="lecture-btn" onclick="show(1)">1. შესავალი</button>
+        <button class="lecture-btn locked" onclick="show(2)">2. ძველი საბერძნეთი</button>
     </div>
+    <div class="content" id="display">
+        <h3>აირჩიეთ ლექცია</h3>
+    </div>
+</div>
 
-    <script>
-        function show(id) {
-            const content = document.getElementById('content');
-            if(id === 1) {
-                content.innerHTML = "<h3>ქვის ხანა</h3><p>აქ იქნება ტექსტი...</p>";
-            } else {
-                content.innerHTML = "<h3>ბაბილონი</h3><p>აქ იქნება ტექსტი...</p>";
-            }
-        }
+<script>
+    const SECRET_SALT = "NAPOLEON";
 
-        function logout() {
-            localStorage.removeItem('userLoggedIn');
-            window.location.href = "login.html";
+    function getCode() {
+        const now = new Date();
+        const timeKey = now.getHours() + "-" + Math.floor(now.getMinutes() / 10);
+        const dateKey = now.getDate() + "-" + (now.getMonth() + 1);
+        const raw = SECRET_SALT + timeKey + dateKey;
+        let hash = 0;
+        for (let i = 0; i < raw.length; i++) { hash = ((hash << 5) - hash) + raw.charCodeAt(i); hash |= 0; }
+        return Math.abs(hash).toString(36).substring(0, 5).toUpperCase();
+    }
+
+    function show(id) {
+        const display = document.getElementById('display');
+        if (id === 1) {
+            display.innerHTML = "<h3>ლექცია 1</h3><p>ეს ლექცია ღიაა ყველასთვის.</p>";
+        } else {
+            display.innerHTML = `
+                <div class="lock-box">
+                    <h2>🔒 ლექცია დაბლოკილია</h2>
+                    <p>შეიყვანეთ დინამიური კოდი:</p>
+                    <input type="text" id="lecture-code" placeholder="XXXXX">
+                    <br>
+                    <button class="btn-unlock" onclick="unlock()">გახსნა</button>
+                </div>`;
         }
-    </script>
+    }
+
+    function unlock() {
+        const input = document.getElementById('lecture-code').value.toUpperCase();
+        if (input === getCode()) {
+            document.getElementById('display').innerHTML = "<h3>ლექცია 2</h3><p>გილოცავთ! კოდი სწორია. აქ არის თქვენი მასალა.</p>";
+        } else {
+            alert("კოდი არასწორია!");
+        }
+    }
+</script>
 </body>
 </html>
