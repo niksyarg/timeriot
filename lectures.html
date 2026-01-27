@@ -11,75 +11,135 @@
         .sidebar { width: 300px; background: #1a1a1a; padding: 20px; border-radius: 15px; border: 1px solid #333; }
         .lecture-link { display: block; padding: 15px; margin-bottom: 10px; background: #262626; border-radius: 8px; cursor: pointer; color: #ccc; font-weight: bold; text-align: left; transition: 0.3s; position: relative; }
         .lecture-link.locked::after { content: '🔒'; position: absolute; right: 10px; }
-        .lecture-link:hover { color: #ff4d4d; }
         .lecture-link.active { background: #ff4d4d; color: white; }
-        .content-area { flex: 1; background: #1a1a1a; padding: 35px; border-radius: 15px; border: 1px solid #333; text-align: left; min-height: 600px; }
+        .content-area { flex: 1; background: #1a1a1a; padding: 35px; border-radius: 15px; border: 1px solid #333; min-height: 600px; }
         
         .lock-screen { text-align: center; padding: 60px 20px; }
-        .lock-screen input { padding: 12px; border-radius: 8px; border: 1px solid #ff4d4d; background: #000; color: white; width: 220px; text-align: center; font-size: 16px; margin-bottom: 15px; }
-        .lock-screen button { padding: 12px 30px; background: #ff4d4d; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
+        .lock-screen input { padding: 12px; border-radius: 8px; border: 1px solid #ff4d4d; background: #000; color: white; width: 220px; text-align: center; font-size: 18px; text-transform: uppercase; }
+        .lock-screen button { padding: 12px 30px; background: #ff4d4d; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 15px; }
         
-        .download-btn { display: inline-block; color: #ff4d4d; border: 2px solid #ff4d4d; padding: 12px 20px; border-radius: 8px; text-decoration: none; margin: 25px 0; font-weight: bold; transition: 0.3s; }
-        .download-btn:hover { background: #ff4d4d; color: white; }
-        
+        .download-btn { display: inline-block; color: #ff4d4d; border: 2px solid #ff4d4d; padding: 12px 20px; border-radius: 8px; text-decoration: none; margin: 25px 0; font-weight: bold; }
         .test-section { border-top: 1px solid #333; margin-top: 30px; padding-top: 25px; }
-        .option-label { display: block; padding: 12px; background: #262626; border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; border: 1px solid transparent; }
-        .option-label:hover { border-color: #ff4d4d; }
-        
-        .check-btn { width: 100%; padding: 18px; background: #27ae60; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 16px; margin-top: 20px; }
-        #result-box { margin-top: 20px; padding: 20px; display: none; border-radius: 10px; text-align: center; font-weight: bold; font-size: 18px; }
+        .option-label { display: block; padding: 12px; background: #262626; border-radius: 8px; margin-bottom: 10px; cursor: pointer; }
+        .check-btn { width: 100%; padding: 18px; background: #27ae60; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        #result-box { margin-top: 20px; padding: 20px; display: none; border-radius: 10px; text-align: center; font-weight: bold; }
         .correct { background: #155724; color: #d4edda; }
         .wrong { background: #721c24; color: #f8d7da; }
+        footer { margin-top: 40px; color: #333; font-size: 12px; cursor: pointer; }
     </style>
 </head>
 <body>
     <a href="index.html" class="btn-home">მთავარი</a>
     <div class="main-wrapper">
         <div class="sidebar">
-            <h3 style="color:#ff4d4d; border-bottom: 1px solid #333; padding-bottom: 10px;">სასწავლო პროგრამა</h3>
+            <h3 style="color:#ff4d4d">ლექციები</h3>
             <div id="list-container"></div>
         </div>
-        <div class="content-area">
-            <div id="lecture-content">
-                <h2 style="color:#ff4d4d">აირჩიეთ სასურველი ლექცია</h2>
-                <p>მასალების სანახავად გამოიყენეთ მარცხენა მენიუ.</p>
-            </div>
+        <div class="content-area" id="lecture-content">
+            <h2 style="color:#ff4d4d">აირჩიეთ ლექცია</h2>
         </div>
     </div>
 
+    <footer onclick="adminClick()">TimeRiot © 2026</footer>
+
     <script>
+        // СЕКРЕТНЫЕ НАСТРОЙКИ (ЗНАЕШЬ ТОЛЬКО ТЫ)
+        const SECRET_SALT = "NAPOLEON"; // Соль для генерации
+        const ADMIN_PASS = "1234";    // Пароль, чтобы увидеть текущий код
+
         const lectures = {
             1: {
-                title: "ქვისა და ბრინჯაოს ხანა საქართველოში",
-                text: `საქართველოს ტერიტორიაზე ადამიანის ცხოვრების კვალი უძველესი დროიდან დასტურდება. 
-                       დმანისში აღმოჩენილი ჰომინიდების ნაშთები (მზია და ზეზვა) 1.8 მილიონი წლით თარიღდება. 
-                       ნეოლითური რევოლუციის შედეგად ადამიანი გადავიდა მწარმოებელ მეურნეობაზე. 
-                       ბრინჯაოს ხანაში კი ჩნდება თრიალეთური კულტურა და ყორყანული სამარხები.`,
+                title: "ქვისა და ბრინჯაოს ხანა",
+                text: "დმანისში აღმოჩენილი ნაშთები 1.8 მლნ წლით თარიღდება...",
                 file: "lecture1.docx",
                 isLocked: false,
                 questions: [
-                    { q: "რამდენი წლისაა დმანისის ნაშთები?", a: ["1.5 მლნ", "1.8 მლნ", "2.0 მლნ", "800 ათასი"], correct: 1 },
-                    { q: "რა ეწოდება ეპოქას, სადაც ქალი იყო წამყვანი?", a: ["პატრიარქატი", "თემი", "მატრიარქატი", "ჯოგური"], correct: 2 },
-                    { q: "რა არის ნეოლითური რევოლუციის მთავარი შედეგი?", a: ["ცეცხლის მოპოვება", "რკინის იარაღი", "მწარმოებელი მეურნეობა", "დამწერლობა"], correct: 2 }
+                    { q: "რამდენი წლისაა დმანისის ნაშთები?", a: ["1.5 მლн", "1.8 მლნ", "2.0 მლნ", "800 ათასი"], correct: 1 }
                 ]
             },
             2: {
                 title: "შუმერი და ბაბილონი",
-                text: `შუმერებმა მესოპოტამიაში შექმნეს პირველი დიდი ცივილიზაცია. მათ ეკუთვნით ბორბლის, გუთნის და ლურსმული დამწერლობის გამოგონება. 
-                       ბაბილონის აღზევება უკავშირდება მეფე ხამურაბის (ძვ.წ. XVIII ს.), რომელმაც შეადგინა 282 მუხლისგან შემდგარი კანონთა კრებული. 
-                       მოგვიანებით ნაბუქოდონოსარ II-მ ბაბილონი მსოფლიოს უმშვენიერეს ქალაქად აქცია.`,
+                text: "ხამურაბის კანონები შედგება 282 მუხლისგან...",
                 file: "lecture2.docx",
                 isLocked: true,
-                keyCode: "RIOT1828",
                 questions: [
-                    { q: "რა დამწერლობა ჰქონდათ შუმერებს?", a: ["იეროგლიფური", "ანბანური", "ლურსმული", "ხაზოვანი"], correct: 2 },
-                    { q: "რამდენი მუხლისგან შედგებოდა ხამურაბის კანონები?", a: ["100", "282", "365", "150"], correct: 1 },
-                    { q: "ვის სახელს უკავშირდება დაკიდული ბაღების აგება?", a: ["სარგონს", "ხამურაბის", "ნაბუქოდონოსარს", "კიროსს"], correct: 2 }
+                    { q: "რამდენი მუხლია ხამურაბის კანონებში?", a: ["100", "282", "300", "50"], correct: 1 }
                 ]
             }
         };
 
-        let currentId = null;
+        // ГЕНЕРАТОР ДИНАМИЧЕСКОГО КОДА (меняется каждые 10 минут)
+        function getDynamicCode() {
+            const now = new Date();
+            const timeKey = now.getHours() + "-" + Math.floor(now.getMinutes() / 10);
+            const raw = SECRET_SALT + timeKey + now.getDate();
+            // Простейший хэш в 5 символов
+            let hash = 0;
+            for (let i = 0; i < raw.length; i++) {
+                hash = ((hash << 5) - hash) + raw.charCodeAt(i);
+                hash |= 0;
+            }
+            return Math.abs(hash).toString(36).substring(0, 5).toUpperCase();
+        }
+
+        let clickCount = 0;
+        function adminClick() {
+            clickCount++;
+            if (clickCount === 3) {
+                const p = prompt("შეიყვანეთ ადმინის პაროლი:");
+                if (p === ADMIN_PASS) {
+                    alert("მიმდინარე კოდი მოწაფეებისთვის: " + getDynamicCode());
+                }
+                clickCount = 0;
+            }
+        }
+
+        function show(id) {
+            const data = lectures[id];
+            const content = document.getElementById('lecture-content');
+            if (data.isLocked) {
+                content.innerHTML = `
+                    <div class="lock-screen">
+                        <h2 style="color:#ff4d4d">🔒 ლექცია დახურულია</h2>
+                        <p>შეიყვანეთ დინამიური კოდი წვდომისთვის:</p>
+                        <input type="text" id="pass-input" placeholder="XXXXX">
+                        <br>
+                        <button onclick="checkKey(${id})">აქტივაცია</button>
+                        <p id="lock-error" style="color:red; display:none; margin-top:15px;">კოდი არასწორია ან ვადა გაუვიდა!</p>
+                    </div>`;
+            } else {
+                renderLecture(data, id);
+            }
+        }
+
+        function checkKey(id) {
+            const input = document.getElementById('pass-input').value.toUpperCase();
+            if (input === getDynamicCode()) {
+                lectures[id].isLocked = false;
+                show(id);
+            } else {
+                document.getElementById('lock-error').style.display = 'block';
+            }
+        }
+
+        function renderLecture(data, id) {
+            let qH = "";
+            data.questions.forEach((q, i) => {
+                qH += `<p><b>${q.q}</b></p>`;
+                q.a.forEach((a, ai) => {
+                    qH += `<label class="option-label"><input type="radio" name="q${i}" value="${ai}"> ${a}</label>`;
+                });
+            });
+            document.getElementById('lecture-content').innerHTML = `
+                <h2 style="color:#ff4d4d">${data.title}</h2>
+                <p>${data.text}</p>
+                <a href="./${data.file}" download class="download-btn">📥 ჩამოტვირთე Word</a>
+                <div class="test-section">
+                    <h3>📝 ტესტი</h3>${qH}
+                    <button class="check-btn" onclick="checkTest(${id})">შემოწმება</button>
+                    <div id="result-box"></div>
+                </div>`;
+        }
 
         function createList() {
             const cont = document.getElementById('list-container');
@@ -93,92 +153,20 @@
             }
         }
 
-        function show(id) {
-            currentId = id;
-            const data = lectures[id];
-            if (data.isLocked) {
-                renderLockScreen(data.keyCode);
-            } else {
-                renderLecture(data);
-            }
-            document.querySelectorAll('.lecture-link').forEach((el, idx) => {
-                el.classList.toggle('active', (idx + 1) == id);
-            });
-        }
-
-        function renderLockScreen(correctCode) {
-            document.getElementById('lecture-content').innerHTML = `
-                <div class="lock-screen">
-                    <h2 style="color:#ff4d4d">🔒 წვდომა შეზღუდულია</h2>
-                    <p>ამ ლექციის სანახავად საჭიროა სპეციალური კოდი.</p>
-                    <input type="text" id="pass-input" placeholder="შეიყვანეთ კოდი">
-                    <br>
-                    <button onclick="checkKey('${correctCode}')">აქტივაცია</button>
-                    <p id="lock-error" style="color:#ff4d4d; display:none; margin-top:15px; font-weight:bold;">კოდი არასწორია!</p>
-                </div>
-            `;
-        }
-
-        function checkKey(correctCode) {
-            const input = document.getElementById('pass-input').value;
-            if (input.toUpperCase() === correctCode.toUpperCase()) {
-                lectures[currentId].isLocked = false;
-                show(currentId);
-            } else {
-                document.getElementById('lock-error').style.display = 'block';
-            }
-        }
-
-        function renderLecture(data) {
-            let qH = "";
-            data.questions.forEach((q, i) => {
-                qH += `<div style="margin-bottom:20px;"><p><b>${i+1}. ${q.q}</b></p>`;
-                q.a.forEach((a, ai) => {
-                    qH += `<label class="option-label"><input type="radio" name="q${i}" value="${ai}"> ${a}</label>`;
-                });
-                qH += `</div>`;
-            });
-
-            document.getElementById('lecture-content').innerHTML = `
-                <h2 style="color:#ff4d4d; margin-bottom:20px;">${data.title}</h2>
-                <div style="line-height:1.8; font-size:17px; color:#ddd;">${data.text}</div>
-                <a href="./${data.file}" download class="download-btn">📥 ჩამოტვირთე სრული ლექცია (Word)</a>
-                <div class="test-section">
-                    <h3 style="color:#ff4d4d; margin-bottom:20px;">📝 ცოდნის შემოწმება</h3>
-                    <div id="questions-box">${qH}</div>
-                    <button class="check-btn" onclick="checkTest()">შედეგის ნახვა</button>
-                    <div id="result-box"></div>
-                </div>
-            `;
-        }
-
-        function checkTest() {
+        function checkTest(id) {
             let score = 0;
-            const qs = lectures[currentId].questions;
-            let allAnswered = true;
-            
+            const qs = lectures[id].questions;
             qs.forEach((q, i) => {
                 const sel = document.querySelector(`input[name="q${i}"]:checked`);
-                if(sel) {
-                    if(sel.value == q.correct) score++;
-                } else {
-                    allAnswered = false;
-                }
+                if(sel && sel.value == q.correct) score++;
             });
-
-            if(!allAnswered) {
-                alert("გთხოვთ უპასუხოთ ყველა კითხვას!");
-                return;
-            }
-
             const res = document.getElementById('result-box');
             res.style.display = "block";
-            res.innerText = "თქვენი შედეგია: " + score + " / " + qs.length;
+            res.innerText = "შედეგი: " + score + " / " + qs.length;
             res.className = (score === qs.length) ? "correct" : "wrong";
-            res.scrollIntoView({ behavior: 'smooth' });
         }
 
-        window.onload = () => { createList(); show(1); };
+        window.onload = createList;
     </script>
 </body>
 </html>
