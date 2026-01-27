@@ -6,38 +6,31 @@
     <title>TimeRiot | ლექციები</title>
     <link href="https://fonts.googleapis.com/css2?family=Fira+GO:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Fira GO', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; background: #0d0d0d; color: white; padding: 20px; }
-        .btn-home { padding: 10px 20px; background: #ff4d4d; color: white; text-decoration: none; border-radius: 8px; margin-bottom: 20px; font-weight: bold; transition: 0.3s; }
-        .btn-home:hover { background: #cc0000; transform: scale(1.05); }
-        
-        .main-wrapper { display: flex; width: 100%; max-width: 1100px; gap: 20px; }
+        body { font-family: 'Fira GO', sans-serif; margin: 0; display: flex; flex-direction: column; align-items: center; background: #0d0d0d; color: white; padding: 20px; min-height: 100vh; }
+        .btn-home { padding: 10px 20px; background: #ff4d4d; color: white; text-decoration: none; border-radius: 8px; margin-bottom: 20px; font-weight: bold; }
+        .main-wrapper { display: flex; width: 100%; max-width: 1100px; gap: 20px; flex: 1; }
         .sidebar { width: 300px; background: #1a1a1a; padding: 20px; border-radius: 15px; border: 1px solid #333; }
-        
-        .lecture-link { display: block; padding: 15px; margin-bottom: 10px; background: #262626; border-radius: 8px; cursor: pointer; color: #ccc; font-weight: bold; text-align: left; transition: 0.3s; position: relative; }
-        .lecture-link.locked::after { content: '🔒'; position: absolute; right: 15px; font-size: 14px; }
-        .lecture-link:hover { color: #ff4d4d; background: #333; }
+        .lecture-link { display: block; padding: 15px; margin-bottom: 10px; background: #262626; border-radius: 8px; cursor: pointer; color: #ccc; font-weight: bold; position: relative; }
+        .lecture-link.locked::after { content: '🔒'; position: absolute; right: 15px; }
         .lecture-link.active { background: #ff4d4d; color: white; }
-        
         .content-area { flex: 1; background: #1a1a1a; padding: 35px; border-radius: 15px; border: 1px solid #333; min-height: 600px; }
         
-        /* Стили защиты */
+        /* КРАСНАЯ ПАНЕЛЬ АДМИНА */
+        .admin-footer { margin-top: 50px; padding: 20px; text-align: center; width: 100%; border-top: 1px solid #333; }
+        #admin-trigger { color: #ff4d4d; cursor: pointer; font-size: 14px; font-weight: bold; border: 1px solid #ff4d4d; padding: 5px 10px; border-radius: 5px; opacity: 0.5; }
+        #admin-trigger:hover { opacity: 1; }
+
         .lock-screen { text-align: center; padding: 60px 20px; }
-        .lock-screen input { padding: 12px; border-radius: 8px; border: 1px solid #ff4d4d; background: #000; color: white; width: 220px; text-align: center; font-size: 18px; text-transform: uppercase; margin-bottom: 15px; outline: none; }
-        .lock-screen button { padding: 12px 30px; background: #ff4d4d; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; font-size: 16px; }
+        .lock-screen input { padding: 12px; border-radius: 8px; border: 1px solid #ff4d4d; background: #000; color: white; width: 200px; text-align: center; font-size: 18px; margin-bottom: 15px; }
+        .lock-screen button { padding: 12px 30px; background: #ff4d4d; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; }
         
-        .download-btn { display: inline-block; color: #ff4d4d; border: 2px solid #ff4d4d; padding: 12px 25px; border-radius: 8px; text-decoration: none; margin: 25px 0; font-weight: bold; transition: 0.3s; }
-        .download-btn:hover { background: #ff4d4d; color: white; }
-        
-        .test-section { border-top: 1px solid #444; margin-top: 40px; padding-top: 30px; }
-        .option-label { display: block; padding: 12px; background: #262626; border-radius: 8px; margin-bottom: 10px; cursor: pointer; border: 1px solid transparent; transition: 0.2s; }
-        .option-label:hover { border-color: #ff4d4d; background: #2d2d2d; }
-        
-        .check-btn { width: 100%; padding: 18px; background: #27ae60; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; font-size: 17px; margin-top: 20px; }
-        #result-box { margin-top: 20px; padding: 20px; display: none; border-radius: 10px; text-align: center; font-weight: bold; font-size: 18px; }
+        .download-btn { display: inline-block; color: #ff4d4d; border: 2px solid #ff4d4d; padding: 12px 20px; border-radius: 8px; text-decoration: none; margin: 25px 0; font-weight: bold; }
+        .test-section { border-top: 1px solid #333; margin-top: 30px; padding-top: 25px; }
+        .option-label { display: block; padding: 12px; background: #262626; border-radius: 8px; margin-bottom: 10px; cursor: pointer; }
+        .check-btn { width: 100%; padding: 18px; background: #27ae60; color: white; border: none; border-radius: 10px; cursor: pointer; font-weight: bold; }
+        #result-box { margin-top: 20px; padding: 20px; display: none; border-radius: 10px; text-align: center; font-weight: bold; }
         .correct { background: #155724; color: #d4edda; }
         .wrong { background: #721c24; color: #f8d7da; }
-        
-        footer { margin-top: 60px; padding: 20px; color: #262626; font-size: 12px; cursor: pointer; user-select: none; }
     </style>
 </head>
 <body>
@@ -46,26 +39,26 @@
 
     <div class="main-wrapper">
         <div class="sidebar">
-            <h3 style="color:#ff4d4d; border-bottom: 1px solid #333; padding-bottom: 10px;">სასწავლო პროგრამა</h3>
+            <h3 style="color:#ff4d4d">ლექციები</h3>
             <div id="list-container"></div>
         </div>
         <div class="content-area" id="lecture-content">
             <h2 style="color:#ff4d4d">აირჩიეთ ლექცია</h2>
-            <p>გამოიყენეთ მენიუ მასალების სანახავად.</p>
         </div>
     </div>
 
-    <footer onclick="adminClick()">TimeRiot Digital Systems © 2026</footer>
+    <div class="admin-footer">
+        <span id="admin-trigger" onclick="adminClick()">ADMIN PANEL | © 2026 TimeRiot</span>
+    </div>
 
     <script>
-        // --- СЕКРЕТНЫЕ НАСТРОЙКИ (ДЛЯ ТЕБЯ) ---
         const SECRET_SALT = "NAPOLEON"; 
         const ADMIN_PASS = "1234"; 
 
         const lectures = {
             1: {
                 title: "ქვისა და ბრინჯაოს ხანა",
-                text: "საქართველოს ტერიტორიაზე ადამიანის ცხოვრების კვალი უძველესი დროიდან დასტურდება. დმანისში აღმოჩენილი ჰომინიდების ნაშთები (მზია და ზეზვა) 1.8 მილიონი წლით თარიღდება. ნეოლითური რევოლუციის შედეგად ადამიანი გადავიდა მწარმოებელ მეურნეობაზე.",
+                text: "პირველყოფილი ადამიანების უძველესი ნაშთები აღმოჩენილია დმანისში (1.8 მლნ წელი). ნეოლითში ადამიანი გახდა მწარმოებელი მეურნე.",
                 file: "lecture1.docx",
                 isLocked: false,
                 questions: [
@@ -76,7 +69,7 @@
             },
             2: {
                 title: "შუმერი და ბაბილონი",
-                text: "მესოპოტამიაში შუმერებმა შექმნეს ლურსმული დამწერლობა და გამოიგონეს ბორბალი. ბაბილონის მეფე ხამურაბიმ (ძვ.წ. XVIII ს.) შექმნა 282 მუხლისგან შემდგარი კანონთა კრებული. ნაბუქოდონოსარს მიეწერება ბაბილონის გოდოლის აგება.",
+                text: "მესოპოტამიაში შუმერებმა შექმნეს ლურსმული დამწერლობა. ბაბილონის მეფე ხამურაბიმ შექმნა კანონთა კრებული.",
                 file: "lecture2.docx",
                 isLocked: true,
                 questions: [
@@ -87,7 +80,6 @@
             }
         };
 
-        // ГЕНЕРАТОР КОДА (10 МИНУТ)
         function getDynamicCode() {
             const now = new Date();
             const timeKey = now.getHours() + "-" + Math.floor(now.getMinutes() / 10);
@@ -101,18 +93,17 @@
             return Math.abs(hash).toString(36).substring(0, 5).toUpperCase();
         }
 
-        // АДМИН-ПАНЕЛЬ (5 КЛИКОВ)
         let clickCount = 0;
         function adminClick() {
             clickCount++;
             if (clickCount === 5) {
-                const p = prompt("შეიყვანეთ ადმინის პაროლი:");
+                const p = prompt("შეიყვანეთ ადმინისტრატორის პაროლი:");
                 if (p === ADMIN_PASS) {
                     alert("მიმდინარე კოდი მოწაფეებისთვის: " + getDynamicCode());
                 }
                 clickCount = 0;
             }
-            setTimeout(() => { clickCount = 0; }, 3000);
+            setTimeout(() => { clickCount = 0; }, 2000);
         }
 
         function createList() {
@@ -138,14 +129,11 @@
                         <input type="text" id="pass-input" placeholder="XXXXX">
                         <br>
                         <button onclick="checkKey(${id})">აქტივაცია</button>
-                        <p id="lock-error" style="color:red; display:none; margin-top:15px; font-weight:bold;">კოდი არასწორია ან ვადა გაუვიდა!</p>
                     </div>`;
             } else {
                 renderLecture(data, id);
             }
-            document.querySelectorAll('.lecture-link').forEach((el, idx) => {
-                el.classList.toggle('active', (idx + 1) == id);
-            });
+            document.querySelectorAll('.lecture-link').forEach((el, idx) => el.classList.toggle('active', (idx+1)==id));
         }
 
         function checkKey(id) {
@@ -154,27 +142,23 @@
                 lectures[id].isLocked = false;
                 show(id);
             } else {
-                document.getElementById('lock-error').style.display = 'block';
+                alert("არასწორი კოდი!");
             }
         }
 
         function renderLecture(data, id) {
             let qH = "";
             data.questions.forEach((q, i) => {
-                qH += `<div style="margin-bottom:20px;"><p><b>${i+1}. ${q.q}</b></p>`;
-                q.a.forEach((a, ai) => {
-                    qH += `<label class="option-label"><input type="radio" name="q${i}" value="${ai}"> ${a}</label>`;
-                });
-                qH += `</div>`;
+                qH += `<p><b>${i+1}. ${q.q}</b></p>`;
+                q.a.forEach((a, ai) => { qH += `<label class="option-label"><input type="radio" name="q${i}" value="${ai}"> ${a}</label>`; });
             });
             document.getElementById('lecture-content').innerHTML = `
-                <h2 style="color:#ff4d4d; margin-bottom:20px;">${data.title}</h2>
-                <p style="line-height:1.8; font-size:17px; color:#ddd;">${data.text}</p>
-                <a href="./${data.file}" download class="download-btn">📥 ჩამოტვირთე Word ვერსია</a>
+                <h2 style="color:#ff4d4d">${data.title}</h2>
+                <p>${data.text}</p>
+                <a href="./${data.file}" download class="download-btn">📥 ჩამოტვირთე Word</a>
                 <div class="test-section">
-                    <h3 style="color:#ff4d4d; margin-bottom:20px;">📝 თვითშემოწმება</h3>
-                    <div id="questions-box">${qH}</div>
-                    <button class="check-btn" onclick="checkTest(${id})">შედეგის ნახვა</button>
+                    <h3 style="color:#ff4d4d">📝 ტესტი</h3>${qH}
+                    <button class="check-btn" onclick="checkTest(${id})">შემოწმება</button>
                     <div id="result-box"></div>
                 </div>`;
         }
