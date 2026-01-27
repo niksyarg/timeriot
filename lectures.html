@@ -4,111 +4,118 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TimeRiot | ლექციები</title>
-    <link rel="stylesheet" href="timeriot.css">
     <link href="https://fonts.googleapis.com/css2?family=Fira+GO:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --red: #ff4d4d; --bg: #0d0d0d; --card: #1a1a1a; }
         body { font-family: 'Fira GO', sans-serif; background: var(--bg); color: white; margin: 0; }
-        
         .navbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; background: var(--card); border-bottom: 2px solid #333; }
         .logo { font-size: 24px; font-weight: bold; color: white; text-decoration: none; }
         .logo span { color: var(--red); }
-
         .container { display: flex; max-width: 1200px; margin: 30px auto; gap: 30px; padding: 0 20px; flex-wrap: wrap; }
-        
-        .sidebar { width: 300px; flex-shrink: 0; }
-        .lecture-card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #333; margin-bottom: 15px; cursor: pointer; transition: 0.3s; }
-        .lecture-card:hover { border-color: var(--red); transform: translateY(-3px); }
+        .sidebar { width: 300px; }
+        .lecture-card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #333; margin-bottom: 15px; cursor: pointer; transition: 0.3s; position: relative; }
+        .lecture-card.locked::after { content: '🔒'; position: absolute; right: 15px; top: 25px; opacity: 0.5; }
         .lecture-card.active { border-left: 5px solid var(--red); background: #252525; }
-
-        .main-content { flex: 1; min-width: 300px; background: var(--card); border-radius: 20px; padding: 40px; border: 1px solid #333; }
-        
-        .lecture-text { line-height: 1.8; color: #ccc; font-size: 17px; margin-bottom: 30px; }
-        .btn-download { display: inline-block; color: var(--red); border: 2px solid var(--red); padding: 12px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; transition: 0.3s; }
-        .btn-download:hover { background: var(--red); color: white; }
-
+        .main-content { flex: 1; min-width: 300px; background: var(--card); border-radius: 20px; padding: 40px; border: 1px solid #333; min-height: 500px; }
+        .btn-download { display: inline-block; color: var(--red); border: 2px solid var(--red); padding: 12px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0; }
         .test-box { margin-top: 40px; padding: 30px; background: #111; border-radius: 15px; border-top: 3px solid var(--red); }
-        .options label { display: block; background: #1a1a1a; padding: 15px; margin: 10px 0; border-radius: 8px; cursor: pointer; border: 1px solid #333; }
-        .btn-check { background: var(--red); color: white; border: none; padding: 15px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 10px; }
-
-        @media (max-width: 768px) { .sidebar { width: 100%; } }
+        .lock-screen { text-align: center; padding: 50px 20px; }
+        .lock-screen input { background: #000; border: 2px solid var(--red); color: white; padding: 12px; border-radius: 8px; font-size: 20px; text-align: center; margin-bottom: 15px; }
+        .btn-unlock { background: var(--red); color: white; border: none; padding: 12px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="navbar">
     <a href="index.html" class="logo">Time<span>Riot</span></a>
-    <a href="index.html" style="color: #888; text-decoration: none; font-size: 14px;">← უკან დაბრუნება</a>
 </div>
 
 <div class="container">
-    <aside class="sidebar">
-        <div class="lecture-card active" onclick="loadLecture(1)">
+    <div class="sidebar">
+        <div class="lecture-card active" id="card1" onclick="loadLecture(1)">
             <h4>1. ქვისა და ბრინჯაოს ხანა</h4>
-            <p>დმანისის აღმოჩენები და პირველი ცივილიზაციები</p>
+            <p>დმანისის აღმოჩენები</p>
         </div>
-        <div class="lecture-card" onclick="loadLecture(2)">
+        <div class="lecture-card locked" id="card2" onclick="loadLecture(2)">
             <h4>2. შუმერი და ბაბილონი</h4>
-            <p>მესოპოტამიური კულტურა და კანონები</p>
+            <p>მესოპოტამიის ისტორია</p>
         </div>
-    </aside>
+    </div>
 
-    <main class="main-content" id="lecture-display">
-        </main>
+    <div class="main-content" id="display">
+        </div>
 </div>
 
 <script>
+    let isUnlocked = false;
+
     const data = {
         1: {
             title: "ქვისა და ბრინჯაოს ხანა",
-            content: "საქართველოს ტერიტორიაზე ადამიანის ცხოვრების კვალი უძველესი დროიდან დასტურდება. დმანისში აღმოჩენილი ჰომინიდების ნაშთები (მზია და ზეზვა) 1.8 მილიონი წლით თარიღდება. ეს აღმოჩენა ამტკიცებს, რომ საქართველო ევროპაში პირველი ჰომინიდების სამშობლოა.",
+            content: "საქართველოს ტერიტორიაზე ადამიანის ცხოვრების კვალი უძველესი დროიდან დასტურდება. დმანისში აღმოჩენილი ჰომინიდების ნაშთები (მზია და ზეზვა) 1.8 მილიონი წლით თარიღდება.",
             file: "lecture1.docx",
             test: [
-                { q: "რამდენი წლისაა დმანისის ნაშთები?", a: ["1.5 მლნ", "1.8 მლნ", "2.1 მლნ"], c: 1 }
+                { q: "რამდენი წლისაა დმანისის ნაშთები?", a: ["1.5 მლნ", "1.8 მლნ", "2.1 მლნ"], c: 1 },
+                { q: "რა ეწოდება პერიოდს, როცა ადამიანი იყენებდა ქვას?", a: ["ქვის ხანა", "რკინის ხანა", "ოქროს ხანა"], c: 0 },
+                { q: "ვინ არიან მზია და ზეზვა?", a: ["მეფეები", "ჰომინიდები", "მწერლები"], c: 1 }
             ]
         },
         2: {
             title: "შუმერი და ბაბილონი",
-            content: "მესოპოტამიაში შუმერებმა შექმნეს პირველი ლურსმული დამწერლობა. ბაბილონის მეფე ხამურაბიმ (ძვ.წ. XVIII ს.) შექმნა 282 მუხლისგან შემდგარი კანონთა კრებული, რომელიც ერთ-ერთი უძველესია მსოფლიოში.",
+            content: "მესოპოტამიაში შუმერებმა შექმნეს პირველი ლურსმული დამწერლობა. ბაბილონის მეფე ხამურაბიმ შექმნა 282 მუხლისგან შემდგარი კანონთა კრებული.",
             file: "lecture2.docx",
             test: [
-                { q: "ვინ იყო ბაბილონის ცნობილი კანონმდებელი?", a: ["ნაბუქოდონოსორი", "ხამურაბი", "სარგონი"], c: 1 }
+                { q: "რა ეწოდება შუმერულ დამწერლობას?", a: ["იეროგლიფები", "ლურსმული", "ანბანი"], c: 1 },
+                { q: "რამდენი მუხლია ხამურაბის კანონებში?", a: ["100", "282", "300"], c: 1 },
+                { q: "ვინ გამოიგონა ბორბალი?", a: ["ეგვიპტელებმა", "შუმერებმა", "ბერძნებმა"], c: 1 }
             ]
         }
     };
 
     function loadLecture(id) {
-        const lecture = data[id];
-        const display = document.getElementById('lecture-display');
-        
-        // Смена активной карточки
-        document.querySelectorAll('.lecture-card').forEach((c, idx) => {
-            c.classList.toggle('active', (idx + 1) === id);
-        });
+        const display = document.getElementById('display');
+        document.querySelectorAll('.lecture-card').forEach(c => c.classList.remove('active'));
+        document.getElementById('card' + id).classList.add('active');
 
-        display.innerHTML = `
-            <h1 style="color:var(--red); margin-top:0;">${lecture.title}</h1>
-            <div class="lecture-text">${lecture.content}</div>
-            <a href="${lecture.file}" class="btn-download" download>📥 ჩამოტვირთე მასალა (Word)</a>
-            
-            <div class="test-box">
-                <h3 style="margin-top:0">📝 თვითშემოწმების ტესტი</h3>
-                ${lecture.test.map((t, i) => `
-                    <div style="margin-bottom:20px;">
-                        <p><b>${t.q}</b></p>
-                        ${t.a.map((ans, ai) => `
-                            <label><input type="radio" name="q${i}" value="${ai}"> ${ans}</label>
-                        `).join('')}
-                    </div>
-                `).join('')}
-                <button class="btn-check" onclick="alert('შედეგი მიღებულია!')">შემოწმება</button>
-            </div>
-        `;
+        if (id === 2 && !isUnlocked) {
+            display.innerHTML = `
+                <div class="lock-screen">
+                    <h2 style="color:var(--red)">🔒 ლექცია დაბლოკილია</h2>
+                    <p>შეიყვანეთ პაროლი წვდომისთვის:</p>
+                    <input type="text" id="pass-input" placeholder="პაროლი">
+                    <br>
+                    <button class="btn-unlock" onclick="checkPass()">გახსნა</button>
+                </div>`;
+        } else {
+            const lecture = data[id];
+            display.innerHTML = `
+                <h1 style="color:var(--red)">${lecture.title}</h1>
+                <p>${lecture.content}</p>
+                <a href="${lecture.file}" class="btn-download" download>📥 ჩამოტვირთე მასალა (Word)</a>
+                <div class="test-box">
+                    <h3>📝 ტესტი (3 კითხვა)</h3>
+                    ${lecture.test.map((t, i) => `
+                        <div style="margin-bottom:15px;">
+                            <p><b>${i+1}. ${t.q}</b></p>
+                            ${t.a.map(ans => `<label style="display:block;"><input type="radio" name="q${i}"> ${ans}</label>`).join('')}
+                        </div>
+                    `).join('')}
+                </div>`;
+        }
     }
 
-    // Загрузка первой лекции при старте
+    function checkPass() {
+        const val = document.getElementById('pass-input').value;
+        if (val === "RIOT1828") {
+            isUnlocked = true;
+            document.getElementById('card2').classList.remove('locked');
+            loadLecture(2);
+        } else {
+            alert("არასწორი პაროლი!");
+        }
+    }
+
     loadLecture(1);
 </script>
-
 </body>
 </html>
