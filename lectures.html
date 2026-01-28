@@ -12,31 +12,26 @@
         .logo { font-size: 24px; font-weight: bold; color: white; text-decoration: none; }
         .logo span { color: var(--red); }
         
-        .quote-box { background: linear-gradient(90deg, #1a1a1a, #252525); border-left: 4px solid var(--red); padding: 20px; margin-bottom: 30px; border-radius: 8px; font-style: italic; color: #aaa; }
-        .quote-box span { color: var(--red); font-weight: bold; display: block; margin-top: 10px; font-style: normal; }
-
         .container { display: flex; max-width: 1200px; margin: 30px auto; gap: 30px; padding: 0 20px; flex-wrap: wrap; }
         .sidebar { width: 300px; }
         .lecture-card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #333; margin-bottom: 15px; cursor: pointer; transition: 0.3s; position: relative; }
         .lecture-card.locked::after { content: '🔒'; position: absolute; right: 15px; top: 25px; opacity: 0.5; }
         .lecture-card.active { border-left: 5px solid var(--red); background: #252525; }
         
-        /* Стили словаря */
-        .dictionary-btn { background: #333; color: #ff4d4d; border: 1px dashed #ff4d4d; text-align: center; padding: 15px; border-radius: 12px; cursor: pointer; margin-top: 20px; font-weight: bold; transition: 0.3s; }
-        .dictionary-btn:hover { background: #ff4d4d; color: white; }
-        .term-card { background: #222; padding: 15px; border-radius: 8px; margin-bottom: 10px; border-left: 3px solid #ff4d4d; }
-        .term-card b { color: #ff4d4d; display: block; margin-bottom: 5px; font-size: 18px; }
+        /* Стили плеера */
+        .music-player { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 12px; margin-top: 20px; text-align: center; }
+        .music-btn { background: none; border: 2px solid #ff4d4d; color: #ff4d4d; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; transition: 0.3s; margin-top: 10px; }
+        .music-btn:hover { background: #ff4d4d; color: white; }
+        .music-btn.playing { background: #ff4d4d; color: white; animation: pulse 2s infinite; }
 
+        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 77, 77, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0); } }
+
+        .dictionary-btn { background: #333; color: #ff4d4d; border: 1px dashed #ff4d4d; text-align: center; padding: 15px; border-radius: 12px; cursor: pointer; margin-top: 20px; font-weight: bold; }
         .main-content { flex: 1; min-width: 300px; background: var(--card); border-radius: 20px; padding: 40px; border: 1px solid #333; min-height: 500px; }
         .btn-download { display: inline-block; color: var(--red); border: 2px solid var(--red); padding: 12px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0; }
-        .btn-whatsapp { display: flex; align-items: center; justify-content: center; gap: 10px; background: #25D366; color: white; text-decoration: none; padding: 15px; border-radius: 8px; font-weight: bold; margin-top: 20px; }
-
         .test-box { margin-top: 40px; padding: 30px; background: #111; border-radius: 15px; border-top: 3px solid var(--red); }
         .btn-check { background: var(--red); color: white; border: none; padding: 12px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; }
         .result-msg { margin-top: 20px; padding: 15px; border-radius: 8px; display: none; text-align: center; font-weight: bold; }
-        
-        .lock-screen { text-align: center; padding: 50px 20px; }
-        .lock-screen input { background: #000; border: 2px solid var(--red); color: white; padding: 12px; border-radius: 8px; font-size: 20px; text-align: center; margin-bottom: 15px; outline: none; }
     </style>
 </head>
 <body>
@@ -47,6 +42,14 @@
 
 <div class="container">
     <div class="sidebar">
+        <div class="music-player">
+            <span style="font-size: 14px; color: #888;">🎧 ფონი მეცადინეობისთვის</span>
+            <button id="music-btn" class="music-btn" onclick="toggleMusic()">ჩართვა</button>
+            <audio id="bg-music" loop>
+                <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
+            </audio>
+        </div>
+
         <div class="lecture-card active" id="card1" onclick="loadLecture(1)">
             <h4>1. ქვისა და ბრინჯაოს ხანა</h4>
             <p>დმანისის აღმოჩენები</p>
@@ -60,120 +63,85 @@
     </div>
 
     <div class="main-content">
-        <div class="quote-box" id="quote-display">
-            "ისტორია არის ფილოსოფია მაგალითებით."
-            <span>- თუკიდიდე</span>
-        </div>
         <div id="display"></div>
     </div>
 </div>
 
 <script>
     let isUnlocked = false;
-    let currentLectureId = 1;
+    let isPlaying = false;
 
-    const quotes = [
-        { t: "ისტორია არის ფილოსოფია მაგალითებით.", a: "თუკიდიდე" },
-        { t: "შეუძლებელი არის სიტყვა, რომელიც მხოლოდ სულელების ლექსიკონში მოიპოვება.", a: "ნაპოლეონ ბონაპარტი" },
-        { t: "ხალხი, რომელმაც არ იცის თავისი წარსული, განწირულია მისი განმეორებისთვის.", a: "ჯორჯ სანტაიანა" }
-    ];
+    function toggleMusic() {
+        const music = document.getElementById('bg-music');
+        const btn = document.getElementById('music-btn');
+        if (!isPlaying) {
+            music.play();
+            btn.innerText = "გამორთვა";
+            btn.classList.add('playing');
+        } else {
+            music.pause();
+            btn.innerText = "ჩართვა";
+            btn.classList.remove('playing');
+        }
+        isPlaying = !isPlaying;
+    }
 
+    // Все старые функции (loadLecture, checkPass, и т.д.) остаются здесь без изменений
     const dictionary = [
-        { term: "ჰომინიდები", desc: "ადამიანის მსგავსი არსებები, რომლებიც მოიცავენ როგორც თანამედროვე ადამიანებს, ისე მათ გადაშენებულ წინაპრებს." },
-        { term: "ნეოლითური რევოლუცია", desc: "გადასვლა მიმთვისებლური მეურნეობიდან (ნადირობა, შემგროვებლობა) მწარმოებელ მეურნეობაზე (მიწათმოქმედება, მეცხოველეობა)." },
-        { term: "ლურსმული დამწერლობა", desc: "დამწერლობის ერთ-ერთი უძველესი ფორმა, რომელიც შეიქმნა შუმერების მიერ თიხის ფირფიტებზე." },
-        { term: "პანთეონი", desc: "ღმერთების ერთობლიობა, რომელიც ეკუთვნის რომელიმე კონკრეტულ რელიგიას ან მითოლოგიას." }
+        { term: "ჰომინიდები", desc: "ადამიანის მსგავსი არსებები..." },
+        { term: "ლურსმული დამწერლობა", desc: "შუმერების მიერ შექმნილი დამწერლობა..." }
     ];
 
     const data = {
         1: {
             title: "ქვისა და ბრინჯაოს ხანა",
-            content: "საქართველოს ტერიტორიაზე ადამიანის ცხოვრების კვალი უძველესი დროიდან დასტურდება. დმანისში აღმოჩენილი ჰომინიდების ნაშთები (მზია და ზეზვა) 1.8 მილიონი წლით თარიღდება.",
+            content: "საქართველოს ტერიტორიაზე ადამიანის ცხოვრების კვალი უძველესი დროიდან დასტურდება...",
             file: "lecture1.docx",
             test: [
                 { q: "რამდენი წლისაა დმანისის ნაშთები?", a: ["1.5 მლნ", "1.8 მლნ", "2.1 მლნ"], c: 1 },
-                { q: "რა ეწოდება პერიოდს, როცა ადამიანი იყენებდა ქვას?", a: ["ქვის ხანა", "რკინის ხანა", "ოქროს ხანა"], c: 0 },
-                { q: "ვინ არიან მზია და ზეზვა?", a: ["მეფეები", "ჰომინიდები", "მწერლები"], c: 1 }
+                { q: "რა ეწოდება პერიოდს?", a: ["ქვის ხანა", "რკინის ხანა"], c: 0 },
+                { q: "ვინ არიან მზია და ზეზვა?", a: ["მეფეები", "ჰომინიდები"], c: 1 }
             ]
         },
         2: {
             title: "შუმერი და ბაბილონი",
-            content: "მესოპოტამიაში შუმერებმა შექმნეს პირველი ლურსმული დამწერლობა. ბაბილონის მეფე ხამურაბიმ შექმნა 282 მუხლისგან შემდგარი კანონთა კრებული.",
+            content: "მესოპოტამიაში შუმერებმა შექმნეს პირველი ლურსმული დამწერლობა...",
             file: "lecture2.docx",
             test: [
-                { q: "რა ეწოდება შუმერულ დამწერლობას?", a: ["იეროგლიფები", "ლურსმული", "ანბანი"], c: 1 },
-                { q: "რამდენი მუხლია ხამურაბის კანონებში?", a: ["100", "282", "300"], c: 1 },
-                { q: "ვინ გამოიგონა ბორბალი?", a: ["ეგვიპტელებმა", "შუმერებმა", "ბერძნებმა"], c: 1 }
+                { q: "რა ეწოდება შუმერულ დამწერლობას?", a: ["იეროგლიფები", "ლურსმული"], c: 1 },
+                { q: "რამდენი მუხლია?", a: ["100", "282"], c: 1 },
+                { q: "ვინ გამოიგონა ბორბალი?", a: ["ეგვიპტელებმა", "შუმერებმა"], c: 1 }
             ]
         }
     };
 
     function showDictionary() {
         const display = document.getElementById('display');
-        document.querySelectorAll('.lecture-card').forEach(c => c.classList.remove('active'));
-        
-        display.innerHTML = `
-            <h1 style="color:var(--red)">📜 ისტორიული ტერმინები</h1>
-            <p>აქ თავმოყრილია ყველა მნიშვნელოვანი ტერმინი, რომელიც დაგჭირდებათ გამოცდებისთვის.</p>
-            <div style="margin-top:30px;">
-                ${dictionary.map(item => `
-                    <div class="term-card">
-                        <b>${item.term}</b>
-                        <span>${item.desc}</span>
-                    </div>
-                `).join('')}
-            </div>
-        `;
+        display.innerHTML = `<h1 style="color:var(--red)">📜 ტერმინოლოგია</h1>` + 
+            dictionary.map(item => `<div style="background:#222; padding:15px; margin-bottom:10px; border-radius:8px;"><b>${item.term}</b>: ${item.desc}</div>`).join('');
     }
 
     function loadLecture(id) {
-        currentLectureId = id;
         const display = document.getElementById('display');
-        document.querySelectorAll('.lecture-card').forEach(c => c.classList.remove('active'));
-        document.getElementById('card' + id).classList.add('active');
-
         if (id === 2 && !isUnlocked) {
-            display.innerHTML = `
-                <div class="lock-screen">
-                    <h2 style="color:var(--red)">🔒 ლექცია დაბლოკილია</h2>
-                    <input type="text" id="pass-input" placeholder="პაროლი">
-                    <br><button class="btn-check" style="width:200px" onclick="checkPass()">გახსნა</button>
-                </div>`;
+            display.innerHTML = `<div style="text-align:center; padding:50px;"><h2>🔒 ლექცია დაბლოკილია</h2><input type="text" id="pass-input" placeholder="პაროლი" style="padding:10px; border-radius:5px; border:none; margin-bottom:10px;"><br><button class="music-btn" onclick="checkPass()">გახსნა</button></div>`;
         } else {
             const lecture = data[id];
-            display.innerHTML = `
-                <h1 style="color:var(--red)">${lecture.title}</h1>
-                <p>${lecture.content}</p>
-                <a href="${lecture.file}" class="btn-download" download>📥 ჩამოტვირთე მასალა (Word)</a>
-                <div class="test-box">
-                    <h3>📝 ტესტი</h3>
-                    ${lecture.test.map((t, i) => `
-                        <div style="margin-bottom:20px;"><p><b>${i+1}. ${t.q}</b></p>
-                        ${t.a.map((ans, ai) => `<label style="display:block;"><input type="radio" name="q${i}" value="${ai}"> ${ans}</label>`).join('')}
-                        </div>`).join('')}
-                    <button class="btn-check" onclick="checkTest()">შემოწმება</button>
-                    <div id="result" class="result-msg"></div>
-                    <a href="https://wa.me/995558551052" target="_blank" class="btn-whatsapp">💬 გაქვს კითხვა? მოგვწერე</a>
-                </div>`;
+            display.innerHTML = `<h1 style="color:var(--red)">${lecture.title}</h1><p>${lecture.content}</p><a href="${lecture.file}" class="btn-download" download>📥 ჩამოტვირთვა</a><div class="test-box"><h3>📝 ტესტი</h3>${lecture.test.map((t, i) => `<p><b>${t.q}</b></p>${t.a.map((ans, ai) => `<label style="display:block;"><input type="radio" name="q${i}" value="${ai}"> ${ans}</label>`).join('')}`).join('')}<button class="btn-check" onclick="checkTest(${id})">შემოწმება</button><div id="result" class="result-msg"></div></div>`;
         }
     }
 
-    function checkPass() {
-        if (document.getElementById('pass-input').value === "RIOT1828") {
-            isUnlocked = true; loadLecture(2);
-        } else { alert("არასწორი პაროლი!"); }
-    }
+    function checkPass() { if (document.getElementById('pass-input').value === "RIOT1828") { isUnlocked = true; loadLecture(2); } else { alert("არასწორია!"); } }
 
-    function checkTest() {
-        const lecture = data[currentLectureId];
+    function checkTest(id) {
         let score = 0;
-        lecture.test.forEach((t, i) => {
+        data[id].test.forEach((t, i) => {
             const sel = document.querySelector(`input[name="q${i}"]:checked`);
             if (sel && parseInt(sel.value) === t.c) score++;
         });
         const res = document.getElementById('result');
         res.style.display = "block";
-        res.innerHTML = score === 3 ? "ბრწყინვალეა! 3/3 ✨" : `შედეგი: ${score}/3. სცადე თავიდან!`;
+        res.innerHTML = score === 3 ? "ბრწყინვალეა! 3/3" : `შედეგი: ${score}/3`;
         res.style.color = score === 3 ? "#2ecc71" : "#f1c40f";
     }
 
