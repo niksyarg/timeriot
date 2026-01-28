@@ -11,19 +11,30 @@
         .navbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; background: var(--card); border-bottom: 2px solid #333; }
         .logo { font-size: 24px; font-weight: bold; color: white; text-decoration: none; }
         .logo span { color: var(--red); }
+        
+        /* Стили для Цитаты */
+        .quote-box { background: linear-gradient(90deg, #1a1a1a, #252525); border-left: 4px solid var(--red); padding: 20px; margin-bottom: 30px; border-radius: 8px; font-style: italic; color: #aaa; position: relative; }
+        .quote-box span { color: var(--red); font-weight: bold; display: block; margin-top: 10px; font-style: normal; }
+
         .container { display: flex; max-width: 1200px; margin: 30px auto; gap: 30px; padding: 0 20px; flex-wrap: wrap; }
         .sidebar { width: 300px; }
         .lecture-card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #333; margin-bottom: 15px; cursor: pointer; transition: 0.3s; position: relative; }
         .lecture-card.locked::after { content: '🔒'; position: absolute; right: 15px; top: 25px; opacity: 0.5; }
         .lecture-card.active { border-left: 5px solid var(--red); background: #252525; }
+        
         .main-content { flex: 1; min-width: 300px; background: var(--card); border-radius: 20px; padding: 40px; border: 1px solid #333; min-height: 500px; }
         .btn-download { display: inline-block; color: var(--red); border: 2px solid var(--red); padding: 12px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0; }
+        
+        /* Кнопка WhatsApp */
+        .btn-whatsapp { display: flex; align-items: center; justify-content: center; gap: 10px; background: #25D366; color: white; text-decoration: none; padding: 15px; border-radius: 8px; font-weight: bold; margin-top: 20px; transition: 0.3s; }
+        .btn-whatsapp:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(37, 211, 102, 0.3); }
+
         .test-box { margin-top: 40px; padding: 30px; background: #111; border-radius: 15px; border-top: 3px solid var(--red); }
         .btn-check { background: var(--red); color: white; border: none; padding: 12px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; }
         .result-msg { margin-top: 20px; padding: 15px; border-radius: 8px; display: none; text-align: center; font-weight: bold; }
+        
         .lock-screen { text-align: center; padding: 50px 20px; }
-        .lock-screen input { background: #000; border: 2px solid var(--red); color: white; padding: 12px; border-radius: 8px; font-size: 20px; text-align: center; margin-bottom: 15px; }
-        .btn-unlock { background: var(--red); color: white; border: none; padding: 12px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .lock-screen input { background: #000; border: 2px solid var(--red); color: white; padding: 12px; border-radius: 8px; font-size: 20px; text-align: center; margin-bottom: 15px; outline: none; }
     </style>
 </head>
 <body>
@@ -44,12 +55,27 @@
         </div>
     </div>
 
-    <div class="main-content" id="display"></div>
+    <div class="main-content">
+        <div class="quote-box" id="quote-display">
+            "ისტორია არის ფილოსოფია მაგალითებით."
+            <span>- თუკიდიდე</span>
+        </div>
+
+        <div id="display"></div>
+    </div>
 </div>
 
 <script>
     let isUnlocked = false;
     let currentLectureId = 1;
+
+    // Массив цитат
+    const quotes = [
+        { t: "ისტორია არის ფილოსოფია მაგალითებით.", a: "თუკიდიდე" },
+        { t: "შეუძლებელი არის სიტყვა, რომელიც მხოლოდ სულელების ლექსიკონში მოიპოვება.", a: "ნაპოლეონ ბონაპარტი" },
+        { t: "ხალხი, რომელმაც არ იცის თავისი წარსული, განწირულია მისი განმეორებისთვის.", a: "ჯორჯ სანტაიანა" },
+        { t: "მე მოვედი, მე ვნახე, მე გავიმარჯვე.", a: "იულიუს კეისარი" }
+    ];
 
     const data = {
         1: {
@@ -74,8 +100,14 @@
         }
     };
 
+    function updateQuote() {
+        const randomQuote = quotes[Math.floor(Math.random() * quotes.length)];
+        document.getElementById('quote-display').innerHTML = `"${randomQuote.t}" <span>- ${randomQuote.a}</span>`;
+    }
+
     function loadLecture(id) {
         currentLectureId = id;
+        updateQuote();
         const display = document.getElementById('display');
         document.querySelectorAll('.lecture-card').forEach(c => c.classList.remove('active'));
         document.getElementById('card' + id).classList.add('active');
@@ -87,7 +119,7 @@
                     <p>შეიყვანეთ პაროლი წვდომისთვის:</p>
                     <input type="text" id="pass-input" placeholder="პაროლი">
                     <br>
-                    <button class="btn-unlock" onclick="checkPass()">გახსნა</button>
+                    <button class="btn-check" style="width:200px" onclick="checkPass()">გახსნა</button>
                 </div>`;
         } else {
             const lecture = data[id];
@@ -105,6 +137,10 @@
                     `).join('')}
                     <button class="btn-check" onclick="checkTest()">შემოწმება</button>
                     <div id="result" class="result-msg"></div>
+                    
+                    <a href="https://wa.me/995558551052?text=გამარჯობა, მაქვს კითხვა ლექციასთან დაკავშირებით: ${lecture.title}" target="_blank" class="btn-whatsapp">
+                        💬 გაქვს კითხვა? მოგვწერე WhatsApp-ში
+                    </a>
                 </div>`;
         }
     }
@@ -115,40 +151,26 @@
             isUnlocked = true;
             document.getElementById('card2').classList.remove('locked');
             loadLecture(2);
-        } else {
-            alert("არასწორი პაროლი!");
-        }
+        } else { alert("არასწორი პაროლი!"); }
     }
 
     function checkTest() {
         const lecture = data[currentLectureId];
         let score = 0;
         lecture.test.forEach((t, i) => {
-            const selected = document.querySelector(`input[name="q${i}"]:checked`);
-            if (selected && parseInt(selected.value) === t.c) {
-                score++;
-            }
+            const sel = document.querySelector(`input[name="q${i}"]:checked`);
+            if (sel && parseInt(sel.value) === t.c) score++;
         });
 
-        const resultDiv = document.getElementById('result');
-        resultDiv.style.display = "block";
-        
-        let message = "";
+        const res = document.getElementById('result');
+        res.style.display = "block";
         if (score === 3) {
-            message = `ბრწყინვალეა! 3-დან ${score} სწორია. შენ ნამდვილი ისტორიკოსი ხარ! 🌟`;
-            resultDiv.style.background = "rgba(46, 204, 113, 0.2)";
-            resultDiv.style.color = "#2ecc71";
-        } else if (score > 0) {
-            message = `კარგია! 3-დან ${score} სწორია. ცოტაც და ყველაფერს გაიგებ! 👍`;
-            resultDiv.style.background = "rgba(241, 196, 15, 0.2)";
-            resultDiv.style.color = "#f1c40f";
+            res.innerHTML = "ბრწყინვალეა! 3-დან 3 სწორია. შენ ნამდვილი ისტორიკოსი ხარ! 🌟";
+            res.style.background = "rgba(46, 204, 113, 0.2)"; res.style.color = "#2ecc71";
         } else {
-            message = `არაუშავს, სცადე თავიდან. ისტორია დიდ მოთმინებას მოითხოვს! 📚`;
-            resultDiv.style.background = "rgba(231, 76, 60, 0.2)";
-            resultDiv.style.color = "#e74c3c";
+            res.innerHTML = `შედეგი: 3-დან ${score} სწორია. სცადე თავიდან უკეთესი შედეგისთვის!`;
+            res.style.background = "rgba(241, 196, 15, 0.2)"; res.style.color = "#f1c40f";
         }
-        
-        resultDiv.innerText = message;
     }
 
     loadLecture(1);
