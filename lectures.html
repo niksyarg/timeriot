@@ -6,35 +6,50 @@
     <title>TimeRiot | ლექციები</title>
     <link href="https://fonts.googleapis.com/css2?family=Fira+GO:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --red: #ff4d4d; --bg: #0d0d0d; --card: #1a1a1a; }
+        :root { --red: #ff4d4d; --bg: #0d0d0d; --card: #1a1a1a; --gold: #ffd700; }
         body { font-family: 'Fira GO', sans-serif; background: var(--bg); color: white; margin: 0; }
+        
+        /* 1. Таймер чтения (Прогресс-бар сверху) */
+        .read-progress { position: fixed; top: 0; left: 0; width: 0%; height: 4px; background: var(--red); z-index: 1000; transition: 0.3s; }
+        
         .navbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; background: var(--card); border-bottom: 2px solid #333; }
         .logo { font-size: 24px; font-weight: bold; color: white; text-decoration: none; }
         .logo span { color: var(--red); }
         
         .container { display: flex; max-width: 1200px; margin: 30px auto; gap: 30px; padding: 0 20px; flex-wrap: wrap; }
         .sidebar { width: 300px; }
+        
+        /* Музыка и Словарь */
+        .sidebar-box { background: var(--card); border: 1px solid #333; padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: center; }
+        .btn-action { background: none; border: 2px solid var(--red); color: var(--red); padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; transition: 0.3s; }
+        .btn-action:hover { background: var(--red); color: white; }
+
         .lecture-card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #333; margin-bottom: 15px; cursor: pointer; transition: 0.3s; position: relative; }
         .lecture-card.locked::after { content: '🔒'; position: absolute; right: 15px; top: 25px; opacity: 0.5; }
         .lecture-card.active { border-left: 5px solid var(--red); background: #252525; }
-        
-        /* Стили плеера */
-        .music-player { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 12px; margin-top: 20px; text-align: center; }
-        .music-btn { background: none; border: 2px solid #ff4d4d; color: #ff4d4d; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; transition: 0.3s; margin-top: 10px; }
-        .music-btn:hover { background: #ff4d4d; color: white; }
-        .music-btn.playing { background: #ff4d4d; color: white; animation: pulse 2s infinite; }
 
-        @keyframes pulse { 0% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.4); } 70% { box-shadow: 0 0 0 10px rgba(255, 77, 77, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 77, 77, 0); } }
+        .main-content { flex: 1; min-width: 300px; background: var(--card); border-radius: 20px; padding: 40px; border: 1px solid #333; }
 
-        .dictionary-btn { background: #333; color: #ff4d4d; border: 1px dashed #ff4d4d; text-align: center; padding: 15px; border-radius: 12px; cursor: pointer; margin-top: 20px; font-weight: bold; }
-        .main-content { flex: 1; min-width: 300px; background: var(--card); border-radius: 20px; padding: 40px; border: 1px solid #333; min-height: 500px; }
-        .btn-download { display: inline-block; color: var(--red); border: 2px solid var(--red); padding: 12px 20px; text-decoration: none; border-radius: 8px; font-weight: bold; margin: 20px 0; }
+        /* Цитаты */
+        .quote-box { background: linear-gradient(90deg, #1a1a1a, #252525); border-left: 4px solid var(--red); padding: 20px; margin-bottom: 30px; border-radius: 8px; font-style: italic; color: #aaa; }
+        .quote-box span { color: var(--red); font-weight: bold; display: block; margin-top: 10px; font-style: normal; }
+
+        /* 2. Золотая карточка */
+        .gold-card { background: rgba(255, 215, 0, 0.1); border: 2px solid var(--gold); padding: 20px; border-radius: 15px; margin: 30px 0; text-align: center; }
+        .gold-card h3 { color: var(--gold); margin-top: 0; }
+
+        /* Тесты и Подсказки */
         .test-box { margin-top: 40px; padding: 30px; background: #111; border-radius: 15px; border-top: 3px solid var(--red); }
+        .hint-btn { background: none; border: none; color: #555; cursor: help; font-size: 14px; margin-left: 10px; }
+        .hint-text { display: none; color: #888; font-size: 13px; margin-top: 5px; font-style: italic; }
+
         .btn-check { background: var(--red); color: white; border: none; padding: 12px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; }
         .result-msg { margin-top: 20px; padding: 15px; border-radius: 8px; display: none; text-align: center; font-weight: bold; }
     </style>
 </head>
-<body>
+<body onscroll="updateProgress()">
+
+<div class="read-progress" id="progressBar"></div>
 
 <div class="navbar">
     <a href="index.html" class="logo">Time<span>Riot</span></a>
@@ -42,12 +57,10 @@
 
 <div class="container">
     <div class="sidebar">
-        <div class="music-player">
+        <div class="sidebar-box">
             <span style="font-size: 14px; color: #888;">🎧 ფონი მეცადინეობისთვის</span>
-            <button id="music-btn" class="music-btn" onclick="toggleMusic()">ჩართვა</button>
-            <audio id="bg-music" loop>
-                <source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg">
-            </audio>
+            <button id="music-btn" class="btn-action" onclick="toggleMusic()">ჩართვა</button>
+            <audio id="bg-music" loop><source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg"></audio>
         </div>
 
         <div class="lecture-card active" id="card1" onclick="loadLecture(1)">
@@ -59,10 +72,14 @@
             <p>მესოპოტამიის ისტორია</p>
         </div>
         
-        <div class="dictionary-btn" onclick="showDictionary()">📜 ტერმინოლოგია</div>
+        <button class="btn-action" onclick="showDictionary()" style="border-style: dashed;">📜 ტერმინოლოგია</button>
     </div>
 
     <div class="main-content">
+        <div class="quote-box" id="quote-display">
+            "ისტორია არის ფილოსოფია მაგალითებით."
+            <span>- თუკიდიდე</span>
+        </div>
         <div id="display"></div>
     </div>
 </div>
@@ -70,78 +87,104 @@
 <script>
     let isUnlocked = false;
     let isPlaying = false;
+    let currentLectureId = 1;
 
-    function toggleMusic() {
-        const music = document.getElementById('bg-music');
-        const btn = document.getElementById('music-btn');
-        if (!isPlaying) {
-            music.play();
-            btn.innerText = "გამორთვა";
-            btn.classList.add('playing');
-        } else {
-            music.pause();
-            btn.innerText = "ჩართვა";
-            btn.classList.remove('playing');
-        }
-        isPlaying = !isPlaying;
-    }
-
-    // Все старые функции (loadLecture, checkPass, и т.д.) остаются здесь без изменений
-    const dictionary = [
-        { term: "ჰომინიდები", desc: "ადამიანის მსგავსი არსებები..." },
-        { term: "ლურსმული დამწერლობა", desc: "შუმერების მიერ შექმნილი დამწერლობა..." }
+    const quotes = [
+        { t: "ისტორია არის ფილოსოფია მაგალითებით.", a: "თუკიდიდე" },
+        { t: "შეუძლებელი არის სიტყვა, რომელიც მხოლოდ სულელების ლექსიკონში მოიპოვება.", a: "ნაპოლეონ ბონაპარტი" },
+        { t: "ხალხი, რომელმაც არ იცის თავისი წარსული, განწირულია მისი განმეორებისთვის.", a: "ჯორჯ სანტაიანა" }
     ];
 
     const data = {
         1: {
             title: "ქვისა და ბრინჯაოს ხანა",
-            content: "საქართველოს ტერიტორიაზე ადამიანის ცხოვრების კვალი უძველესი დროიდან დასტურდება...",
+            content: "საქართველოს ტერიტორიაზე ადამიანის ცხოვრების კვალი უძველესი დროიდან დასტურდება. დმანისში აღმოჩენილი ჰომინიდების ნაშთები (მზია და ზეზვა) 1.8 მილიონი წლით თარიღდება.",
+            goldFact: "დაიმახსოვრე: დმანისის აღმოჩენა ამტკიცებს, რომ საქართველო ევროპაში პირველი ადამიანების სამშობლოა!",
             file: "lecture1.docx",
             test: [
-                { q: "რამდენი წლისაა დმანისის ნაშთები?", a: ["1.5 მლნ", "1.8 მლნ", "2.1 მლნ"], c: 1 },
-                { q: "რა ეწოდება პერიოდს?", a: ["ქვის ხანა", "რკინის ხანა"], c: 0 },
-                { q: "ვინ არიან მზია და ზეზვა?", a: ["მეფეები", "ჰომინიდები"], c: 1 }
+                { q: "რამდენი წლისაა დმანისის ნაშთები?", a: ["1.5 მლნ", "1.8 მლნ", "2.1 მლნ"], c: 1, h: "დამრგვალებულად თითქმის 2 მილიონი." },
+                { q: "რა ეწოდება პერიოდს?", a: ["ქვის ხანა", "რკინის ხანა"], c: 0, h: "იყენებდნენ მასალას, რაც ფეხქვეშ ეყარათ." },
+                { q: "ვინ არიან მზია და ზეზვა?", a: ["მეფეები", "ჰომინიდები"], c: 1, h: "ისინი ჩვენი უძველესი წინაპრები არიან." }
             ]
         },
         2: {
             title: "შუმერი და ბაბილონი",
-            content: "მესოპოტამიაში შუმერებმა შექმნეს პირველი ლურსმული დამწერლობა...",
+            content: "მესოპოტამიაში შუმერებმა შექმნეს პირველი ლურსმული დამწერლობა. ხამურაბიმ შექმნა კანონთა კრებული.",
+            goldFact: "დაიმახსოვრე: ხამურაბის კანონები მსოფლიოში პირველი წერილობითი სამართლებრივი დოკუმენტია!",
             file: "lecture2.docx",
             test: [
-                { q: "რა ეწოდება შუმერულ დამწერლობას?", a: ["იეროგლიფები", "ლურსმული"], c: 1 },
-                { q: "რამდენი მუხლია?", a: ["100", "282"], c: 1 },
-                { q: "ვინ გამოიგონა ბორბალი?", a: ["ეგვიპტელებმა", "შუმერებმა"], c: 1 }
+                { q: "რა ეწოდება შუმერულ დამწერლობას?", a: ["იეროგლიფები", "ლურსმული"], c: 1, h: "მას ლურსმნის ფორმის ნიშნებით წერდნენ." },
+                { q: "რამდენი მუხლია კანონებში?", a: ["100", "282"], c: 1, h: "300-ზე ოდნავ ნაკლები." },
+                { q: "ვინ გამოიგონა ბორბალი?", a: ["ეგვიპტელებმა", "შუმერებმა"], c: 1, h: "ისინი მესოპოტამიაში ცხოვრობდნენ." }
             ]
         }
     };
 
-    function showDictionary() {
-        const display = document.getElementById('display');
-        display.innerHTML = `<h1 style="color:var(--red)">📜 ტერმინოლოგია</h1>` + 
-            dictionary.map(item => `<div style="background:#222; padding:15px; margin-bottom:10px; border-radius:8px;"><b>${item.term}</b>: ${item.desc}</div>`).join('');
+    function updateProgress() {
+        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
+        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        const scrolled = (winScroll / height) * 100;
+        document.getElementById("progressBar").style.width = scrolled + "%";
+    }
+
+    function toggleMusic() {
+        const music = document.getElementById('bg-music');
+        const btn = document.getElementById('music-btn');
+        if (!isPlaying) { music.play(); btn.innerText = "გამორთვა"; } 
+        else { music.pause(); btn.innerText = "ჩართვა"; }
+        isPlaying = !isPlaying;
+    }
+
+    function toggleHint(i) {
+        const hint = document.getElementById('hint-' + i);
+        hint.style.display = hint.style.display === 'block' ? 'none' : 'block';
     }
 
     function loadLecture(id) {
+        currentLectureId = id;
         const display = document.getElementById('display');
+        document.querySelectorAll('.lecture-card').forEach(c => c.classList.remove('active'));
+        document.getElementById('card' + id).classList.add('active');
+
         if (id === 2 && !isUnlocked) {
-            display.innerHTML = `<div style="text-align:center; padding:50px;"><h2>🔒 ლექცია დაბლოკილია</h2><input type="text" id="pass-input" placeholder="პაროლი" style="padding:10px; border-radius:5px; border:none; margin-bottom:10px;"><br><button class="music-btn" onclick="checkPass()">გახსნა</button></div>`;
+            display.innerHTML = `<div style="text-align:center; padding:50px;"><h2>🔒 ლექცია დაბლოკილია</h2><input type="text" id="pass-input" placeholder="პაროლი" style="padding:10px; border-radius:5px; border:none; margin-bottom:10px;"><br><button class="btn-check" style="width:200px" onclick="checkPass()">გახსნა</button></div>`;
         } else {
             const lecture = data[id];
-            display.innerHTML = `<h1 style="color:var(--red)">${lecture.title}</h1><p>${lecture.content}</p><a href="${lecture.file}" class="btn-download" download>📥 ჩამოტვირთვა</a><div class="test-box"><h3>📝 ტესტი</h3>${lecture.test.map((t, i) => `<p><b>${t.q}</b></p>${t.a.map((ans, ai) => `<label style="display:block;"><input type="radio" name="q${i}" value="${ai}"> ${ans}</label>`).join('')}`).join('')}<button class="btn-check" onclick="checkTest(${id})">შემოწმება</button><div id="result" class="result-msg"></div></div>`;
+            display.innerHTML = `
+                <span style="color:#888; font-size:12px;">⏱️ 3 წუთი საკითხავი</span>
+                <h1 style="color:var(--red)">${lecture.title}</h1>
+                <p>${lecture.content}</p>
+                <div class="gold-card"><h3>🏆 მთავარი ფაქტი</h3><p>${lecture.goldFact}</p></div>
+                <a href="${lecture.file}" class="btn-download" style="color:var(--red); border:2px solid var(--red); padding:10px; text-decoration:none; border-radius:8px; display:inline-block;" download>📥 ჩამოტვირთვა</a>
+                <div class="test-box">
+                    <h3>📝 ტესტი</h3>
+                    ${lecture.test.map((t, i) => `
+                        <div style="margin-bottom:20px;">
+                            <p><b>${i+1}. ${t.q}</b> <button class="hint-btn" onclick="toggleHint(${i})">❓ მინიშნება</button></p>
+                            <div id="hint-${i}" class="hint-text">${t.h}</div>
+                            ${t.a.map((ans, ai) => `<label style="display:block;"><input type="radio" name="q${i}" value="${ai}"> ${ans}</label>`).join('')}
+                        </div>`).join('')}
+                    <button class="btn-check" onclick="checkTest()">შემოწმება</button>
+                    <div id="result" class="result-msg"></div>
+                </div>`;
         }
     }
 
-    function checkPass() { if (document.getElementById('pass-input').value === "RIOT1828") { isUnlocked = true; loadLecture(2); } else { alert("არასწორია!"); } }
+    function checkPass() {
+        if (document.getElementById('pass-input').value === "RIOT1828") { isUnlocked = true; loadLecture(2); }
+        else { alert("არასწორი პაროლი!"); }
+    }
 
-    function checkTest(id) {
+    function checkTest() {
+        const lecture = data[currentLectureId];
         let score = 0;
-        data[id].test.forEach((t, i) => {
+        lecture.test.forEach((t, i) => {
             const sel = document.querySelector(`input[name="q${i}"]:checked`);
             if (sel && parseInt(sel.value) === t.c) score++;
         });
         const res = document.getElementById('result');
         res.style.display = "block";
-        res.innerHTML = score === 3 ? "ბრწყინვალეა! 3/3" : `შედეგი: ${score}/3`;
+        res.innerHTML = score === 3 ? "ბრწყინვალეა! 3/3 🌟" : `შედეგი: ${score}/3. სცადე თავიდან!`;
         res.style.color = score === 3 ? "#2ecc71" : "#f1c40f";
     }
 
