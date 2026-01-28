@@ -6,36 +6,38 @@
     <title>TimeRiot | ლექციები</title>
     <link href="https://fonts.googleapis.com/css2?family=Fira+GO:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --red: #ff4d4d; --bg: #0d0d0d; --card: #1a1a1a; --gold: #ffd700; }
-        body { font-family: 'Fira GO', sans-serif; background: var(--bg); color: white; margin: 0; }
+        :root { --red: #ff4d4d; --bg: #0d0d0d; --card: #1a1a1a; --gold: #ffd700; --text: #ffffff; }
+        /* Мягкий режим */
+        body.soft-mode { --bg: #121210; --card: #1c1c18; --text: #e0dcd0; --red: #e65c5c; }
         
-        .read-progress { position: fixed; top: 0; left: 0; width: 0%; height: 4px; background: var(--red); z-index: 1000; transition: 0.3s; }
+        body { font-family: 'Fira GO', sans-serif; background: var(--bg); color: var(--text); margin: 0; transition: 0.3s; }
+        
+        .read-progress { position: fixed; top: 0; left: 0; width: 0%; height: 4px; background: var(--red); z-index: 1000; transition: 0.1s; }
         
         .navbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; background: var(--card); border-bottom: 2px solid #333; }
-        .logo { font-size: 24px; font-weight: bold; color: white; text-decoration: none; }
+        .logo { font-size: 24px; font-weight: bold; color: var(--text); text-decoration: none; }
         .logo span { color: var(--red); }
         
         .container { display: flex; max-width: 1200px; margin: 30px auto; gap: 30px; padding: 0 20px; flex-wrap: wrap; }
         .sidebar { width: 300px; }
         
         .sidebar-box { background: var(--card); border: 1px solid #333; padding: 15px; border-radius: 12px; margin-bottom: 15px; text-align: center; }
-        .btn-action { background: none; border: 2px solid var(--red); color: var(--red); padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; transition: 0.3s; }
+        .btn-action { background: none; border: 2px solid var(--red); color: var(--red); padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; transition: 0.3s; font-family: 'Fira GO'; }
         .btn-action:hover { background: var(--red); color: white; }
 
         .lecture-card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #333; margin-bottom: 15px; cursor: pointer; transition: 0.3s; position: relative; }
         .lecture-card.locked::after { content: '🔒'; position: absolute; right: 15px; top: 25px; opacity: 0.5; }
         .lecture-card.active { border-left: 5px solid var(--red); background: #252525; }
 
-        .main-content { flex: 1; min-width: 300px; background: var(--card); border-radius: 20px; padding: 40px; border: 1px solid #333; }
+        .main-content { flex: 1; min-width: 300px; background: var(--card); border-radius: 20px; padding: 40px; border: 1px solid #333; position: relative; }
 
-        .quote-box { background: linear-gradient(90deg, #1a1a1a, #252525); border-left: 4px solid var(--red); padding: 20px; margin-bottom: 30px; border-radius: 8px; font-style: italic; color: #aaa; }
+        .quote-box { background: linear-gradient(90deg, var(--card), #252525); border-left: 4px solid var(--red); padding: 20px; margin-bottom: 30px; border-radius: 8px; font-style: italic; color: #aaa; }
         .quote-box span { color: var(--red); font-weight: bold; display: block; margin-top: 10px; font-style: normal; }
 
-        /* Стиль для Галереи Личностей */
         .person-gallery { display: flex; gap: 15px; margin: 25px 0; flex-wrap: wrap; }
         .person-item { background: #222; border: 1px solid #444; padding: 10px 20px; border-radius: 30px; cursor: help; transition: 0.3s; position: relative; }
         .person-item:hover { border-color: var(--red); background: #2a2a2a; transform: translateY(-3px); }
-        .person-item .bio { display: none; position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%); background: #333; padding: 15px; border-radius: 10px; width: 200px; font-size: 13px; z-index: 10; border: 1px solid var(--red); box-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+        .person-item .bio { display: none; position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%); background: #333; padding: 15px; border-radius: 10px; width: 200px; font-size: 13px; z-index: 10; border: 1px solid var(--red); box-shadow: 0 10px 20px rgba(0,0,0,0.5); color: white; }
         .person-item:hover .bio { display: block; }
 
         .gold-card { background: rgba(255, 215, 0, 0.1); border: 2px solid var(--gold); padding: 20px; border-radius: 15px; margin: 30px 0; text-align: center; }
@@ -45,8 +47,15 @@
         .hint-btn { background: none; border: none; color: #555; cursor: help; font-size: 14px; margin-left: 10px; }
         .hint-text { display: none; color: #888; font-size: 13px; margin-top: 5px; font-style: italic; }
 
-        .btn-check { background: var(--red); color: white; border: none; padding: 12px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; }
+        .btn-check { background: var(--red); color: white; border: none; padding: 12px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; font-family: 'Fira GO'; }
         .result-msg { margin-top: 20px; padding: 15px; border-radius: 8px; display: none; text-align: center; font-weight: bold; }
+
+        /* Плавающая шпаргалка */
+        .cheat-sheet-btn { position: fixed; bottom: 20px; right: 20px; background: var(--gold); color: black; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
+        .cheat-modal { display: none; position: fixed; bottom: 80px; right: 20px; background: #222; border: 2px solid var(--gold); padding: 15px; border-radius: 12px; width: 250px; z-index: 1000; color: white; }
+
+        /* Окно успеха */
+        #success-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; border: 3px solid var(--gold); padding: 40px; border-radius: 20px; text-align: center; z-index: 2000; box-shadow: 0 0 50px rgba(255, 215, 0, 0.2); }
     </style>
 </head>
 <body onscroll="updateProgress()">
@@ -55,6 +64,7 @@
 
 <div class="navbar">
     <a href="index.html" class="logo">Time<span>Riot</span></a>
+    <button class="btn-action" onclick="toggleSoftMode()" style="width: auto; margin-top: 0; padding: 5px 15px;">🌙 რბილი რეჟიმი</button>
 </div>
 
 <div class="container">
@@ -86,10 +96,23 @@
     </div>
 </div>
 
+<div class="cheat-sheet-btn" onclick="toggleCheatSheet()">💡</div>
+<div class="cheat-modal" id="cheatSheet">
+    <h4 style="margin: 0 0 10px 0; color: var(--gold);">📌 მნიშვნელოვანი თარიღები</h4>
+    <ul id="dates-list" style="padding-left: 20px; font-size: 14px; line-height: 1.6;"></ul>
+</div>
+
+<div id="success-modal">
+    <h1 style="color: var(--gold);">გილოცავთ! 🏆</h1>
+    <p>თქვენ წარმატებით გაიარეთ ყველა ხელმისაწვდომი ლექცია და ტესტი!</p>
+    <button class="btn-check" onclick="document.getElementById('success-modal').style.display='none'">გაგრძელება</button>
+</div>
+
 <script>
     let isUnlocked = false;
     let isPlaying = false;
     let currentLectureId = 1;
+    let completedLectures = new Set();
 
     const quotes = [
         { t: "ისტორია არის ფილოსოფია მაგალითებით.", a: "თუკიდიდე" },
@@ -111,11 +134,12 @@
                 { name: "მზია", bio: "დმანისში აღმოჩენილი მდედრი ჰომინიდი. ევროპის უძველესი ბინადარი." }
             ],
             goldFact: "დაიმახსოვრე: დმანისის აღმოჩენა ამტკიცებს, რომ საქართველო ევროპაში პირველი ადამიანების სამშობლოა!",
+            dates: ["1.8 მლნ წელი - დმანისელი ჰომინიდები", "ძვ.წ. VI-IV ათასწლეული - ნეოლითი", "ძვ.წ. IV-III ათასწლეული - ენეოლითი"],
             file: "lecture1.docx",
             test: [
-                { q: "რამდენი წლისაა დმანისის ნაშთები?", a: ["1.5 მლნ", "1.8 მლნ", "2.1 მლნ"], c: 1, h: "დამრგვალებულად თითქმის 2 მილიონი." },
-                { q: "რა ეწოდება პერიოდს?", a: ["ქვის ხანა", "რკინის ხანა"], c: 0, h: "იყენებდნენ მასალას, რაც ფეხქვეშ ეყარათ." },
-                { q: "ვინ არიან მზია და ზეზვა?", a: ["მეფეები", "ჰომინიდები"], c: 1, h: "ისინი ჩვენი უძველესი წინაპრები არიან." }
+                { q: "რამდენი წლისაა დმანისის ნაშთები?", a: ["1.2 მლნ", "1.5 მლნ", "1.8 მლნ", "2.1 მლნ"], c: 2, h: "თითქმის 2 მილიონი წელი." },
+                { q: "რომელ პერიოდს მოიცავს ნეოლითი საქართველოში?", a: ["ძვ.წ. X-VIII", "ძვ.წ. VI-IV", "ძვ.წ. IV-II", "ძვ.წ. II-I"], c: 1, h: "შუა პერიოდი ძველ წელთაღრიცხვამდე." },
+                { q: "ვინ არიან მზია და ზეზვა?", a: ["მეფეები", "მწერლები", "ღვთაებები", "ჰომინიდები"], c: 3, h: "ჩვენი უძველესი წინაპრები." }
             ]
         },
         2: {
@@ -126,15 +150,19 @@
                 { name: "გილგამეში", bio: "ურუქის ლეგენდარული მეფე, შუმერული ეპოსის გმირი." }
             ],
             goldFact: "დაიმახსოვრე: ხამურაბის კანონები მსოფლიოში პირველი წერილობითი სამართლებრივი დოკუმენტია!",
+            dates: ["ძვ.წ. IV ათასწ. - შუმერული ცივილიზაცია", "ძვ.წ. XVIII ს. - ხამურაბის მეფობა", "ძვ.წ. 1750 წ. - ხამურაბის კანონები"],
             file: "lecture2.docx",
             test: [
-                { q: "რა ეწოდება შუმერულ დამწერლობას?", a: ["იეროგლიფები", "ლურსმული"], c: 1, h: "მას ლურსმნის ფორმის ნიშნებით წერდნენ." },
-                { q: "რამდენი მუხლია კანონებში?", a: ["100", "282"], c: 1, h: "300-ზე ოდნავ ნაკლები." },
-                { q: "ვინ გამოიგონა ბორბალი?", a: ["ეგვიპტელებმა", "შუმერებმა"], c: 1, h: "ისინი მესოპოტამიაში ცხოვრობდნენ." }
+                { q: "რა ეწოდება შუმერულ დამწერლობას?", a: ["იეროგლიფები", "ანბანი", "ლურსმული", "კვანძური"], c: 2, h: "იყენებდნენ ლურსმნისებურ ფორმებს." },
+                { q: "რომელ საუკუნეში მოღვაწეობდა ხამურაბი?", a: ["ძვ.წ. XX", "ძვ.წ. XIX", "ძვ.წ. XVIII", "ძვ.წ. XVII"], c: 2, h: "მე-18 საუკუნე ძვ.წ." },
+                { q: "რამდენი მუხლისგან შედგება ხამურაბის კოდექსი?", a: ["150", "282", "312", "400"], c: 1, h: "300-ზე ოდნავ ნაკლები." }
             ]
         }
     };
 
+    function toggleSoftMode() { document.body.classList.toggle('soft-mode'); }
+    function toggleCheatSheet() { document.getElementById('cheatSheet').style.display = document.getElementById('cheatSheet').style.display === 'block' ? 'none' : 'block'; }
+    
     function updateProgress() {
         const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
         const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
@@ -166,36 +194,30 @@
         const display = document.getElementById('display');
         document.querySelectorAll('.lecture-card').forEach(c => c.classList.remove('active'));
         document.getElementById('card' + id).classList.add('active');
+        
+        // Обновить шпаргалку
+        const datesList = document.getElementById('dates-list');
+        datesList.innerHTML = data[id].dates.map(d => `<li>${d}</li>`).join('');
 
         if (id === 2 && !isUnlocked) {
-            display.innerHTML = `<div style="text-align:center; padding:50px;"><h2>🔒 ლექცია დაბლოკილია</h2><input type="text" id="pass-input" placeholder="პაროლი" style="padding:10px; border-radius:5px; border:none; margin-bottom:10px;"><br><button class="btn-check" style="width:200px" onclick="checkPass()">გახსნა</button></div>`;
+            display.innerHTML = `<div style="text-align:center; padding:50px;"><h2>🔒 ლექცია დაბლოკილია</h2><input type="text" id="pass-input" placeholder="პაროლი" style="padding:10px; border-radius:12px; border:2px solid var(--red); background: #000; color: white; margin-bottom:10px;"><br><button class="btn-check" style="width:200px" onclick="checkPass()">გახსნა</button></div>`;
         } else {
             const lecture = data[id];
             display.innerHTML = `
                 <span style="color:#888; font-size:12px;">⏱️ 3 წუთი საკითხავი</span>
                 <h1 style="color:var(--red)">${lecture.title}</h1>
                 <p>${lecture.content}</p>
-                
                 <h4 style="margin-top:30px; color:#888;">👤 ისტორიული ფიგურები:</h4>
-                <div class="person-gallery">
-                    ${lecture.persons.map(p => `
-                        <div class="person-item">
-                            ${p.name}
-                            <div class="bio">${p.bio}</div>
-                        </div>
-                    `).join('')}
-                </div>
-
+                <div class="person-gallery">${lecture.persons.map(p => `<div class="person-item">${p.name}<div class="bio">${p.bio}</div></div>`).join('')}</div>
                 <div class="gold-card"><h3>🏆 მთავარი ფაქტი</h3><p>${lecture.goldFact}</p></div>
                 <a href="${lecture.file}" class="btn-download" style="color:var(--red); border:2px solid var(--red); padding:10px; text-decoration:none; border-radius:8px; display:inline-block;" download>📥 ჩამოტვირთვა</a>
-                
                 <div class="test-box">
-                    <h3>📝 ტესტი</h3>
+                    <h3>📝 ტესტი (4 სავარაუდო პასუხი)</h3>
                     ${lecture.test.map((t, i) => `
                         <div style="margin-bottom:20px;">
                             <p><b>${i+1}. ${t.q}</b> <button class="hint-btn" onclick="toggleHint(${i})">❓ მინიშნება</button></p>
                             <div id="hint-${i}" class="hint-text">${t.h}</div>
-                            ${t.a.map((ans, ai) => `<label style="display:block;"><input type="radio" name="q${i}" value="${ai}"> ${ans}</label>`).join('')}
+                            ${t.a.map((ans, ai) => `<label style="display:block; padding: 5px 0;"><input type="radio" name="q${i}" value="${ai}"> ${ans}</label>`).join('')}
                         </div>`).join('')}
                     <button class="btn-check" onclick="checkTest()">შემოწმება</button>
                     <div id="result" class="result-msg"></div>
@@ -217,8 +239,15 @@
         });
         const res = document.getElementById('result');
         res.style.display = "block";
-        res.innerHTML = score === 3 ? "ბრწყინვალეა! 3/3 🌟" : `შედეგი: ${score}/3. სცადე თავიდან!`;
-        res.style.color = score === 3 ? "#2ecc71" : "#f1c40f";
+        if (score === 3) {
+            res.innerHTML = "ბრწყინვალეა! 3/3 🌟"; res.style.color = "#2ecc71";
+            completedLectures.add(currentLectureId);
+            if (completedLectures.size === Object.keys(data).length) {
+                document.getElementById('success-modal').style.display = 'block';
+            }
+        } else {
+            res.innerHTML = `შედეგი: ${score}/3. სცადე თავიდან!`; res.style.color = "#f1c40f";
+        }
     }
 
     loadLecture(1);
