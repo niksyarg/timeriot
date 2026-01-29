@@ -21,16 +21,16 @@
         .btn-action { background: none; border: 2px solid var(--red); color: var(--red); padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; transition: 0.3s; font-family: 'Fira GO'; }
         .btn-action:hover { background: var(--red); color: white; }
 
-        /* ახალი: გენეალოგიური ხე */
+        /* Тренажер Дат: Стили окна */
+        .trainer-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2999; backdrop-filter: blur(5px); }
+        .trainer-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; border: 2px solid var(--gold); padding: 40px; border-radius: 25px; z-index: 3000; text-align: center; width: 320px; box-shadow: 0 0 50px rgba(255, 215, 0, 0.2); }
+
+        /* Генеалогическое древо */
         .family-tree { background: #111; padding: 20px; border-radius: 15px; border: 1px solid #333; margin: 20px 0; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
         .tree-node { background: var(--card); border: 2px solid var(--gold); padding: 10px; border-radius: 8px; text-align: center; font-size: 13px; min-width: 100px; position: relative; }
-        .tree-node::after { content: '↓'; position: absolute; bottom: -20px; left: 50%; color: var(--gold); display: none; }
-        .tree-node.has-child::after { display: block; }
+        .tree-node.has-child::after { content: '↓'; position: absolute; bottom: -20px; left: 50%; color: var(--gold); transform: translateX(-50%); }
 
-        /* ახალი: გეო-ლინკი */
         .geo-link { color: var(--red); border-bottom: 1px dashed var(--red); cursor: pointer; font-weight: bold; }
-        .geo-link:hover { background: rgba(255, 77, 77, 0.1); }
-
         .lecture-card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #333; margin-bottom: 15px; cursor: pointer; transition: 0.3s; position: relative; }
         .lecture-card.locked::after { content: '🔒'; position: absolute; right: 15px; top: 25px; opacity: 0.5; }
         .lecture-card.active { border-left: 5px solid var(--red); background: #252525; }
@@ -38,11 +38,9 @@
         .main-content { flex: 1; min-width: 300px; background: var(--card); border-radius: 20px; padding: 40px; border: 1px solid #333; position: relative; }
 
         @keyframes pulse-red { 0% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.7); } 70% { transform: translate(-50%, -50%) scale(1.2); box-shadow: 0 0 0 10px rgba(255, 77, 77, 0); } 100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 0 rgba(255, 77, 77, 0); } }
-        @keyframes gold-glow { 0% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.2); } 50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); } 100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.2); } }
-
-        .map-container { background: #222; border: 1px solid #444; border-radius: 15px; height: 250px; margin: 25px 0; position: relative; overflow: hidden; transition: 0.5s; }
-        .map-marker { position: absolute; width: 14px; height: 14px; background: var(--red); border: 2px solid white; border-radius: 50%; animation: pulse-red 2s infinite; transform: translate(-50%, -50%); cursor: pointer; z-index: 5; }
-        .map-marker.highlight { transform: translate(-50%, -50%) scale(2); z-index: 10; }
+        .map-container { background: #222; border: 1px solid #444; border-radius: 15px; height: 250px; margin: 25px 0; position: relative; overflow: hidden; }
+        .map-marker { position: absolute; width: 14px; height: 14px; background: var(--red); border: 2px solid white; border-radius: 50%; animation: pulse-red 2s infinite; transform: translate(-50%, -50%); cursor: pointer; }
+        .map-marker.highlight { transform: translate(-50%, -50%) scale(2.5); z-index: 100; transition: 0.3s; background: var(--gold); }
 
         .comparison-slider { position: relative; width: 100%; height: 350px; overflow: hidden; border-radius: 15px; margin: 20px 0; border: 2px solid #333; cursor: ew-resize; }
         .comparison-slider img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
@@ -51,7 +49,7 @@
         .dig-container { position: relative; width: 100%; height: 300px; margin: 20px 0; border-radius: 15px; overflow: hidden; border: 2px solid #444; background: #000; }
         .dig-canvas { position: absolute; top: 0; left: 0; z-index: 5; }
 
-        .gold-card { background: rgba(255, 215, 0, 0.05); border: 2px solid var(--gold); padding: 20px; border-radius: 15px; margin: 30px 0; text-align: center; animation: gold-glow 3s infinite; }
+        .gold-card { background: rgba(255, 215, 0, 0.05); border: 2px solid var(--gold); padding: 20px; border-radius: 15px; margin: 30px 0; text-align: center; }
         .timeline-container { display: flex; justify-content: space-between; position: relative; margin: 30px 0; padding-top: 20px; }
         .timeline-line { position: absolute; top: 30px; left: 0; width: 100%; height: 2px; background: #333; }
         .timeline-item { position: relative; z-index: 2; text-align: center; width: 30%; }
@@ -65,6 +63,16 @@
 <body onscroll="updateProgress()">
 
 <div class="read-progress" id="progressBar"></div>
+
+<div class="trainer-overlay" id="tOverlay" onclick="closeTrainer()"></div>
+<div class="trainer-modal" id="tModal">
+    <h3 style="color:var(--gold); margin:0;">გაიხსენე მოვლენა</h3>
+    <h1 id="tDate" style="margin: 25px 0; font-size: 32px; color: #fff;"></h1>
+    <p id="tAnswer" style="display:none; color:var(--gold); font-size: 18px; margin-bottom: 25px; font-weight: bold;"></p>
+    <button class="btn-action" id="tBtnShow" onclick="showTrainerAnswer()">პასუხის ნახვა</button>
+    <button class="btn-action" id="tBtnNext" style="display:none;" onclick="dateTrainer()">შემდეგი</button>
+    <button class="btn-action" style="border-color:#555; color:#555;" onclick="closeTrainer()">დახურვა</button>
+</div>
 
 <div class="navbar">
     <a href="index.html" class="logo">Time<span>Riot</span></a>
@@ -115,7 +123,6 @@
     const data = {
         1: {
             title: "ქვისა და ბრინჯაოს ხანა",
-            // ტექსტში დავამატე geo-link ფუნქცია
             content: "საქართველოს ტერიტორიაზე ადამიანის ცხოვრების კვალი უძველესი დროიდან დასტურდება. <span class='geo-link' onclick='focusMap(55, 45)'>დმანისში</span> აღმოჩენილი ჰომინიდების ნაშთები (მზია და ზეზვა) 1.8 მილიონი წლით თარიღდება. ქვემოთ შეგიძლია თავად 'გათხარო' არტეფაქტი.",
             digImage: "https://i.imgur.com/8Y4e3pD.png", 
             timeline: [
@@ -123,7 +130,6 @@
                 { date: "ძვ.წ. VI-IV ათასწ.", desc: "ნეოლითური რევოლუცია" },
                 { date: "ძვ.წ. IV-III ათასწ.", desc: "ბრინჯაოს ხანის დასაწყისი" }
             ],
-            // ახალი: გენეალოგია
             tree: [
                 { name: "ავსტრალოპითეკი", child: true },
                 { name: "ჰომო ერექტუსი (დმანისი)", child: true },
@@ -182,20 +188,43 @@
         }
     };
 
+    // Функция Тренажера Дат
+    function dateTrainer() {
+        const allDates = Object.values(data).flatMap(l => l.dates);
+        const randomDateRaw = allDates[Math.floor(Math.random() * allDates.length)];
+        const parts = randomDateRaw.split(' - ');
+
+        document.getElementById('tDate').innerText = parts[0];
+        document.getElementById('tAnswer').innerText = parts[1];
+        
+        document.getElementById('tAnswer').style.display = 'none';
+        document.getElementById('tBtnShow').style.display = 'inline-block';
+        document.getElementById('tBtnNext').style.display = 'none';
+
+        document.getElementById('tModal').style.display = 'block';
+        document.getElementById('tOverlay').style.display = 'block';
+    }
+
+    function showTrainerAnswer() {
+        document.getElementById('tAnswer').style.display = 'block';
+        document.getElementById('tBtnShow').style.display = 'none';
+        document.getElementById('tBtnNext').style.display = 'inline-block';
+    }
+
+    function closeTrainer() {
+        document.getElementById('tModal').style.display = 'none';
+        document.getElementById('tOverlay').style.display = 'none';
+    }
+
     function focusMap(x, y) {
         const markers = document.querySelectorAll('.map-marker');
         markers.forEach(m => {
             if (m.style.left === x+'%' && m.style.top === y+'%') {
+                m.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 m.classList.add('highlight');
-                setTimeout(() => m.classList.remove('highlight'), 2000);
+                setTimeout(() => m.classList.remove('highlight'), 3000);
             }
         });
-    }
-
-    function dateTrainer() {
-        const allDates = Object.values(data).flatMap(l => l.dates);
-        const randomDate = allDates[Math.floor(Math.random() * allDates.length)];
-        alert("გაიხსენე მოვლენა: \n\n" + randomDate.split(' - ')[0] + "\n\n(პასუხი: " + randomDate.split(' - ')[1] + ")");
     }
 
     function loadLecture(id) {
