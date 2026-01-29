@@ -7,7 +7,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Fira+GO:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --red: #ff4d4d; --bg: #0d0d0d; --card: #1a1a1a; --gold: #ffd700; --text: #ffffff; }
-        /* Мягкий режим */
         body.soft-mode { --bg: #121210; --card: #1c1c18; --text: #e0dcd0; --red: #e65c5c; }
         
         body { font-family: 'Fira GO', sans-serif; background: var(--bg); color: var(--text); margin: 0; transition: 0.3s; }
@@ -31,8 +30,10 @@
 
         .main-content { flex: 1; min-width: 300px; background: var(--card); border-radius: 20px; padding: 40px; border: 1px solid #333; position: relative; }
 
-        .quote-box { background: linear-gradient(90deg, var(--card), #252525); border-left: 4px solid var(--red); padding: 20px; margin-bottom: 30px; border-radius: 8px; font-style: italic; color: #aaa; }
-        .quote-box span { color: var(--red); font-weight: bold; display: block; margin-top: 10px; font-style: normal; }
+        /* Карта */
+        .map-container { background: #222; border: 1px solid #444; border-radius: 15px; height: 250px; margin: 25px 0; position: relative; overflow: hidden; background-image: radial-gradient(#333 1px, transparent 1px); background-size: 20px 20px; }
+        .map-marker { position: absolute; width: 12px; height: 12px; background: var(--red); border: 2px solid white; border-radius: 50%; cursor: pointer; transform: translate(-50%, -50%); box-shadow: 0 0 10px var(--red); }
+        .map-marker:hover::after { content: attr(data-title); position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--red); color: white; padding: 5px 10px; border-radius: 5px; font-size: 12px; white-space: nowrap; z-index: 20; }
 
         .person-gallery { display: flex; gap: 15px; margin: 25px 0; flex-wrap: wrap; }
         .person-item { background: #222; border: 1px solid #444; padding: 10px 20px; border-radius: 30px; cursor: help; transition: 0.3s; position: relative; }
@@ -50,11 +51,9 @@
         .btn-check { background: var(--red); color: white; border: none; padding: 12px 30px; border-radius: 8px; font-weight: bold; cursor: pointer; width: 100%; margin-top: 20px; font-family: 'Fira GO'; }
         .result-msg { margin-top: 20px; padding: 15px; border-radius: 8px; display: none; text-align: center; font-weight: bold; }
 
-        /* Плавающая шпаргалка */
         .cheat-sheet-btn { position: fixed; bottom: 20px; right: 20px; background: var(--gold); color: black; width: 50px; height: 50px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: bold; cursor: pointer; z-index: 1000; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         .cheat-modal { display: none; position: fixed; bottom: 80px; right: 20px; background: #222; border: 2px solid var(--gold); padding: 15px; border-radius: 12px; width: 250px; z-index: 1000; color: white; }
 
-        /* Окно успеха */
         #success-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; border: 3px solid var(--gold); padding: 40px; border-radius: 20px; text-align: center; z-index: 2000; box-shadow: 0 0 50px rgba(255, 215, 0, 0.2); }
     </style>
 </head>
@@ -88,10 +87,6 @@
     </div>
 
     <div class="main-content">
-        <div class="quote-box" id="quote-display">
-            "ისტორია არის ფილოსოფია მაგალითებით."
-            <span>- თუკიდიდე</span>
-        </div>
         <div id="display"></div>
     </div>
 </div>
@@ -114,17 +109,6 @@
     let currentLectureId = 1;
     let completedLectures = new Set();
 
-    const quotes = [
-        { t: "ისტორია არის ფილოსოფია მაგალითებით.", a: "თუკიდიდე" },
-        { t: "შეუძლებელი არის სიტყვა, რომელიც მხოლოდ სულელების ლექსიკონში მოიპოვება.", a: "ნაპოლეონ ბონაპარტი" },
-        { t: "ხალხი, რომელმაც არ იცის თავისი წარსული, განწირულია მისი განმეორებისთვის.", a: "ჯორჯ სანტაიანა" }
-    ];
-
-    const dictionary = [
-        { term: "ჰომინიდები", desc: "ადამიანის მსგავსი არსებები..." },
-        { term: "ლურსმული დამწერლობა", desc: "შუმერების მიერ შექმნილი დამწერლობა..." }
-    ];
-
     const data = {
         1: {
             title: "ქვისა და ბრინჯაოს ხანა",
@@ -133,8 +117,12 @@
                 { name: "ზეზვა", bio: "დმანისში აღმოჩენილი მამრი ჰომინიდი. ცხოვრობდა 1.8 მლნ წლის წინ." },
                 { name: "მზია", bio: "დმანისში აღმოჩენილი მდედრი ჰომინიდი. ევროპის უძველესი ბინადარი." }
             ],
+            mapPoints: [
+                { x: '55%', y: '45%', title: 'დმანისი (1.8 მლნ წელი)' },
+                { x: '50%', y: '40%', title: 'კავკასია' }
+            ],
             goldFact: "დაიმახსოვრე: დმანისის აღმოჩენა ამტკიცებს, რომ საქართველო ევროპაში პირველი ადამიანების სამშობლოა!",
-            dates: ["1.8 მლნ წელი - დმანისელი ჰომინიდები", "ძვ.წ. VI-IV ათასწლეული - ნეოლითი", "ძვ.წ. IV-III ათასწლეული - ენეოლითი"],
+            dates: ["1.8 მლნ წელი - დმანისელი ჰომინიდები", "ძვ.წ. VI-IV ათასწლეული - ნეოლითი"],
             file: "lecture1.docx",
             test: [
                 { q: "რამდენი წლისაა დმანისის ნაშთები?", a: ["1.2 მლნ", "1.5 მლნ", "1.8 მლნ", "2.1 მლნ"], c: 2, h: "თითქმის 2 მილიონი წელი." },
@@ -149,8 +137,12 @@
                 { name: "ხამურაბი", bio: "ბაბილონის მეფე, რომელმაც შეადგინა პირველი კანონთა კრებული." },
                 { name: "გილგამეში", bio: "ურუქის ლეგენდარული მეფე, შუმერული ეპოსის გმირი." }
             ],
+            mapPoints: [
+                { x: '60%', y: '70%', title: 'ბაბილონი' },
+                { x: '65%', y: '80%', title: 'შუმერი' }
+            ],
             goldFact: "დაიმახსოვრე: ხამურაბის კანონები მსოფლიოში პირველი წერილობითი სამართლებრივი დოკუმენტია!",
-            dates: ["ძვ.წ. IV ათასწ. - შუმერული ცივილიზაცია", "ძვ.წ. XVIII ს. - ხამურაბის მეფობა", "ძვ.წ. 1750 წ. - ხამურაბის კანონები"],
+            dates: ["ძვ.წ. IV ათასწ. - შუმერი", "ძვ.წ. XVIII ს. - ხამურაბი"],
             file: "lecture2.docx",
             test: [
                 { q: "რა ეწოდება შუმერულ დამწერლობას?", a: ["იეროგლიფები", "ანბანი", "ლურსმული", "კვანძური"], c: 2, h: "იყენებდნენ ლურსმნისებურ ფორმებს." },
@@ -186,7 +178,7 @@
     function showDictionary() {
         const display = document.getElementById('display');
         display.innerHTML = `<h1 style="color:var(--red)">📜 ტერმინოლოგია</h1>` + 
-            dictionary.map(item => `<div style="background:#222; padding:15px; margin-bottom:10px; border-radius:8px; border-left:3px solid var(--red);"><b>${item.term}</b>: ${item.desc}</div>`).join('');
+            [ { term: "ჰომინიდები", desc: "ადამიანის მსგავსი არსებები..." }, { term: "ლურსმული დამწერლობა", desc: "შუმერების დამწერლობა..." } ].map(item => `<div style="background:#222; padding:15px; margin-bottom:10px; border-radius:8px; border-left:3px solid var(--red);"><b>${item.term}</b>: ${item.desc}</div>`).join('');
     }
 
     function loadLecture(id) {
@@ -194,10 +186,7 @@
         const display = document.getElementById('display');
         document.querySelectorAll('.lecture-card').forEach(c => c.classList.remove('active'));
         document.getElementById('card' + id).classList.add('active');
-        
-        // Обновить шпаргалку
-        const datesList = document.getElementById('dates-list');
-        datesList.innerHTML = data[id].dates.map(d => `<li>${d}</li>`).join('');
+        document.getElementById('dates-list').innerHTML = data[id].dates.map(d => `<li>${d}</li>`).join('');
 
         if (id === 2 && !isUnlocked) {
             display.innerHTML = `<div style="text-align:center; padding:50px;"><h2>🔒 ლექცია დაბლოკილია</h2><input type="text" id="pass-input" placeholder="პაროლი" style="padding:10px; border-radius:12px; border:2px solid var(--red); background: #000; color: white; margin-bottom:10px;"><br><button class="btn-check" style="width:200px" onclick="checkPass()">გახსნა</button></div>`;
@@ -207,12 +196,20 @@
                 <span style="color:#888; font-size:12px;">⏱️ 3 წუთი საკითხავი</span>
                 <h1 style="color:var(--red)">${lecture.title}</h1>
                 <p>${lecture.content}</p>
-                <h4 style="margin-top:30px; color:#888;">👤 ისტორიული ფიგურები:</h4>
+                
+                <h4 style="margin-top:20px; color:#888;">📍 ინტერაქტიული რუკა:</h4>
+                <div class="map-container">
+                    ${lecture.mapPoints.map(p => `<div class="map-marker" style="left:${p.x}; top:${p.y};" data-title="${p.title}"></div>`).join('')}
+                    <div style="position:absolute; bottom:10px; right:10px; font-size:10px; color:#555;">TimeRiot Map Engine</div>
+                </div>
+
+                <h4 style="margin-top:20px; color:#888;">👤 ისტორიული ფიგურები:</h4>
                 <div class="person-gallery">${lecture.persons.map(p => `<div class="person-item">${p.name}<div class="bio">${p.bio}</div></div>`).join('')}</div>
                 <div class="gold-card"><h3>🏆 მთავარი ფაქტი</h3><p>${lecture.goldFact}</p></div>
                 <a href="${lecture.file}" class="btn-download" style="color:var(--red); border:2px solid var(--red); padding:10px; text-decoration:none; border-radius:8px; display:inline-block;" download>📥 ჩამოტვირთვა</a>
+                
                 <div class="test-box">
-                    <h3>📝 ტესტი (4 სავარაუდო პასუხი)</h3>
+                    <h3>📝 ტესტი</h3>
                     ${lecture.test.map((t, i) => `
                         <div style="margin-bottom:20px;">
                             <p><b>${i+1}. ${t.q}</b> <button class="hint-btn" onclick="toggleHint(${i})">❓ მინიშნება</button></p>
@@ -242,9 +239,7 @@
         if (score === 3) {
             res.innerHTML = "ბრწყინვალეა! 3/3 🌟"; res.style.color = "#2ecc71";
             completedLectures.add(currentLectureId);
-            if (completedLectures.size === Object.keys(data).length) {
-                document.getElementById('success-modal').style.display = 'block';
-            }
+            if (completedLectures.size === Object.keys(data).length) document.getElementById('success-modal').style.display = 'block';
         } else {
             res.innerHTML = `შედეგი: ${score}/3. სცადე თავიდან!`; res.style.color = "#f1c40f";
         }
