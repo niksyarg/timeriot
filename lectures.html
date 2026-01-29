@@ -3,17 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TimeRiot | Full Autopilot Edition</title>
+    <title>TimeRiot | Education Platform</title>
     <link href="https://fonts.googleapis.com/css2?family=Fira+GO:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --red: #ff4d4d; --bg: #0d0d0d; --card: #1a1a1a; --gold: #ffd700; --text: #ffffff; }
         body.soft-mode { --bg: #121210; --card: #1c1c18; --text: #e0dcd0; --red: #e65c5c; }
         body { font-family: 'Fira GO', sans-serif; background: var(--bg); color: var(--text); margin: 0; transition: 0.3s; }
         
-        /* Прогресс-бары */
         .master-progress { position: fixed; top: 0; left: 0; width: 100%; height: 6px; background: #222; z-index: 2000; }
         #masterProgressBar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--red), var(--gold)); transition: 1s; box-shadow: 0 0 10px var(--gold); }
-        .read-progress { position: fixed; top: 6px; left: 0; width: 0%; height: 2px; background: var(--red); z-index: 1000; }
 
         .navbar { display: flex; justify-content: space-between; align-items: center; padding: 20px 5%; background: var(--card); border-bottom: 2px solid #333; margin-top: 6px; }
         .logo { font-size: 24px; font-weight: bold; color: var(--text); text-decoration: none; }
@@ -27,42 +25,27 @@
 
         .lecture-card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #333; margin-bottom: 15px; cursor: pointer; transition: 0.3s; position: relative; }
         .lecture-card.completed { border-left: 5px solid #2ecc71; }
-        .lecture-card.completed::after { content: '✅'; position: absolute; right: 15px; top: 20px; }
-        .lecture-card.locked { opacity: 0.5; filter: grayscale(0.8); }
-        .lecture-card.locked::after { content: '🔒'; position: absolute; right: 15px; top: 20px; }
         .lecture-card.active { border-left: 5px solid var(--red); background: #252525; }
 
         .main-content { flex: 1; min-width: 300px; background: var(--card); border-radius: 20px; padding: 40px; border: 1px solid #333; position: relative; }
 
-        /* Элементы контента */
-        .family-tree { background: #111; padding: 20px; border-radius: 15px; border: 1px solid #333; margin: 20px 0; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
-        .tree-node { background: var(--card); border: 2px solid var(--gold); padding: 10px; border-radius: 8px; text-align: center; font-size: 13px; min-width: 100px; position: relative; }
-        .tree-node.has-child::after { content: '↓'; position: absolute; bottom: -20px; left: 50%; color: var(--gold); transform: translateX(-50%); }
-        .geo-link { color: var(--red); border-bottom: 1px dashed var(--red); cursor: pointer; font-weight: bold; }
+        /* Плюшка: Живой конспект */
+        .fact-chip { display: inline-block; background: rgba(255, 215, 0, 0.1); border: 1px solid var(--gold); color: var(--gold); padding: 5px 15px; border-radius: 15px; margin: 5px; font-size: 13px; transition: 0.3s; cursor: default; }
+        .fact-chip:hover { background: var(--gold); color: #000; transform: scale(1.05); }
+
         .map-container { background: #222; border: 1px solid #444; border-radius: 15px; height: 250px; margin: 25px 0; position: relative; overflow: hidden; }
-        .map-marker { position: absolute; width: 14px; height: 14px; background: var(--red); border: 2px solid white; border-radius: 50%; animation: pulse-red 2s infinite; transform: translate(-50%, -50%); cursor: pointer; }
-        .map-marker.highlight { transform: translate(-50%, -50%) scale(2.5); z-index: 100; background: var(--gold); }
-        
+        .map-marker { position: absolute; width: 14px; height: 14px; background: var(--red); border: 2px solid white; border-radius: 50%; transform: translate(-50%, -50%); cursor: pointer; }
         .dig-container { position: relative; width: 100%; height: 300px; margin: 20px 0; border-radius: 15px; overflow: hidden; border: 2px solid #444; background: #000; }
         .comparison-slider { position: relative; width: 100%; height: 350px; overflow: hidden; border-radius: 15px; margin: 20px 0; border: 2px solid #333; cursor: ew-resize; }
         .img-after { position: absolute; top: 0; left: 0; height: 100%; width: 50%; border-right: 3px solid var(--red); overflow: hidden; z-index: 2; }
         .img-after img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
-        .btn-next-step { background: var(--gold); color: #000; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; margin-top: 20px; cursor: pointer; display: none; font-family: 'Fira GO'; }
-
-        /* Тренажеры */
-        .trainer-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 2999; backdrop-filter: blur(5px); }
-        .trainer-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; border: 2px solid var(--gold); padding: 40px; border-radius: 25px; z-index: 3000; text-align: center; width: 320px; }
+        .btn-next-step { background: var(--gold); color: #000; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; margin-top: 20px; cursor: pointer; display: none; }
         .test-box { margin-top: 40px; padding: 30px; background: #111; border-radius: 15px; border-top: 3px solid var(--red); }
-        
-        /* Заглушка оплаты */
-        .paywall-box { text-align: center; padding: 50px 20px; border: 2px solid var(--gold); border-radius: 20px; background: rgba(255, 215, 0, 0.03); }
-        @keyframes pulse-red { 0% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.7); } 70% { transform: translate(-50%, -50%) scale(1.2); box-shadow: 0 0 0 10px rgba(255, 77, 77, 0); } 100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 0 rgba(255, 77, 77, 0); } }
     </style>
 </head>
-<body onscroll="updateReadProgress()" onload="initApp()">
+<body onload="initApp()">
 
 <div class="master-progress"><div id="masterProgressBar"></div></div>
-<div class="read-progress" id="progressBar"></div>
 
 <div class="navbar">
     <a href="index.html" class="logo">Time<span>Riot</span></a>
@@ -79,121 +62,81 @@
             <button id="music-btn" class="btn-action" onclick="toggleMusic()">ჩართვა</button>
             <audio id="bg-music" loop><source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg"></audio>
         </div>
-        <div class="sidebar-box" style="border-color: var(--gold);">
-            <button class="btn-action" style="border-color: var(--gold); color: var(--gold);" onclick="dateTrainer()">⚡ ტრენაჟორი</button>
-        </div>
         <div id="lectureList"></div>
-        <button class="btn-action" onclick="showDictionary()" style="border-style: dashed;">📜 ტერმინოლოგია</button>
     </div>
     <div class="main-content">
         <div id="display"></div>
     </div>
 </div>
 
-<div class="trainer-overlay" id="tOverlay" onclick="closeTrainer()"></div>
-<div class="trainer-modal" id="tModal">
-    <h3 style="color:var(--gold); margin:0;">გაიხსენე მოვლენა</h3>
-    <h1 id="tDate" style="margin: 25px 0; font-size: 32px; color: #fff;"></h1>
-    <p id="tAnswer" style="display:none; color:var(--gold); font-size: 18px; margin-bottom: 25px; font-weight: bold;"></p>
-    <button class="btn-action" id="tBtnShow" onclick="showTrainerAnswer()">პასუხის ნახვა</button>
-    <button class="btn-action" id="tBtnNext" style="display:none;" onclick="dateTrainer()">შემდეგი</button>
-    <button class="btn-action" style="border-color:#555; color:#555;" onclick="closeTrainer()">დახურვა</button>
-</div>
-
 <script>
-    const MASTER_KEY = "RIOT-117-GOLD"; 
-    
     const data = {
         1: {
             title: "ქვისა და ბრინჯაოს ხანა",
-            content: "საქართველოს ტერიტორიაზე ადამიანის ცხოვრების კვალი უძველესი დროიდან დასტურდება. <span class='geo-link' onclick='focusMap(55, 45)'>დმანისში</span> აღმოჩენილი ჰომინიდების ნაშთები (მზია და ზეზვა) 1.8 მილიონი წლით თარიღდება. ქვემოთ შეგიძლია თავად 'გათხარო' არტეფაქტი.",
+            content: "საქართველოს ტერიტორიაზე ადამიანის ცხოვრების კვალი უძველესი დროიდან დასტურდება. დმანისში აღმოჩენილი ჰომინიდების ნაშთები 1.8 მილიონი წლით თარიღდება.",
+            chips: ["1.8 მლნ წელი", "ზეზვა და მზია", "დმანისი", "პირველი ევროპელები"],
             digImage: "https://i.imgur.com/8Y4e3pD.png",
-            tree: [{ name: "ავსტრალოპითეკი", child: true }, { name: "ჰომო ერექტუსი (დმანისი)", child: true }, { name: "ჰომო საპიენსი", child: false }],
-            mapPoints: [{ x: '55%', y: '45%', title: 'დმანისი' }, { x: '50%', y: '40%', title: 'კავკასია' }],
-            dates: ["1.8 მლნ წელი - დმანისელი ჰომინიდები", "ძვ.წ. VI-IV ათასწლეული - ნეოლითი"],
-            test: [
-                { q: "რამდენი წლისაა დმანისის ნაშთები?", a: ["1.2 მლნ", "1.5 მლნ", "1.8 მლნ"], c: 2 },
-                { q: "ვინ არიან მზია და ზეზვა?", a: ["მეფეები", "მწერლები", "ჰომინიდები"], c: 2 }
-            ]
+            mapPoints: [{ x: '55%', y: '45%', title: 'დმანისი' }],
+            test: [{ q: "რამდენი წლისაა დმანისის ნაშთები?", a: ["1.2 მლნ", "1.5 მლნ", "1.8 მლნ"], c: 2 }]
         },
         2: {
             title: "შუმერი და ბაბილონი",
-            content: "მესოპოტამიაში შუმერებმა შექმნეს პირველი ლურსმული დამწერლობა. ნახე <span class='geo-link' onclick='focusMap(60, 70)'>ბაბილონის</span> რეკონსტრუქცია სლაიდერის გამოყენებით.",
+            content: "მესოპოტამიაში შუმერებმა შექმნეს პირველი ლურსმული დამწერლობა. ბაბილონი გახდა უმნიშვნელოვანესი ცენტრი ხამურაბის დროს.",
+            chips: ["ძვ.წ. IV ათასწ.", "ლურსმული დამწერლობა", "ხამურაბის კანონები"],
             slider: { before: "https://i.imgur.com/xO4X9Q3.jpg", after: "https://i.imgur.com/vHqY7R7.jpg" },
-            tree: [{ name: "შუმერები", child: true }, { name: "აქადელები", child: true }, { name: "ბაბილონელები", child: false }],
-            mapPoints: [{ x: '60%', y: '70%', title: 'ბაბილონი' }, { x: '65%', y: '80%', title: 'შუმერი' }],
-            dates: ["ძვ.წ. IV ათასწ. - შუმერი", "ძვ.წ. XVIII ს. - ხამურაბი"],
-            test: [
-                { q: "რა ეწოდება შუმერულ დამწერლობას?", a: ["იეროგლიფები", "ანბანი", "ლურსმული"], c: 2 },
-                { q: "რომელ საუკუნეში მოღვაწეობდა ხამურაბი?", a: ["ძვ.წ. XX", "ძვ.წ. XVIII", "ძვ.წ. XVII"], c: 1 }
-            ]
+            mapPoints: [{ x: '60%', y: '70%', title: 'ბაბილონი' }],
+            test: [{ q: "რა ეწოდება შუმერულ დამწერლობას?", a: ["იეროგლიფები", "ანბანი", "ლურსმული"], c: 2 }]
         }
     };
 
     let userProgress = JSON.parse(localStorage.getItem('timeriot_completed')) || [];
     let currentId = 1;
 
-    function getDeviceID() { return btoa(navigator.userAgent + window.screen.width + window.screen.height); }
-
     function initApp() { renderSidebar(); loadLecture(1); updateMasterProgress(); }
 
     function renderSidebar() {
         const list = document.getElementById('lectureList');
         list.innerHTML = '';
-        [1, 2].forEach(id => {
-            const isCompleted = userProgress.includes(id);
-            const isLocked = id > 1 && !localStorage.getItem('timeriot_auth');
-            list.innerHTML += `<div class="lecture-card ${id === currentId ? 'active' : ''} ${isCompleted ? 'completed' : ''} ${isLocked ? 'locked' : ''}" onclick="loadLecture(${id})"><h4>${id}. ${data[id].title}</h4></div>`;
+        Object.keys(data).forEach(id => {
+            const isCompleted = userProgress.includes(parseInt(id));
+            list.innerHTML += `<div class="lecture-card ${id == currentId ? 'active' : ''} ${isCompleted ? 'completed' : ''}" onclick="loadLecture(${id})"><h4>${id}. ${data[id].title}</h4></div>`;
         });
     }
 
     function loadLecture(id) {
-        const display = document.getElementById('display');
-        const deviceID = getDeviceID();
-        if (id > 1 && (!localStorage.getItem('timeriot_auth') || localStorage.getItem('timeriot_device') !== deviceID)) {
-            display.innerHTML = `
-                <div class="paywall-box">
-                    <h1 style="font-size:50px; margin:0;">🔒</h1>
-                    <h2 style="color:var(--gold);">კურსი დაბლოკილია</h2>
-                    <p>სრული წვდომისთვის შეიყვანეთ კოდი:</p>
-                    <input type="text" id="masterKeyInput" style="padding:15px; border-radius:10px; border:2px solid var(--gold); background:#000; color:#fff; text-align:center; width:250px; margin:20px 0;">
-                    <br><button class="btn-action" style="width:200px; background:var(--gold); color:#000;" onclick="activateCourse()">აქტივაცია</button>
-                </div>`;
-            return;
-        }
         currentId = id;
         const l = data[id];
-        let html = `<h1>${l.title}</h1><p>${l.content}</p>`;
-        if (l.tree) html += `<h4>👑 იერარქია:</h4><div class="family-tree">${l.tree.map(node => `<div class="tree-node ${node.child ? 'has-child' : ''}">${node.name}</div>`).join('')}</div>`;
+        const display = document.getElementById('display');
+        let html = `<h1>${l.title}</h1>`;
+        
+        // Рендер чипсов (плюшка)
+        html += `<div style="margin-bottom: 20px;">${l.chips.map(c => `<span class="fact-chip">${c}</span>`).join('')}</div>`;
+        
+        html += `<p>${l.content}</p>`;
         if (l.digImage) html += `<div class="dig-container" id="digZone"><img src="${l.digImage}" style="width:100%"><canvas id="digCanvas" style="position:absolute;top:0;left:0;"></canvas></div>`;
         if (l.slider) html += `<div class="comparison-slider" onmousemove="moveSlider(event)"><img src="${l.slider.before}"><div class="img-after"><img src="${l.slider.after}"></div></div>`;
-        html += `<div class="map-container">${l.mapPoints.map(p => `<div class="map-marker" style="left:${p.x}; top:${p.y};" data-title="${p.title}"></div>`).join('')}</div>`;
-        html += `<div class="test-box"><h3>📝 ტესტი</h3>${l.test.map((t, i) => `<p>${t.q}</p>${t.a.map((ans, ai) => `<label><input type="radio" name="q${i}" value="${ai}"> ${ans}</label><br>`).join('')}`).join('')}<button class="btn-action" onclick="checkAutopilotTest(${id})">შემოწმება</button></div>`;
-        html += `<button id="nextBtn" class="btn-next-step" onclick="loadLecture(${id + 1})">შემდეგი ლექცია 🔓</button>`;
+        
+        html += `<div class="test-box"><h3>📝 ტესტი</h3>${l.test.map((t, i) => `<p>${t.q}</p>${t.a.map((ans, ai) => `<label><input type="radio" name="q${i}" value="${ai}"> ${ans}</label><br>`).join('')}`).join('')}<button class="btn-action" onclick="checkTest(${id})">შემოწმება</button></div>`;
+        html += `<button id="nextBtn" class="btn-next-step" style="display:none;" onclick="loadLecture(${id + 1})">შემდეგი ლექცია 🔓</button>`;
+        
         display.innerHTML = html;
         renderSidebar();
         if (l.digImage) initScratch();
     }
 
-    function activateCourse() {
-        if (document.getElementById('masterKeyInput').value === MASTER_KEY) {
-            localStorage.setItem('timeriot_auth', 'true');
-            localStorage.setItem('timeriot_device', getDeviceID());
-            alert('გააქტიურდა!');
-            loadLecture(currentId);
-        } else { alert('არასწორი კოდი!'); }
-    }
-
-    function checkAutopilotTest(id) {
+    function checkTest(id) {
         const l = data[id];
-        let score = 0;
+        let correct = true;
         l.test.forEach((t, i) => {
             const sel = document.querySelector(`input[name="q${i}"]:checked`);
-            if (sel && parseInt(sel.value) === t.c) score++;
+            if (!sel || parseInt(sel.value) !== t.c) correct = false;
         });
-        if (score === l.test.length) {
+
+        if (correct) {
             if (!userProgress.includes(id)) { userProgress.push(id); localStorage.setItem('timeriot_completed', JSON.stringify(userProgress)); }
-            updateMasterProgress(); renderSidebar(); document.getElementById('nextBtn').style.display = 'block';
+            updateMasterProgress(); renderSidebar();
+            document.getElementById('nextBtn').style.display = 'block';
+            alert('სწორია!');
         } else { alert('სცადე თავიდან'); }
     }
 
@@ -203,47 +146,19 @@
         document.getElementById('globalStats').innerText = `პროგრესი: ${userProgress.length}/117`;
     }
 
-    function updateReadProgress() {
-        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-        document.getElementById("progressBar").style.width = (winScroll / height) * 100 + "%";
-    }
-
-    function dateTrainer() {
-        const all = Object.values(data).flatMap(l => l.dates);
-        const random = all[Math.floor(Math.random() * all.length)].split(' - ');
-        document.getElementById('tDate').innerText = random[0];
-        document.getElementById('tAnswer').innerText = random[1];
-        document.getElementById('tAnswer').style.display = 'none';
-        document.getElementById('tBtnShow').style.display = 'inline-block';
-        document.getElementById('tBtnNext').style.display = 'none';
-        document.getElementById('tModal').style.display = 'block';
-        document.getElementById('tOverlay').style.display = 'block';
-    }
-
-    function showTrainerAnswer() { document.getElementById('tAnswer').style.display = 'block'; document.getElementById('tBtnShow').style.display = 'none'; document.getElementById('tBtnNext').style.display = 'inline-block'; }
-    function closeTrainer() { document.getElementById('tModal').style.display = 'none'; document.getElementById('tOverlay').style.display = 'none'; }
-    function focusMap(x, y) {
-        const markers = document.querySelectorAll('.map-marker');
-        markers.forEach(m => {
-            if (m.style.left === x+'%' && m.style.top === y+'%') {
-                m.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                m.classList.add('highlight');
-                setTimeout(() => m.classList.remove('highlight'), 3000);
-            }
-        });
-    }
     function moveSlider(e) {
         const slider = e.currentTarget; const after = slider.querySelector('.img-after');
         const rect = slider.getBoundingClientRect(); let x = e.pageX - rect.left;
         if (x < 0) x = 0; if (x > rect.width) x = rect.width;
         after.style.width = x + "px";
     }
+
     function toggleMusic() { 
         const m = document.getElementById('bg-music'); const b = document.getElementById('music-btn');
         if (m.paused) { m.play(); b.innerText = "გამორთვა"; } else { m.pause(); b.innerText = "ჩართვა"; }
     }
     function toggleSoftMode() { document.body.classList.toggle('soft-mode'); }
+
     function initScratch() {
         const canvas = document.getElementById('digCanvas'); const ctx = canvas.getContext('2d'); const zone = document.getElementById('digZone');
         if(!canvas) return;
