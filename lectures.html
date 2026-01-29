@@ -21,25 +21,32 @@
         .btn-action { background: none; border: 2px solid var(--red); color: var(--red); padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; transition: 0.3s; font-family: 'Fira GO'; }
         .btn-action:hover { background: var(--red); color: white; }
 
+        /* ახალი: გენეალოგიური ხე */
+        .family-tree { background: #111; padding: 20px; border-radius: 15px; border: 1px solid #333; margin: 20px 0; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .tree-node { background: var(--card); border: 2px solid var(--gold); padding: 10px; border-radius: 8px; text-align: center; font-size: 13px; min-width: 100px; position: relative; }
+        .tree-node::after { content: '↓'; position: absolute; bottom: -20px; left: 50%; color: var(--gold); display: none; }
+        .tree-node.has-child::after { display: block; }
+
+        /* ახალი: გეო-ლინკი */
+        .geo-link { color: var(--red); border-bottom: 1px dashed var(--red); cursor: pointer; font-weight: bold; }
+        .geo-link:hover { background: rgba(255, 77, 77, 0.1); }
+
         .lecture-card { background: var(--card); padding: 20px; border-radius: 12px; border: 1px solid #333; margin-bottom: 15px; cursor: pointer; transition: 0.3s; position: relative; }
         .lecture-card.locked::after { content: '🔒'; position: absolute; right: 15px; top: 25px; opacity: 0.5; }
         .lecture-card.active { border-left: 5px solid var(--red); background: #252525; }
 
         .main-content { flex: 1; min-width: 300px; background: var(--card); border-radius: 20px; padding: 40px; border: 1px solid #333; position: relative; }
 
-        /* Эффекты пульсации и свечения */
         @keyframes pulse-red { 0% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.7); } 70% { transform: translate(-50%, -50%) scale(1.2); box-shadow: 0 0 0 10px rgba(255, 77, 77, 0); } 100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 0 rgba(255, 77, 77, 0); } }
         @keyframes gold-glow { 0% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.2); } 50% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); } 100% { box-shadow: 0 0 5px rgba(255, 215, 0, 0.2); } }
 
-        .map-container { background: #222; border: 1px solid #444; border-radius: 15px; height: 250px; margin: 25px 0; position: relative; overflow: hidden; }
-        .map-marker { position: absolute; width: 12px; height: 12px; background: var(--red); border: 2px solid white; border-radius: 50%; animation: pulse-red 2s infinite; transform: translate(-50%, -50%); cursor: pointer; }
-        .map-marker:hover::after { content: attr(data-title); position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); background: var(--red); color: white; padding: 5px 10px; border-radius: 5px; font-size: 12px; white-space: nowrap; z-index: 20; }
+        .map-container { background: #222; border: 1px solid #444; border-radius: 15px; height: 250px; margin: 25px 0; position: relative; overflow: hidden; transition: 0.5s; }
+        .map-marker { position: absolute; width: 14px; height: 14px; background: var(--red); border: 2px solid white; border-radius: 50%; animation: pulse-red 2s infinite; transform: translate(-50%, -50%); cursor: pointer; z-index: 5; }
+        .map-marker.highlight { transform: translate(-50%, -50%) scale(2); z-index: 10; }
 
-        /* Слайдер и Раскопки */
         .comparison-slider { position: relative; width: 100%; height: 350px; overflow: hidden; border-radius: 15px; margin: 20px 0; border: 2px solid #333; cursor: ew-resize; }
         .comparison-slider img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
         .img-after { position: absolute; top: 0; left: 0; height: 100%; width: 50%; border-right: 3px solid var(--red); overflow: hidden; z-index: 2; }
-        .img-after img { width: 100%; height: 100%; object-fit: cover; }
         
         .dig-container { position: relative; width: 100%; height: 300px; margin: 20px 0; border-radius: 15px; overflow: hidden; border: 2px solid #444; background: #000; }
         .dig-canvas { position: absolute; top: 0; left: 0; z-index: 5; }
@@ -70,6 +77,11 @@
             <span style="font-size: 14px; color: #888;">🎧 ფონი მეცადინეობისთვის</span>
             <button id="music-btn" class="btn-action" onclick="toggleMusic()">ჩართვა</button>
             <audio id="bg-music" loop><source src="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" type="audio/mpeg"></audio>
+        </div>
+
+        <div class="sidebar-box" style="border-color: var(--gold);">
+            <span style="font-size: 14px; color: var(--gold);">⚡ სწრაფი გამეორება</span>
+            <button class="btn-action" style="border-color: var(--gold); color: var(--gold);" onclick="dateTrainer()">დაწყება</button>
         </div>
 
         <div class="lecture-card active" id="card1" onclick="loadLecture(1)">
@@ -103,12 +115,19 @@
     const data = {
         1: {
             title: "ქვისა და ბრინჯაოს ხანა",
-            content: "საქართველოს ტერიტორიაზე ადამიანის ცხოვრების კვალი უძველესი დროიდან დასტურდება. დმანისში აღმოჩენილი ჰომინიდების ნაშთები (მზია და ზეზვა) 1.8 მილიონი წლით თარიღდება. ქვემოთ შეგიძლია თავად 'გათხარო' არტეფაქტი.",
+            // ტექსტში დავამატე geo-link ფუნქცია
+            content: "საქართველოს ტერიტორიაზე ადამიანის ცხოვრების კვალი უძველესი დროიდან დასტურდება. <span class='geo-link' onclick='focusMap(55, 45)'>დმანისში</span> აღმოჩენილი ჰომინიდების ნაშთები (მზია და ზეზვა) 1.8 მილიონი წლით თარიღდება. ქვემოთ შეგიძლია თავად 'გათხარო' არტეფაქტი.",
             digImage: "https://i.imgur.com/8Y4e3pD.png", 
             timeline: [
                 { date: "1.8 მლნ წელი", desc: "დმანისელი ჰომინიდები" },
                 { date: "ძვ.წ. VI-IV ათასწ.", desc: "ნეოლითური რევოლუცია" },
                 { date: "ძვ.წ. IV-III ათასწ.", desc: "ბრინჯაოს ხანის დასაწყისი" }
+            ],
+            // ახალი: გენეალოგია
+            tree: [
+                { name: "ავსტრალოპითეკი", child: true },
+                { name: "ჰომო ერექტუსი (დმანისი)", child: true },
+                { name: "ჰომო საპიენსი", child: false }
             ],
             persons: [
                 { name: "ზეზვა", bio: "დმანისში აღმოჩენილი მამრი ჰომინიდი." },
@@ -129,11 +148,16 @@
         },
         2: {
             title: "შუმერი და ბაბილონი",
-            content: "მესოპოტამიაში შუმერებმა შექმნეს პირველი ლურსმული დამწერლობა. ნახე ბაბილონის რეკონსტრუქცია სლაიდერის გამოყენებით.",
+            content: "მესოპოტამიაში შუმერებმა შექმნეს პირველი ლურსმული დამწერლობა. ნახე <span class='geo-link' onclick='focusMap(60, 70)'>ბაბილონის</span> რეკონსტრუქცია სლაიდერის გამოყენებით.",
             slider: {
                 before: "https://i.imgur.com/xO4X9Q3.jpg", 
                 after: "https://i.imgur.com/vHqY7R7.jpg"
             },
+            tree: [
+                { name: "შუმერები", child: true },
+                { name: "აქადელები", child: true },
+                { name: "ბაბილონელები", child: false }
+            ],
             timeline: [
                 { date: "ძვ.წ. IV ათასწ.", desc: "შუმერული ცივილიზაცია" },
                 { date: "ძვ.წ. XVIII ს.", desc: "ხამურაბის მმართველობა" },
@@ -158,6 +182,22 @@
         }
     };
 
+    function focusMap(x, y) {
+        const markers = document.querySelectorAll('.map-marker');
+        markers.forEach(m => {
+            if (m.style.left === x+'%' && m.style.top === y+'%') {
+                m.classList.add('highlight');
+                setTimeout(() => m.classList.remove('highlight'), 2000);
+            }
+        });
+    }
+
+    function dateTrainer() {
+        const allDates = Object.values(data).flatMap(l => l.dates);
+        const randomDate = allDates[Math.floor(Math.random() * allDates.length)];
+        alert("გაიხსენე მოვლენა: \n\n" + randomDate.split(' - ')[0] + "\n\n(პასუხი: " + randomDate.split(' - ')[1] + ")");
+    }
+
     function loadLecture(id) {
         currentLectureId = id;
         const display = document.getElementById('display');
@@ -177,6 +217,12 @@
                 </div>
                 <p>${l.content}</p>`;
 
+            if (l.tree) {
+                html += `<h4>👑 მემკვიდრეობა / იერარქია:</h4><div class="family-tree">
+                    ${l.tree.map(node => `<div class="tree-node ${node.child ? 'has-child' : ''}">${node.name}</div>`).join('')}
+                </div>`;
+            }
+
             if (l.digImage) {
                 html += `<h4 style="color:var(--gold)">⛏️ გათხარე არტეფაქტი:</h4><div class="dig-container" id="digZone"><img src="${l.digImage}" style="width:100%;height:100%;object-fit:contain;"><canvas id="digCanvas" class="dig-canvas"></canvas></div>`;
             }
@@ -186,7 +232,7 @@
             }
 
             html += `
-                <h4 style="color:#888;">📍 ინტერაქტიული რუკა:</h4>
+                <h4 style="color:#888;">📍 ინტერაქტიული რუკა (დააკლიკე ტექსტში წითელ სიტყვებს):</h4>
                 <div class="map-container">${l.mapPoints.map(p => `<div class="map-marker" style="left:${p.x}; top:${p.y};" data-title="${p.title}"></div>`).join('')}</div>
                 <div class="gold-card"><h3>🏆 მთავარი ფაქტი</h3><p>${l.goldFact}</p></div>
                 <a href="${l.file}" style="color:var(--red); border:2px solid var(--red); padding:10px; text-decoration:none; border-radius:8px; display:inline-block;" download>📥 ჩამოტვირთვა</a>
@@ -197,7 +243,6 @@
         }
     }
 
-    // Вспомогательные функции (Музыка, Прогресс, Словарь и т.д.) - Всё сохранено!
     function updateProgress() { const winScroll = document.body.scrollTop || document.documentElement.scrollTop; const height = document.documentElement.scrollHeight - document.documentElement.clientHeight; document.getElementById("progressBar").style.width = (winScroll / height) * 100 + "%"; }
     function toggleMusic() { const m = document.getElementById('bg-music'); const b = document.getElementById('music-btn'); if (!isPlaying) { m.play(); b.innerText = "გამორთვა"; } else { m.pause(); b.innerText = "ჩართვა"; } isPlaying = !isPlaying; }
     function toggleSoftMode() { document.body.classList.toggle('soft-mode'); }
@@ -214,6 +259,7 @@
 
     function initScratch() {
         const canvas = document.getElementById('digCanvas'); const ctx = canvas.getContext('2d'); const zone = document.getElementById('digZone');
+        if(!canvas) return;
         canvas.width = zone.offsetWidth; canvas.height = zone.offsetHeight;
         ctx.fillStyle = "#5c4033"; ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.fillStyle = "white"; ctx.font = "20px Fira GO"; ctx.textAlign = "center"; ctx.fillText("გათხარე აქ", canvas.width/2, canvas.height/2);
