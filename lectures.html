@@ -3,18 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TimeRiot | 119 ლექცია & ბლოკნოტი</title>
+    <title>TimeRiot | Ultimate Edition</title>
     <link href="https://fonts.googleapis.com/css2?family=Fira+GO:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root { --red: #ff4d4d; --bg: #0d0d0d; --card: #1a1a1a; --gold: #ffd700; --text: #ffffff; --accent: #2ecc71; }
-        body.soft-mode { --bg: #0a0a09; --card: #141412; --text: #d1cdc0; --red: #ff5e5e; --gold: #ffcc00; }
+        :root { --red: #ff4d4d; --bg: #0d0d0d; --card: #1a1a1a; --gold: #ffd700; --text: #ffffff; }
+        body.soft-mode { --bg: #0a0a09; --card: #141412; --text: #d1cdc0; --red: #ff5e5e; }
         
-        body { font-family: 'Fira GO', sans-serif; background: var(--bg); color: var(--text); margin: 0; transition: 0.3s; }
+        body { font-family: 'Fira GO', sans-serif; background: var(--bg); color: var(--text); margin: 0; transition: 0.3s; overflow-x: hidden; }
         
+        /* Прогресс и Навигация */
         .master-progress { position: fixed; top: 0; left: 0; width: 100%; height: 6px; background: #222; z-index: 2000; }
         #masterProgressBar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--red), var(--gold)); transition: 1s; box-shadow: 0 0 10px var(--gold); }
-        .read-progress { position: fixed; top: 6px; left: 0; width: 0%; height: 2px; background: var(--red); z-index: 1000; }
-
         .navbar { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: var(--card); border-bottom: 2px solid #333; margin-top: 6px; }
         .logo { font-size: 24px; font-weight: bold; color: var(--text); text-decoration: none; }
         .logo span { color: var(--red); }
@@ -26,31 +25,46 @@
         
         .search-box { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #444; background: #000; color: white; margin-bottom: 15px; box-sizing: border-box; font-family: 'Fira GO'; }
 
+        /* Карточки лекций */
         .lecture-card { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid #333; margin-bottom: 10px; cursor: pointer; transition: 0.3s; position: relative; }
-        .lecture-card.completed { border-left: 5px solid var(--accent); }
+        .lecture-card.completed { border-left: 5px solid #2ecc71; }
+        .lecture-card.completed::after { content: '✅'; position: absolute; right: 10px; top: 15px; font-size: 12px; }
         .lecture-card.active { border-left: 5px solid var(--red); background: #252525; }
-        .lecture-card h4 { margin: 0; font-size: 14px; }
+        .lecture-card.locked { opacity: 0.5; filter: grayscale(0.8); cursor: not-allowed; }
 
         .main-content { flex: 1; min-width: 300px; background: var(--card); border-radius: 20px; padding: 40px; border: 1px solid #333; position: relative; }
 
-        /* Блокнот */
-        .notebook-section { margin-top: 20px; text-align: left; }
-        .notebook-item { font-size: 12px; color: var(--gold); margin-bottom: 5px; cursor: pointer; text-decoration: underline; }
+        /* Интерактив */
+        .family-tree { background: #111; padding: 20px; border-radius: 15px; border: 1px solid #333; margin: 20px 0; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .tree-node { background: var(--card); border: 2px solid var(--gold); padding: 10px; border-radius: 8px; text-align: center; font-size: 13px; min-width: 100px; position: relative; }
+        .tree-node.has-child::after { content: '↓'; position: absolute; bottom: -20px; left: 50%; color: var(--gold); transform: translateX(-50%); }
+        .geo-link { color: var(--red); border-bottom: 1px dashed var(--red); cursor: pointer; font-weight: bold; }
+        .map-container { background: #222; border: 1px solid #444; border-radius: 15px; height: 250px; margin: 25px 0; position: relative; overflow: hidden; }
+        .map-marker { position: absolute; width: 14px; height: 14px; background: var(--red); border: 2px solid white; border-radius: 50%; animation: pulse-red 2s infinite; transform: translate(-50%, -50%); cursor: pointer; }
+        .map-marker.highlight { transform: translate(-50%, -50%) scale(2.5); z-index: 100; background: var(--gold); }
+        .dig-container { position: relative; width: 100%; height: 300px; margin: 20px 0; border-radius: 15px; overflow: hidden; border: 2px solid #444; background: #000; }
+        .comparison-slider { position: relative; width: 100%; height: 350px; overflow: hidden; border-radius: 15px; border: 2px solid #333; cursor: ew-resize; margin: 20px 0; }
+        .img-after { position: absolute; top: 0; left: 0; height: 100%; width: 50%; border-right: 3px solid var(--red); overflow: hidden; z-index: 2; }
+        .img-after img { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; }
 
+        /* Кнопки и формы */
         .btn-action { background: none; border: 2px solid var(--red); color: var(--red); padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; transition: 0.3s; font-family: 'Fira GO'; }
         .btn-action:hover { background: var(--red); color: white; }
-        .btn-bookmark { border-color: var(--gold); color: var(--gold); margin-bottom: 20px; width: auto; padding: 5px 15px; }
+        .btn-bookmark { border-color: var(--gold); color: var(--gold); width: auto; margin-bottom: 20px; }
+        .test-box { margin-top: 40px; padding: 30px; background: #111; border-radius: 15px; border-top: 3px solid var(--red); }
+        .btn-next-step { background: var(--gold); color: #000; border: none; padding: 15px; border-radius: 12px; font-weight: bold; width: 100%; margin-top: 20px; cursor: pointer; display: none; }
+        
+        /* Тренажер и Оплата */
+        .trainer-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 2999; backdrop-filter: blur(5px); }
+        .trainer-modal { display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); background: #1a1a1a; border: 2px solid var(--gold); padding: 40px; border-radius: 25px; z-index: 3000; text-align: center; width: 320px; }
+        .paywall-box { text-align: center; padding: 40px; border: 2px solid var(--gold); border-radius: 20px; background: rgba(255, 215, 0, 0.05); }
 
-        /* Элементы контента */
-        .dig-container { position: relative; width: 100%; height: 300px; margin: 20px 0; border-radius: 15px; overflow: hidden; border: 2px solid #444; }
-        .comparison-slider { position: relative; width: 100%; height: 350px; overflow: hidden; border-radius: 15px; border: 2px solid #333; cursor: ew-resize; }
-        .img-after { position: absolute; top: 0; left: 0; height: 100%; width: 50%; border-right: 3px solid var(--red); overflow: hidden; z-index: 2; }
+        @keyframes pulse-red { 0% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 0 rgba(255, 77, 77, 0.7); } 70% { transform: translate(-50%, -50%) scale(1.2); box-shadow: 0 0 0 10px rgba(255, 77, 77, 0); } 100% { transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 0 0 rgba(255, 77, 77, 0); } }
     </style>
 </head>
-<body onscroll="updateReadProgress()" onload="initApp()">
+<body onload="initApp()">
 
 <div class="master-progress"><div id="masterProgressBar"></div></div>
-<div class="read-progress" id="progressBar"></div>
 
 <div class="navbar">
     <a href="index.html" class="logo">Time<span>Riot</span></a>
@@ -65,13 +79,11 @@
     <div class="sidebar">
         <input type="text" id="lectureSearch" class="search-box" placeholder="ძებნა..." oninput="filterLectures()">
         
-        <div id="lectureList" style="max-height: 400px; overflow-y: auto;"></div>
+        <div id="lectureList" style="max-height: 450px; overflow-y: auto; padding-right: 5px;"></div>
 
         <div class="sidebar-box" style="margin-top: 20px; border-color: var(--gold);">
-            <h4 style="color:var(--gold); margin-top:0;">📓 ჩემი ბლოკნოტი</h4>
-            <div id="notebookList" class="notebook-section">
-                <span style="color:#666; font-size: 11px;">ჯერ არაფერია შენახული...</span>
-            </div>
+            <h4 style="color:var(--gold); margin:0 0 10px 0;">📓 ბლოკნოტი</h4>
+            <div id="notebookList" style="text-align: left; font-size: 12px;"></div>
         </div>
 
         <div class="sidebar-box">
@@ -88,21 +100,43 @@
 
 <div class="trainer-overlay" id="tOverlay" onclick="closeTrainer()"></div>
 <div class="trainer-modal" id="tModal">
-    <h3 id="tDate" style="font-size: 32px; color: #fff;"></h3>
-    <p id="tAnswer" style="display:none; color:var(--gold); font-size: 18px; font-weight: bold;"></p>
+    <h1 id="tDate" style="font-size: 32px; color: #fff;"></h1>
+    <p id="tAnswer" style="display:none; color:var(--gold); font-size: 18px; font-weight: bold; margin-bottom: 20px;"></p>
     <button class="btn-action" id="tBtnShow" onclick="showTrainerAnswer()">ნახვა</button>
     <button class="btn-action" style="border-color:#555;" onclick="closeTrainer()">დახურვა</button>
 </div>
 
 <script>
+    const MASTER_KEY = "RIOT-117-GOLD"; 
+
     const data = {
-        1: { title: "ქვისა და ბრინჯაოს ხანა", desc: "დმანისის აღმოჩენები", content: "საქართველოს ტერიტორიაზე ადამიანის ცხოვრების კვალი უძველესი დროიდან დასტურდება. დმანისში აღმოჩენილი ჰომინიდები 1.8 მილიონი წლით თარიღდება.", digImage: "https://i.imgur.com/8Y4e3pD.png", dates: ["1.8 მლნ წელი - დმანისი"], test: [{ q: "რამდენი წლისაა დმანისის ნაშთები?", a: ["1.2 მლნ", "1.5 მლნ", "1.8 მლნ"], c: 2 }] },
-        2: { title: "შუმერი და ბაბილონი", desc: "მესოპოტამია", content: "მესოპოტამიაში შუმერებმა შექმნეს პირველი ლურსმული დამწერლობა. ბაბილონი გახდა ცენტრი ხამურაბის დროს.", slider: { before: "https://i.imgur.com/xO4X9Q3.jpg", after: "https://i.imgur.com/vHqY7R7.jpg" }, dates: ["ძვ.წ. XVIII ს. - ხამურაბი"], test: [{ q: "რა დამწერლობა შექმნეს შუმერებმა?", a: ["ანბანი", "ლურსმული", "იეროგლიფები"], c: 1 }] }
+        1: {
+            title: "ქვისა და ბრინჯაოს ხანა",
+            desc: "დმანისის აღმოჩენები",
+            content: "საქართველოს ტერიტორიაზე ადამიანის ცხოვრების კვალი უძველესი დროიდან დასტურდება. <span class='geo-link' onclick='focusMap(55, 45)'>დმანისში</span> აღმოჩენილი ჰომინიდები 1.8 მილიონი წლით თარიღდება.",
+            digImage: "https://i.imgur.com/8Y4e3pD.png",
+            tree: [{ name: "ავსტრალოპითეკი", child: true }, { name: "ჰომო ერექტუსი (დმანისი)", child: true }, { name: "ჰომო საპიენსი", child: false }],
+            mapPoints: [{ x: '55%', y: '45%', title: 'დმანისი' }, { x: '50%', y: '40%', title: 'კავკასია' }],
+            dates: ["1.8 მლნ წელი - დმანისი"],
+            test: [{ q: "რამდენი წლისაა დმანისის ნაშთები?", a: ["1.2 მლნ", "1.5 მლნ", "1.8 მლნ"], c: 2 }]
+        },
+        2: {
+            title: "შუმერი და ბაბილონი",
+            desc: "მესოპოტამია",
+            content: "შუმერებმა შექმნეს პირველი ლურსმული დამწერლობა. ნახე <span class='geo-link' onclick='focusMap(60, 70)'>ბაბილონის</span> რეკონსტრუქცია.",
+            slider: { before: "https://i.imgur.com/xO4X9Q3.jpg", after: "https://i.imgur.com/vHqY7R7.jpg" },
+            tree: [{ name: "შუმერები", child: true }, { name: "აქადელები", child: true }, { name: "ბაბილონელები", child: false }],
+            mapPoints: [{ x: '60%', y: '70%', title: 'ბაბილონი' }],
+            dates: ["ძვ.წ. XVIII ს. - ხამურაბი"],
+            test: [{ q: "რა დამწერლობა შექმნეს შუმერებმა?", a: ["ანბანი", "ლურსმული", "იეროგლიფები"], c: 1 }]
+        }
     };
 
     let userProgress = JSON.parse(localStorage.getItem('timeriot_completed')) || [];
     let bookmarks = JSON.parse(localStorage.getItem('timeriot_bookmarks')) || [];
     let currentId = 1;
+
+    function getDeviceID() { return btoa(navigator.userAgent + window.screen.width + window.screen.height); }
 
     function initApp() { renderSidebar(); renderNotebook(); loadLecture(1); updateMasterProgress(); }
 
@@ -111,54 +145,44 @@
         list.innerHTML = '';
         for (let i = 1; i <= 119; i++) {
             const lecture = data[i] || { title: `ლექცია ${i}`, desc: "მალე..." };
-            list.innerHTML += `<div class="lecture-card ${i == currentId ? 'active' : ''} ${userProgress.includes(i) ? 'completed' : ''}" data-title="${lecture.title.toLowerCase()}" onclick="loadLecture(${i})"><h4>${i}. ${lecture.title}</h4></div>`;
+            const isCompleted = userProgress.includes(i);
+            const isLocked = i > 1 && !localStorage.getItem('timeriot_auth');
+            list.innerHTML += `<div class="lecture-card ${i == currentId ? 'active' : ''} ${isCompleted ? 'completed' : ''} ${isLocked ? 'locked' : ''}" data-title="${lecture.title.toLowerCase()}" onclick="loadLecture(${i})"><h4>${i}. ${lecture.title}</h4></div>`;
         }
     }
 
     function loadLecture(id) {
+        const display = document.getElementById('display');
+        const deviceID = getDeviceID();
+        
+        if (id > 1 && (!localStorage.getItem('timeriot_auth') || localStorage.getItem('timeriot_device') !== deviceID)) {
+            display.innerHTML = `<div class="paywall-box"><h1>🔒</h1><h2>კურსი დაბლოკილია</h2><p>შეიყვანეთ კოდი სრული წვდომისთვის:</p><input type="text" id="masterKeyInput" style="padding:12px; border-radius:10px; border:2px solid var(--gold); background:#000; color:#fff; text-align:center; width:220px; margin:20px 0;"><br><button class="btn-action" style="width:200px; background:var(--gold); color:#000;" onclick="activateCourse()">აქტივაცია</button></div>`;
+            return;
+        }
+
         currentId = id;
         const l = data[id];
-        const display = document.getElementById('display');
-        if (!l) {
-            display.innerHTML = `<h1>ლექცია ${id}</h1><p>მასალა მზადდება...</p>`;
-        } else {
-            let html = `<button class="btn-action btn-bookmark" onclick="toggleBookmark(${id})">${bookmarks.includes(id) ? '🔖 შენახულია' : '📌 ბლოკნოტში დამატება'}</button>`;
-            html += `<h1>${l.title}</h1><p>${l.content}</p>`;
-            if (l.digImage) html += `<div class="dig-container" id="digZone"><img src="${l.digImage}" style="width:100%"><canvas id="digCanvas" style="position:absolute;top:0;left:0;"></canvas></div>`;
-            if (l.slider) html += `<div class="comparison-slider" onmousemove="moveSlider(event)"><img src="${l.slider.before}"><div class="img-after"><img src="${l.slider.after}"></div></div>`;
-            html += `<div class="test-box"><h3>📝 ტესტი</h3>${l.test.map((t, i) => `<p>${t.q}</p>${t.a.map((ans, ai) => `<label><input type="radio" name="q${i}" value="${ai}"> ${ans}</label><br>`).join('')}`).join('')}<button class="btn-action" onclick="checkTest(${id})">შემოწმება</button></div>`;
-            display.innerHTML = html;
-            if (l.digImage) initScratch();
-        }
-        renderSidebar();
-    }
+        if (!l) { display.innerHTML = `<h1>ლექცია ${id}</h1><p>მასალა მზადდება...</p>`; return; }
 
-    function toggleBookmark(id) {
-        if (bookmarks.includes(id)) bookmarks = bookmarks.filter(b => b !== id);
-        else bookmarks.push(id);
-        localStorage.setItem('timeriot_bookmarks', JSON.stringify(bookmarks));
-        renderNotebook();
-        loadLecture(id);
-    }
-
-    function renderNotebook() {
-        const list = document.getElementById('notebookList');
-        if (bookmarks.length === 0) { list.innerHTML = '<span style="color:#666; font-size: 11px;">ცარიელია...</span>'; return; }
-        list.innerHTML = bookmarks.map(id => `<div class="notebook-item" onclick="loadLecture(${id})">#${id} ${data[id].title}</div>`).join('');
-    }
-
-    function updateMasterProgress() {
-        const count = userProgress.length;
-        const percent = (count / 119) * 100;
-        document.getElementById('masterProgressBar').style.width = percent + '%';
-        document.getElementById('globalStats').innerText = `${count}/119`;
+        let html = `<button class="btn-action btn-bookmark" onclick="toggleBookmark(${id})">${bookmarks.includes(id) ? '🔖 შენახულია' : '📌 ბლოკნოტში'}</button><h1>${l.title}</h1><p>${l.content}</p>`;
+        if (l.tree) html += `<h4>👑 იერარქია:</h4><div class="family-tree">${l.tree.map(node => `<div class="tree-node ${node.child ? 'has-child' : ''}">${node.name}</div>`).join('')}</div>`;
+        if (l.digImage) html += `<div class="dig-container" id="digZone"><img src="${l.digImage}" style="width:100%"><canvas id="digCanvas" style="position:absolute;top:0;left:0;"></canvas></div>`;
+        if (l.slider) html += `<div class="comparison-slider" onmousemove="moveSlider(event)"><img src="${l.slider.before}"><div class="img-after"><img src="${l.slider.after}"></div></div>`;
+        html += `<div class="map-container">${l.mapPoints ? l.mapPoints.map(p => `<div class="map-marker" style="left:${p.x}; top:${p.y};" data-title="${p.title}"></div>`).join('') : ''}</div>`;
+        html += `<div class="test-box"><h3>📝 ტესტი</h3>${l.test.map((t, i) => `<p>${t.q}</p>${t.a.map((ans, ai) => `<label><input type="radio" name="q${i}" value="${ai}"> ${ans}</label><br>`).join('')}`).join('')}<button class="btn-action" onclick="checkTest(${id})">შემოწმება</button></div>`;
+        html += `<button id="nextBtn" class="btn-next-step" onclick="loadLecture(${id + 1})">შემდეგი ლექცია 🔓</button>`;
         
-        let rank = "ნეოფიტი";
-        if (count > 5) rank = "მკვლევარი";
-        if (count > 20) rank = "არქეოლოგი";
-        if (count > 50) rank = "ისტორიკოსი";
-        if (count > 100) rank = "დროის მაგისტრი";
-        document.getElementById('userRank').innerText = `რანგი: ${rank}`;
+        display.innerHTML = html;
+        renderSidebar();
+        if (l.digImage) initScratch();
+    }
+
+    function activateCourse() {
+        if (document.getElementById('masterKeyInput').value === MASTER_KEY) {
+            localStorage.setItem('timeriot_auth', 'true');
+            localStorage.setItem('timeriot_device', getDeviceID());
+            alert('კურსი გააქტიურდა!'); loadLecture(currentId);
+        } else alert('არასწორი კოდი!');
     }
 
     function checkTest(id) {
@@ -170,8 +194,30 @@
         });
         if (correct) {
             if (!userProgress.includes(id)) { userProgress.push(id); localStorage.setItem('timeriot_completed', JSON.stringify(userProgress)); }
-            updateMasterProgress(); renderSidebar(); alert('სწორია!');
+            updateMasterProgress(); renderSidebar(); document.getElementById('nextBtn').style.display = 'block'; alert('სწორია!');
         } else alert('სცადე თავიდან');
+    }
+
+    function toggleBookmark(id) {
+        if (bookmarks.includes(id)) bookmarks = bookmarks.filter(b => b !== id);
+        else bookmarks.push(id);
+        localStorage.setItem('timeriot_bookmarks', JSON.stringify(bookmarks));
+        renderNotebook(); loadLecture(id);
+    }
+
+    function renderNotebook() {
+        const list = document.getElementById('notebookList');
+        if (bookmarks.length === 0) { list.innerHTML = '<span style="color:#666;">ცარიელია...</span>'; return; }
+        list.innerHTML = bookmarks.map(id => `<div style="color:var(--gold); cursor:pointer; margin-bottom:5px; text-decoration:underline;" onclick="loadLecture(${id})">#${id} ${data[id].title}</div>`).join('');
+    }
+
+    function updateMasterProgress() {
+        const count = userProgress.length;
+        document.getElementById('masterProgressBar').style.width = (count / 119 * 100) + '%';
+        document.getElementById('globalStats').innerText = `${count}/119`;
+        let rank = "ნეოფიტი";
+        if (count > 5) rank = "მკვლევარი"; if (count > 20) rank = "არქეოლოგი"; if (count > 100) rank = "დროის მაგისტრი";
+        document.getElementById('userRank').innerText = `რანგი: ${rank}`;
     }
 
     function filterLectures() {
@@ -181,40 +227,46 @@
         });
     }
 
-    function toggleSoftMode() { document.body.classList.toggle('soft-mode'); }
-    function updateReadProgress() {
-        const winScroll = document.body.scrollTop || document.documentElement.scrollTop;
-        const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
-        document.getElementById("progressBar").style.width = (winScroll / height) * 100 + "%";
-    }
     function dateTrainer() {
         const all = Object.values(data).flatMap(l => l.dates);
         const random = all[Math.floor(Math.random() * all.length)].split(' - ');
         document.getElementById('tDate').innerText = random[0];
         document.getElementById('tAnswer').innerText = random[1];
         document.getElementById('tAnswer').style.display = 'none';
+        document.getElementById('tBtnShow').style.display = 'inline-block';
         document.getElementById('tModal').style.display = 'block';
         document.getElementById('tOverlay').style.display = 'block';
     }
-    function showTrainerAnswer() { document.getElementById('tAnswer').style.display = 'block'; }
+
+    function showTrainerAnswer() { document.getElementById('tAnswer').style.display = 'block'; document.getElementById('tBtnShow').style.display = 'none'; }
     function closeTrainer() { document.getElementById('tModal').style.display = 'none'; document.getElementById('tOverlay').style.display = 'none'; }
+    function toggleSoftMode() { document.body.classList.toggle('soft-mode'); }
+    function toggleMusic() { 
+        const m = document.getElementById('bg-music'); 
+        if (m.paused) { m.play(); document.getElementById('music-btn').innerText = "გამორთვა"; } 
+        else { m.pause(); document.getElementById('music-btn').innerText = "🎧 მუსიკა"; }
+    }
     function moveSlider(e) {
         const slider = e.currentTarget; const after = slider.querySelector('.img-after');
         const rect = slider.getBoundingClientRect(); let x = e.pageX - rect.left;
         after.style.width = Math.min(Math.max(x, 0), rect.width) + "px";
     }
-    function toggleMusic() { 
-        const m = document.getElementById('bg-music');
-        if (m.paused) { m.play(); document.getElementById('music-btn').innerText = "გამორთვა"; } 
-        else { m.pause(); document.getElementById('music-btn').innerText = "🎧 მუსიკა"; }
-    }
     function initScratch() {
         const canvas = document.getElementById('digCanvas'); const ctx = canvas.getContext('2d'); const zone = document.getElementById('digZone');
-        canvas.width = zone.offsetWidth; canvas.height = zone.offsetHeight;
+        if(!canvas) return; canvas.width = zone.offsetWidth; canvas.height = zone.offsetHeight;
         ctx.fillStyle = "#5c4033"; ctx.fillRect(0, 0, canvas.width, canvas.height);
         ctx.globalCompositeOperation = 'destination-out';
         canvas.addEventListener('mousemove', (e) => {
             const rect = canvas.getBoundingClientRect(); ctx.beginPath(); ctx.arc(e.clientX - rect.left, e.clientY - rect.top, 30, 0, Math.PI * 2); ctx.fill();
+        });
+    }
+    function focusMap(x, y) {
+        const markers = document.querySelectorAll('.map-marker');
+        markers.forEach(m => {
+            if (m.style.left === x+'%' && m.style.top === y+'%') {
+                m.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                m.classList.add('highlight'); setTimeout(() => m.classList.remove('highlight'), 3000);
+            }
         });
     }
 </script>
