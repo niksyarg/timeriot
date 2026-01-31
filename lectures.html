@@ -11,7 +11,7 @@
         
         body { font-family: 'Fira GO', sans-serif; background: var(--bg); color: var(--text); margin: 0; transition: 0.3s; overflow-x: hidden; }
         
-        /* Глобальный прогресс */
+        /* პროგრესის ხაზები */
         .master-progress { position: fixed; top: 0; left: 0; width: 100%; height: 6px; background: #222; z-index: 2000; }
         #masterProgressBar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--red), var(--gold)); transition: 1s; box-shadow: 0 0 10px var(--gold); }
 
@@ -24,13 +24,11 @@
         .sidebar { width: 300px; }
         .sidebar-box { background: var(--card); border: 1px solid #333; padding: 15px; border-radius: 12px; margin-bottom: 15px; }
         
-        /* Кабинет и Календарь */
-        .user-panel { background: linear-gradient(135deg, #1a1a1a, #222); padding: 20px; border-radius: 15px; border: 1px solid var(--gold); margin-bottom: 25px; }
+        /* კაბინეტი და კალენდარი */
         .exam-countdown { color: var(--red); font-weight: bold; font-size: 18px; margin: 10px 0; }
-
         .search-box { width: 100%; padding: 12px; border-radius: 10px; border: 1px solid #444; background: #000; color: white; margin-bottom: 15px; box-sizing: border-box; font-family: 'Fira GO'; }
 
-        /* Лекции */
+        /* ლექციების ბარათები */
         .lecture-card { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid #333; margin-bottom: 10px; cursor: pointer; transition: 0.3s; position: relative; }
         .lecture-card.completed { border-left: 5px solid var(--green); }
         .lecture-card.active { border-left: 5px solid var(--red); background: #252525; }
@@ -38,18 +36,19 @@
 
         .main-content { flex: 1; min-width: 300px; background: var(--card); border-radius: 20px; padding: 40px; border: 1px solid #333; position: relative; }
 
-        /* Видео и Термины */
-        .video-container { position: relative; padding-bottom: 56.25%; height: 0; overflow: hidden; border-radius: 15px; margin: 20px 0; border: 1px solid #333; }
-        .video-container iframe { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
-        
+        /* მედია და ტერმინები */
+        .audio-player-box { background: #111; padding: 15px; border-radius: 15px; margin-bottom: 25px; border: 1px solid var(--gold); }
         .term-link { color: var(--gold); border-bottom: 1px dotted var(--gold); cursor: help; font-weight: bold; }
-        .glossary-card { background: #000; border-left: 4px solid var(--gold); padding: 10px; margin: 10px 0; display: none; font-size: 13px; }
+        .glossary-card { background: #000; border-left: 4px solid var(--gold); padding: 15px; margin: 15px 0; display: none; font-size: 14px; border-radius: 0 10px 10px 0; line-height: 1.6; }
 
-        /* Кнопки */
+        /* ღილაკები */
         .btn-action { background: none; border: 2px solid var(--red); color: var(--red); padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: bold; width: 100%; margin-top: 10px; transition: 0.3s; font-family: 'Fira GO'; }
         .btn-action:hover { background: var(--red); color: white; }
         
         .test-box { margin-top: 40px; padding: 30px; background: #111; border-radius: 15px; border-top: 3px solid var(--red); }
+        
+        /* ინტერაქტიული ელემენტები */
+        .dig-container { position: relative; width: 100%; height: 300px; margin: 20px 0; border-radius: 15px; overflow: hidden; border: 2px solid #444; }
         .comparison-slider { position: relative; width: 100%; height: 350px; overflow: hidden; border-radius: 15px; border: 2px solid #333; cursor: ew-resize; margin: 20px 0; }
         .img-after { position: absolute; top: 0; left: 0; height: 100%; width: 50%; border-right: 3px solid var(--red); overflow: hidden; z-index: 2; }
         
@@ -79,8 +78,8 @@
             <p id="userNameDisplay" style="font-size:14px; margin:10px 0;">სტუმარი</p>
             <div id="globalStats">პროგრესი: 0/119</div>
             <hr style="border:0; border-top:1px solid #333; margin:10px 0;">
-            <div style="font-size:12px; color:#888;">გამოცდამდე დარჩა:</div>
-            <div class="exam-countdown" id="countdown">124 დღე</div>
+            <div style="font-size:11px; color:#888;">გამოცდამდე დარჩა:</div>
+            <div class="exam-countdown" id="countdown">გამოთვლა...</div>
         </div>
 
         <input type="text" id="lectureSearch" class="search-box" placeholder="ძებნა..." oninput="filterLectures()">
@@ -113,26 +112,34 @@
         1: {
             title: "ქვისა და ბრინჯაოს ხანა",
             desc: "დმანისი და პირველი ევროპელები",
-            video: "https://www.youtube.com/embed/dQw4w9WgXcQ", // Пример видео
+            audio: "lecture1.mp3", // აქ ჩაჯდება შენი აუდიო ფაილი
             content: `საქართველოს ტერიტორია ადამიანის განსახლების ერთ-ერთი უძველესი კერაა. 
                       განსაკუთრებული მნიშვნელობა აქვს <span class="term-link" onclick="toggleTerm(0)">დმანისს</span>, 
                       სადაც აღმოჩენილია 1.8 მილიონი წლის წინანდელი ჰომინიდების ნაშთები. <br><br>
-                      <div id="term-0" class="glossary-card"><b>დმანისი:</b> ადგილი ქვემო ქართლში, სადაც აღმოაჩინეს ევროპაში უძველესი ადამიანების ნაშთები (ზეზვა და მზია).</div>
-                      <b>პალეოლითი:</b> ეს არის ძველი ქვის ხანა, რომელიც იყოფა სამ ნაწილად... <br>
-                      <span class="term-link" onclick="toggleTerm(1)">ნეოლითური რევოლუცია</span> - კაცობრიობის ისტორიაში უმნიშვნელოვანესი გარდატეხა.
-                      <div id="term-1" class="glossary-card"><b>ნეოლითური რევოლუცია:</b> გადასვლა მომპოვებლური მეურნეობიდან (ნადირობა) მწარმოებლურზე (მიწათმოქმედება).</div>`,
+                      
+                      <div id="term-0" class="glossary-card">
+                        <b>დმანისი:</b> არქეოლოგიური ძეგლი ქვემო ქართლში. აქ აღმოჩენილი თავის ქალები (ზეზვა და მზია) ამტკიცებენ, რომ საქართველო ევროპაში პირველი ადამიანების სამშობლოა.
+                      </div>
+
+                      <b>პალეოლითი:</b> ეს არის ძველი ქვის ხანა, რომელიც ყველაზე ხანგრძლივი პერიოდია კაცობრიობის ისტორიაში. <br><br>
+                      
+                      <span class="term-link" onclick="toggleTerm(1)">ნეოლითური რევოლუცია</span> - კაცობრიობის ისტორიაში უმნიშვნელოვანესი გარდატეხა, როდესაც ადამიანი მომთაბარეობიდან ბინადარ ცხოვრებაზე გადავიდა.
+                      
+                      <div id="term-1" class="glossary-card">
+                        <b>ნეოლითური რევოლუცია:</b> გადასვლა მომპოვებლური მეურნეობიდან (ნადირობა, შემგროვებლობა) მწარმოებლურ მეურნეობაზე (მიწათმოქმედება, მეცხოველეობა).
+                      </div>`,
             digImage: "https://i.imgur.com/8Y4e3pD.png",
             mapPoints: [{ x: '55%', y: '45%', title: 'დმანისი' }],
             dates: ["1.8 მლნ წელი - დმანისი", "ძვ.წ. VI ათასწ. - ნეოლითი"],
             test: [
                 { q: "რამდენი წლისაა დმანისის ჰომინიდები?", a: ["1.2 მლნ", "1.5 მლნ", "1.8 მლნ"], c: 2 },
-                { q: "რომელ ეპოქაში დაიწყო მიწათმოქმედება?", a: ["პალეოლითში", "ნეოლითში", "ბრინჯაოს ხანაში"], c: 1 }
+                { q: "რომელ ეპოქაში გადავიდა ადამიანი მწარმოებლურ მეურნეობაზე?", a: ["პალეოლითში", "ნეოლითში", "ბრინჯაოს ხანაში"], c: 1 }
             ]
         },
         2: {
             title: "შუმერი და ბაბილონი",
             desc: "მესოპოტამიის ცივილიზაცია",
-            content: "შუმერებმა შექმნეს პირველი ლურსმული დამწერლობა. ბაბილონი გახდა ცენტრი ხამურაბის დროს.",
+            content: "შუმერებმა შექმნეს პირველი ლურსმული დამწერლობა. ბაბილონი გახდა უმნიშვნელოვანესი ცენტრი ხამურაბის დროს.",
             slider: { before: "https://i.imgur.com/xO4X9Q3.jpg", after: "https://i.imgur.com/vHqY7R7.jpg" },
             dates: ["ძვ.წ. XVIII ს. - ხამურაბი"],
             test: [{ q: "რა დამწერლობა შექმნეს შუმერებმა?", a: ["ანბანი", "ლურსმული", "იეროგლიფები"], c: 1 }]
@@ -148,18 +155,19 @@
         renderSidebar(); 
         loadLecture(1); 
         updateMasterProgress();
-        // Установка даты экзамена (например, 15 июня 2026)
+        
+        // გამოცდის ათვლა
         const examDate = new Date("2026-06-15");
         const today = new Date();
         const diff = Math.ceil((examDate - today) / (1000 * 60 * 60 * 24));
-        document.getElementById('countdown').innerText = diff + " დღე";
+        document.getElementById('countdown').innerText = diff > 0 ? diff + " დღე" : "გამოცდები დაიწყო!";
     }
 
     function renderSidebar() {
         const list = document.getElementById('lectureList');
         list.innerHTML = '';
         for (let i = 1; i <= 119; i++) {
-            const lecture = data[i] || { title: `ლექცია ${i}`, desc: "მალე..." };
+            const lecture = data[i] || { title: `ლექცია ${i}`, desc: "მზადდება..." };
             const isCompleted = userProgress.includes(i);
             const isLocked = i > 1 && !localStorage.getItem('timeriot_auth');
             list.innerHTML += `<div class="lecture-card ${i == currentId ? 'active' : ''} ${isCompleted ? 'completed' : ''} ${isLocked ? 'locked' : ''}" data-title="${lecture.title.toLowerCase()}" onclick="loadLecture(${i})"><h4>${i}. ${lecture.title}</h4><p>${lecture.desc}</p></div>`;
@@ -169,7 +177,7 @@
     function loadLecture(id) {
         const display = document.getElementById('display');
         if (id > 1 && !localStorage.getItem('timeriot_auth')) {
-            display.innerHTML = `<div class="paywall-box"><h1>🔒</h1><h2>კურსი დაბლოკილია</h2><p>შეიყვანეთ კოდი გასახსნელად:</p><input type="text" id="masterKeyInput" style="padding:12px; border-radius:10px; border:2px solid var(--gold); background:#000; color:#fff; text-align:center;"><br><button class="btn-action" style="width:200px; background:var(--gold); color:#000;" onclick="activateCourse()">აქტივაცია</button></div>`;
+            display.innerHTML = `<div class="paywall-box"><h1>🔒</h1><h2>კურსი დაბლოკილია</h2><p>შეიყვანეთ კოდი სრული წვდომისთვის:</p><input type="text" id="masterKeyInput" style="padding:12px; border-radius:10px; border:2px solid var(--gold); background:#000; color:#fff; text-align:center;"><br><button class="btn-action" style="width:200px; background:var(--gold); color:#000;" onclick="activateCourse()">აქტივაცია</button></div>`;
             return;
         }
         currentId = id;
@@ -177,15 +185,26 @@
         if (!l) { display.innerHTML = `<h1>ლექცია ${id}</h1><p>მასალა მზადდება...</p>`; return; }
 
         let html = `<h1>${l.title}</h1>`;
-        if (l.video) html += `<div class="video-container"><iframe src="${l.video}" frameborder="0" allowfullscreen></iframe></div>`;
+        
+        // აუდიო ფლეიერი
+        if (l.audio) {
+            html += `<div class="audio-player-box">
+                        <p style="margin:0 0 10px 0; font-size:13px; color:var(--gold);">🎧 მოუსმინეთ ლექციის ახსნას:</p>
+                        <audio controls style="width:100%;"><source src="${l.audio}" type="audio/mpeg"></audio>
+                     </div>`;
+        }
+
         html += `<p>${l.content}</p>`;
+        
         if (l.digImage) html += `<div class="dig-container" id="digZone"><img src="${l.digImage}" style="width:100%"><canvas id="digCanvas" style="position:absolute;top:0;left:0;"></canvas></div>`;
         if (l.slider) html += `<div class="comparison-slider" onmousemove="moveSlider(event)"><img src="${l.slider.before}"><div class="img-after"><img src="${l.slider.after}"></div></div>`;
-        html += `<div class="test-box"><h3>📝 ტესტი</h3>${l.test.map((t, i) => `<p>${t.q}</p>${t.a.map((ans, ai) => `<label><input type="radio" name="q${i}" value="${ai}"> ${ans}</label><br>`).join('')}`).join('')}<button class="btn-action" onclick="checkTest(${id})">შემოწმება</button></div>`;
+        
+        html += `<div class="test-box"><h3>📝 ტესტი თვითშემოწმებისთვის</h3>${l.test.map((t, i) => `<p><b>${i+1}. ${t.q}</b></p>${t.a.map((ans, ai) => `<label style="display:block; margin-bottom:5px;"><input type="radio" name="q${i}" value="${ai}"> ${ans}</label>`).join('')}`).join('')}<button class="btn-action" onclick="checkTest(${id})">შემოწმება</button></div>`;
         
         display.innerHTML = html;
         renderSidebar();
         if (l.digImage) initScratch();
+        window.scrollTo(0, 0);
     }
 
     function toggleTerm(id) {
@@ -202,8 +221,8 @@
         });
         if (correct) {
             if (!userProgress.includes(id)) { userProgress.push(id); localStorage.setItem('timeriot_completed', JSON.stringify(userProgress)); }
-            updateMasterProgress(); renderSidebar(); alert('სწორია! ლექცია დასრულებულია.');
-        } else alert('სცადე თავიდან');
+            updateMasterProgress(); renderSidebar(); alert('ყოჩაღ! ტესტი წარმატებით გაიარე.');
+        } else alert('სცადე თავიდან!');
     }
 
     function updateMasterProgress() {
@@ -215,10 +234,6 @@
         document.getElementById('userRank').innerText = `რანგი: ${rank}`;
     }
 
-    function generatePDF() {
-        alert("ანგარიში გენერირდება... გთხოვთ დაელოდოთ PDF ფაილს თქვენი პროგრესით.");
-    }
-
     function activateCourse() {
         if (document.getElementById('masterKeyInput').value === MASTER_KEY) {
             localStorage.setItem('timeriot_auth', 'true');
@@ -227,7 +242,7 @@
         } else alert('არასწორი კოდი!');
     }
 
-    // Вспомогательные функции
+    // დამხმარე ფუნქციები
     function toggleSoftMode() { document.body.classList.toggle('soft-mode'); }
     function filterLectures() {
         const query = document.getElementById('lectureSearch').value.toLowerCase();
@@ -237,6 +252,7 @@
     }
     function dateTrainer() {
         const all = Object.values(data).flatMap(l => l.dates);
+        if(!all.length) return;
         const random = all[Math.floor(Math.random() * all.length)].split(' - ');
         document.getElementById('tDate').innerText = random[0];
         document.getElementById('tAnswer').innerText = random[1];
@@ -252,6 +268,7 @@
         const rect = slider.getBoundingClientRect(); let x = e.pageX - rect.left;
         after.style.width = Math.min(Math.max(x, 0), rect.width) + "px";
     }
+    function generatePDF() { alert("რეპორტი მზადდება..."); }
     function toggleMusic() { 
         const m = document.getElementById('bg-music'); 
         if (m.paused) { m.play(); document.getElementById('music-btn').innerText = "გამორთვა"; } 
