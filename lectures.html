@@ -3,41 +3,36 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TimeRiot | სასწავლო პლატფორმა</title>
+    <title>TimeRiot | Pro Education</title>
     <link href="https://fonts.googleapis.com/css2?family=Fira+GO:wght@400;700&display=swap" rel="stylesheet">
     <style>
         :root { --red: #ff4d4d; --bg: #0d0d0d; --card: #1a1a1a; --gold: #ffd700; --text: #ffffff; --green: #2ecc71; }
         body { font-family: 'Fira GO', sans-serif; background: var(--bg); color: var(--text); margin: 0; overflow-x: hidden; }
         
-        /* ავტორიზაცია */
         #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 5000; display: flex; align-items: center; justify-content: center; }
         .auth-card { background: var(--card); padding: 40px; border-radius: 25px; border: 2px solid var(--gold); text-align: center; width: 320px; }
         .input-riot { background: #111; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 12px; width: 100%; margin-bottom: 15px; box-sizing: border-box; font-family: 'Fira GO'; }
 
-        /* ნავიგაცია */
         .navbar { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: var(--card); border-bottom: 2px solid #333; }
-        .logo { font-size: 24px; font-weight: bold; text-decoration: none; color: #fff; }
-        .logo span { color: var(--red); }
-
-        /* კონტეინერი */
         .container { display: flex; max-width: 1400px; margin: 30px auto; gap: 30px; padding: 0 20px; }
         .sidebar { width: 350px; }
         
         .sidebar-box { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--gold); margin-bottom: 20px; }
-        
         .lecture-card { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid #333; margin-bottom: 10px; cursor: pointer; display: flex; justify-content: space-between; transition: 0.3s; }
         .lecture-card.completed { border-left: 5px solid var(--green); }
         .lecture-card.active { border-left: 5px solid var(--red); background: #222; }
         .lecture-card.locked { opacity: 0.4; cursor: not-allowed; }
 
         .main-content { flex: 1; background: var(--card); border-radius: 20px; padding: 40px; border: 1px solid #333; min-height: 80vh; }
-        
         .btn-action { background: none; border: 2px solid var(--red); color: var(--red); padding: 10px 20px; border-radius: 25px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; font-family: 'Fira GO'; }
-        .btn-action:hover { background: var(--red); color: white; }
+        .btn-action:hover:not(:disabled) { background: var(--red); color: white; }
+        .btn-action:disabled { border-color: #444; color: #444; cursor: not-allowed; }
+
+        .term-link { color: var(--gold); border-bottom: 1px dotted var(--gold); cursor: pointer; font-weight: bold; }
+        .glossary-card { background: #000; border-left: 4px solid var(--gold); padding: 15px; margin: 15px 0; display: none; border-radius: 0 10px 10px 0; }
         
         .test-box { margin-top: 40px; padding: 30px; background: #111; border-radius: 15px; border-top: 3px solid var(--red); }
-        .option-label { display: block; padding: 12px; margin: 8px 0; background: rgba(255,255,255,0.05); border-radius: 10px; cursor: pointer; transition: 0.2s; }
-        .option-label:hover { background: rgba(255,255,255,0.1); }
+        .option-label { display: block; padding: 12px; margin: 8px 0; background: rgba(255,255,255,0.05); border-radius: 10px; cursor: pointer; }
     </style>
 </head>
 <body onload="checkAuth()">
@@ -45,19 +40,15 @@
 <div id="auth-overlay">
     <div class="auth-card">
         <h2 style="color:var(--gold);">Time<span>Riot</span></h2>
-        <p style="color: #888;">ავტორიზაცია</p>
-        <input type="text" id="userNameInput" class="input-riot" placeholder="სახელი">
+        <input type="text" id="userNameInput" class="input-riot" placeholder="თქვენი სახელი">
         <input type="password" id="userAccessKey" class="input-riot" placeholder="პაროლი">
         <button class="btn-action" onclick="login()">შესვლა</button>
     </div>
 </div>
 
 <div class="navbar">
-    <a href="#" class="logo">Time<span>Riot</span></a>
-    <div style="display:flex; gap:15px; align-items:center;">
-        <div id="adminBadge" style="display:none; color:var(--red); font-weight:bold; border:1px solid var(--red); padding:2px 10px; border-radius:20px; font-size:12px;">ADMIN</div>
-        <button class="btn-action" onclick="logout()" style="width: auto; padding: 5px 15px; border-color: #555; color: #555;">გამოსვლა 🚪</button>
-    </div>
+    <div class="logo" style="font-size:24px; font-weight:bold; color:#fff;">Time<span style="color:var(--red);">Riot</span></div>
+    <button class="btn-action" onclick="logout()" style="width: auto; padding: 5px 15px; border-color: #555; color: #555;">გამოსვლა 🚪</button>
 </div>
 
 <div class="container">
@@ -68,46 +59,52 @@
             <div id="userRank" style="color:var(--gold); font-size:12px; margin-top:5px;">რანგი: ნეოფიტი</div>
         </div>
         <div id="lectureList"></div>
+        <div style="margin-top:20px; padding:15px; border:1px solid var(--gold); border-radius:15px; text-align:center;">
+            <h4 style="color:var(--gold); margin-top:0;">🏆 გამოცდა</h4>
+            <button class="btn-action" style="border-color:var(--gold); color:var(--gold);" onclick="startGlobalExam()">ტესტირებაზე გადასვლა</button>
+        </div>
     </div>
     <div class="main-content" id="display">
-        <h2 style="text-align:center; margin-top:50px; color:#555;">აირჩიეთ ლექცია მენიუდან</h2>
+        <h2 style="text-align:center; margin-top:100px; color:#555;">აირჩიეთ ლექცია მენიუდან</h2>
     </div>
 </div>
 
 <script>
     const ADMIN_PASS = "Master-2026";
     const STUDENT_PASS = "STUDENT-2026";
+    const EXAM_CODE = "EXAM-2026";
 
-    // მონაცემთა ბაზა
     const lecturesData = {
         1: {
             title: "ქვის ხანა საქართველოში",
             content: `
-                <p><b>პალეოლითი (ძველი ქვის ხანა)</b> გრძელდებოდა 2,5 მილიონი წლიდან ძვ.წ. 10.000 წლამდე. საქართველოს ტერიტორიაზე ყველაზე ძველია <b>დმანისში</b> ნაპოვნი ნაშთები (1.7-1.8 მლნ წელი).</p>
-                <p>ზედა პალეოლითის ხანაში ჩამოყალიბდა ადამიანთა მყარი ჯგუფები - <b>გვარები</b>. ნეოლითში კი მოხდა <b>ნეოლითური რევოლუცია</b> - გადასვლა მწარმოებლურ მეურნეობაზე.</p>
+                <p><b>პალეოლითი</b> გრძელდებოდა 2,5 მილიონი წლიდან ძვ.წ. 10.000 წლამდე. ყველაზე ძველია <span class="term-link" onclick="toggleTerm('t1')">დმანისში</span> ნაპოვნი ნაშთები.</p>
+                <div id="t1" class="glossary-card"><b>დმანისი:</b> ადგილი, სადაც აღმოჩენილია 1.8 მლნ წლის წინანდელი ჰომინიდები - ზეზვა და მზია.</div>
+                <p>ნეოლითში კი მოხდა <span class="term-link" onclick="toggleTerm('t2')">ნეოლითური რევოლუცია</span>.</p>
+                <div id="t2" class="glossary-card"><b>ნეოლითური რევოლუცია:</b> გადასვლა მომპოვებლური მეურნეობიდან მწარმოებლურზე.</div>
             `,
             test: [
-                { q: "რამდენი წლისაა დმანისის ნაშთები?", a: ["1.2 მლნ", "1.5 მლნ", "1.7-1.8 მლნ", "2.0 მლნ"], c: 2 },
+                { q: "რამდენი წლისაა დმანისის ნაშთები?", a: ["1.2 მლნ", "1.5 მლნ", "1.8 მლნ", "2.0 მლნ"], c: 2 },
                 { q: "რა ეწოდება ადამიანთა მყარ ჯგუფებს?", a: ["ჯოგი", "გვარი", "ტომი", "სამეფო"], c: 1 },
-                { q: "რას ნიშნავს ნეოლითური რევოლუცია?", a: ["ომს", "მწარმოებლურ მეურნეობაზე გადასვლას", "ცეცხლს", "რკინას"], c: 1 }
+                { q: "რას ნიშნავს ნეოლითური რევოლუცია?", a: ["ომს", "წარმოებაზე გადასვლას", "ცეცხლს", "რკინას"], c: 1 }
             ]
         },
         2: {
             title: "შუმერი და ბაბილონი",
             content: `
-                <p>მდინარეებს <b>ეფრატსა და ტიგროსს</b> შორის არსებულ ტერიტორიას მესოპოტამიას უწოდებდნენ. სამხრეთ ნაწილში შუმერებმა შექმნეს დიდი ცივილიზაცია.</p>
-                <p>შუმერებმა გამოიგონეს ბორბალი, ეტლი და <b>ლურსმული დამწერლობა</b>. ბაბილონი აღზევდა მეფე <b>ხამურაბის</b> დროს (ძვ.წ. XVIII ს.), რომელმაც შექმნა 282 მუხლიანი კანონთა კრებული.</p>
-                <p>მოგვიანებით ნაბუქოდონოსორმა ააგო ბაბილონის გოდოლი და დაკიდული ბაღები. შუმერულ ტაძრებს <b>ზიკურატები</b> ეწოდება.</p>
+                <p>მესოპოტამიაში შუმერებმა შექმნეს დიდი ცივილიზაცია. ბაბილონი აღზევდა მეფე <span class="term-link" onclick="toggleTerm('b1')">ხამურაბის</span> დროს.</p>
+                <div id="b1" class="glossary-card"><b>ხამურაბი:</b> უდიდესი კანონმდებელი (ძვ.წ. XVIII ს.), 282 მუხლიანი კანონთა კრებულის ავტორი.</div>
             `,
             test: [
-                { q: "რომელ მდინარეებს შორის იყო მესოპოტამია?", a: ["ნილოსი და იორდანე", "ტიგროსი და ეფრატი", "ინდი და განგი", "მტკვარი და რიონი"], c: 1 },
-                { q: "რამდენი მუხლისგან შედგებოდა ხამურაბის კანონები?", a: ["100", "200", "282", "300"], c: 2 },
+                { q: "რომელ მდინარეებს შორის იყო მესოპოტამია?", a: ["ნილოსი/იორდანე", "ტიგროსი/ეფრატი", "ინდი/განგი", "მტკვარი/რიონი"], c: 1 },
+                { q: "რამდენი მუხლისგან შედგებოდა ხამურაბის კანონები?", a: ["100", "282", "300", "200"], c: 1 },
                 { q: "რა ეწოდება შუმერულ ტაძრებს?", a: ["პირამიდა", "ზიკურატი", "პანთეონი", "მეჩეთი"], c: 1 }
             ]
         }
     };
 
     let completed = JSON.parse(localStorage.getItem('riot_progress')) || [];
+    let studyTimer;
 
     function login() {
         const name = document.getElementById('userNameInput').value;
@@ -119,11 +116,7 @@
         } else { alert("არასწორი კოდი!"); }
     }
 
-    function logout() {
-        localStorage.removeItem('riot_user');
-        localStorage.removeItem('riot_role');
-        location.reload();
-    }
+    function logout() { localStorage.clear(); location.reload(); }
 
     function checkAuth() {
         if (localStorage.getItem('riot_user')) {
@@ -145,52 +138,70 @@
         list.innerHTML = '';
         for (let i = 1; i <= 119; i++) {
             const isLocked = i > 1 && !completed.includes(i - 1) && !isAdmin;
-            const isDone = completed.includes(i);
             const l = lecturesData[i] || { title: `ლექცია №${i}` };
-            
-            list.innerHTML += `<div class="lecture-card ${isLocked?'locked':''} ${isDone?'completed':''}" id="card-${i}" onclick="${isLocked?'':'loadLecture('+i+')'}">
-                <span>#${i} ${l.title}</span> <span>${isDone?'✅':(isLocked?'🔒':'▶️')}</span>
+            list.innerHTML += `<div class="lecture-card ${isLocked?'locked':''} ${completed.includes(i)?'completed':''}" onclick="${isLocked?'':'loadLecture('+i+')'}">
+                <span>#${i} ${l.title}</span> <span>${completed.includes(i)?'✅':(isLocked?'🔒':'▶️')}</span>
             </div>`;
         }
     }
 
     function loadLecture(id) {
-        const l = lecturesData[id] || { title: `ლექცია №${id}`, content: "მასალა მალე დაემატება...", test: [] };
+        const l = lecturesData[id] || { title: `ლექცია №${id}`, content: "მასალა მზადდება...", test: [] };
         let html = `<h1>${l.title}</h1><div style="line-height:1.7; font-size:18px;">${l.content}</div>`;
         
-        if (l.test && l.test.length > 0) {
-            html += `<div class="test-box"><h3>📝 ტესტი</h3>`;
+        if (l.test.length > 0) {
+            html += `<div class="test-box">
+                <p id="timer-msg" style="color:var(--red); font-size:12px;">ტესტი გააქტიურდება 10 წამში (წაიკითხეთ მასალა)...</p>
+                <div id="quiz-inner" style="opacity:0.3; pointer-events:none;">
+                    <h3>📝 თვითშემოწმება</h3>`;
             l.test.forEach((t, i) => {
-                html += `<p><b>${i+1}. ${t.q}</b></p>`;
+                html += `<p><b>${t.q}</b></p>`;
                 t.a.forEach((ans, ai) => {
                     html += `<label class="option-label"><input type="radio" name="q${i}" value="${ai}"> ${ans}</label>`;
                 });
             });
-            html += `<button class="btn-action" style="margin-top:20px; border-color:var(--gold); color:var(--gold);" onclick="checkTest(${id})">შემოწმება</button></div>`;
+            html += `<button id="check-btn" class="btn-action" disabled onclick="checkTest(${id})">შემოწმება</button></div></div>`;
         }
         document.getElementById('display').innerHTML = html;
-        document.querySelectorAll('.lecture-card').forEach(c => c.classList.remove('active'));
-        document.getElementById('card-'+id).classList.add('active');
         window.scrollTo(0,0);
+
+        clearTimeout(studyTimer);
+        studyTimer = setTimeout(() => {
+            const quiz = document.getElementById('quiz-inner');
+            if(quiz) {
+                quiz.style.opacity = "1";
+                quiz.style.pointerEvents = "auto";
+                document.getElementById('check-btn').disabled = false;
+                document.getElementById('timer-msg').innerText = "ტესტი ხელმისაწვდომია!";
+                document.getElementById('timer-msg').style.color = "var(--green)";
+            }
+        }, 10000); // 10 წამი
     }
 
     function checkTest(id) {
         const l = lecturesData[id];
-        let score = 0;
+        let correct = 0;
         l.test.forEach((t, i) => {
             const sel = document.querySelector(`input[name="q${i}"]:checked`);
-            if (sel && parseInt(sel.value) === t.c) score++;
+            if (sel && parseInt(sel.value) === t.c) correct++;
         });
-        
-        if (score === 3) {
+
+        if (correct === l.test.length) {
+            alert("ყოჩაღ! ყველა პასუხი სწორია.");
             if (!completed.includes(id)) {
                 completed.push(id);
                 localStorage.setItem('riot_progress', JSON.stringify(completed));
             }
-            alert("სწორია! ლექცია ჩაბარებულია.");
-            updateUI();
-            renderSidebar();
-        } else { alert("სწორია " + score + " 3-დან. სცადეთ თავიდან!"); }
+            location.reload();
+        } else {
+            alert(`თქვენ გაქვთ შეცდომები. სწორია მხოლოდ ${correct} პასუხი ${l.test.length}-დან. გადაიკითხეთ კონსპექტი და სცადეთ თავიდან!`);
+            document.querySelectorAll('input[type="radio"]').forEach(el => el.checked = false);
+        }
+    }
+
+    function toggleTerm(id) {
+        const el = document.getElementById(id);
+        el.style.display = el.style.display === 'block' ? 'none' : 'block';
     }
 
     function updateUI() {
@@ -198,6 +209,16 @@
         let rank = "ნეოფიტი";
         if(completed.length > 5) rank = "მკვლევარი";
         document.getElementById('userRank').innerText = "რანგი: " + rank;
+    }
+
+    function startGlobalExam() {
+        const code = prompt("შეიყვანეთ საგამოცდო კოდი:");
+        if(code === EXAM_CODE) {
+            const name = localStorage.getItem('riot_user');
+            alert("გამარჯობა " + name + "! გამოცდა იწყება. თქვენ გაქვთ 60 წუთი.");
+            // აქ შეგვიძლია ჩავსვათ Google Forms ლინკი ან სხვა გვერდი
+            // window.location.href = "ლინკი";
+        } else { alert("კოდი არასწორია!"); }
     }
 </script>
 </body>
