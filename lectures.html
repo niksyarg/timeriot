@@ -14,10 +14,13 @@
         .input-riot { background: #111; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 12px; width: 100%; margin-bottom: 15px; box-sizing: border-box; font-family: 'Fira GO'; }
 
         .navbar { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: var(--card); border-bottom: 2px solid #333; }
+        .logo { font-size: 24px; font-weight: bold; color: #fff; text-decoration: none; }
+        .logo span { color: var(--red); }
+
         .container { display: flex; max-width: 1400px; margin: 30px auto; gap: 30px; padding: 0 20px; }
         .sidebar { width: 350px; }
-        
         .sidebar-box { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--gold); margin-bottom: 20px; }
+        
         .lecture-card { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid #333; margin-bottom: 10px; cursor: pointer; display: flex; justify-content: space-between; transition: 0.3s; }
         .lecture-card.completed { border-left: 5px solid var(--green); }
         .lecture-card.active { border-left: 5px solid var(--red); background: #222; }
@@ -47,8 +50,11 @@
 </div>
 
 <div class="navbar">
-    <div class="logo" style="font-size:24px; font-weight:bold; color:#fff;">Time<span style="color:var(--red);">Riot</span></div>
-    <button class="btn-action" onclick="logout()" style="width: auto; padding: 5px 15px; border-color: #555; color: #555;">გამოსვლა 🚪</button>
+    <a href="#" class="logo">Time<span>Riot</span></a>
+    <div style="display:flex; gap:15px; align-items:center;">
+        <div id="adminBadge" style="display:none; color:var(--red); font-weight:bold; border:1px solid var(--red); padding:2px 10px; border-radius:20px; font-size:12px;">ADMIN</div>
+        <button class="btn-action" onclick="logout()" style="width: auto; padding: 5px 15px; border-color: #555; color: #555;">გამოსვლა 🚪</button>
+    </div>
 </div>
 
 <div class="container">
@@ -59,29 +65,25 @@
             <div id="userRank" style="color:var(--gold); font-size:12px; margin-top:5px;">რანგი: ნეოფიტი</div>
         </div>
         <div id="lectureList"></div>
-        <div style="margin-top:20px; padding:15px; border:1px solid var(--gold); border-radius:15px; text-align:center;">
-            <h4 style="color:var(--gold); margin-top:0;">🏆 გამოცდა</h4>
-            <button class="btn-action" style="border-color:var(--gold); color:var(--gold);" onclick="startGlobalExam()">ტესტირებაზე გადასვლა</button>
-        </div>
     </div>
     <div class="main-content" id="display">
-        <h2 style="text-align:center; margin-top:100px; color:#555;">აირჩიეთ ლექცია მენიუდან</h2>
+        <h2 style="text-align:center; margin-top:100px; color:#555;">აირჩიეთ თემა სამუშაოდ</h2>
     </div>
 </div>
 
 <script>
     const ADMIN_PASS = "Master-2026";
     const STUDENT_PASS = "STUDENT-2026";
-    const EXAM_CODE = "EXAM-2026";
 
     const lecturesData = {
         1: {
             title: "ქვის ხანა საქართველოში",
             content: `
-                <p><b>პალეოლითი</b> გრძელდებოდა 2,5 მილიონი წლიდან ძვ.წ. 10.000 წლამდე. ყველაზე ძველია <span class="term-link" onclick="toggleTerm('t1')">დმანისში</span> ნაპოვნი ნაშთები.</p>
+                <p><b>პალეოლითი</b> გრძელდებოდა 2,5 მილიონი წლიდან ძვ.წ. 10.000 წლამდე. 
+                საქართველოს ტერიტორიაზე ყველაზე ძველია <span class="term-link" onclick="toggleTerm('t1')">დმანისში</span> ნაპოვნი ნაშთები.</p>
                 <div id="t1" class="glossary-card"><b>დმანისი:</b> ადგილი, სადაც აღმოჩენილია 1.8 მლნ წლის წინანდელი ჰომინიდები - ზეზვა და მზია.</div>
                 <p>ნეოლითში კი მოხდა <span class="term-link" onclick="toggleTerm('t2')">ნეოლითური რევოლუცია</span>.</p>
-                <div id="t2" class="glossary-card"><b>ნეოლითური რევოლუცია:</b> გადასვლა მომპოვებლური მეურნეობიდან მწარმოებლურზე.</div>
+                <div id="t2" class="glossary-card"><b>ნეოლითური რევოლუცია:</b> გადასვლა მომპოვებლურიდან მწარმოებლურ მეურნეობაზე.</div>
             `,
             test: [
                 { q: "რამდენი წლისაა დმანისის ნაშთები?", a: ["1.2 მლნ", "1.5 მლნ", "1.8 მლნ", "2.0 მლნ"], c: 2 },
@@ -94,11 +96,27 @@
             content: `
                 <p>მესოპოტამიაში შუმერებმა შექმნეს დიდი ცივილიზაცია. ბაბილონი აღზევდა მეფე <span class="term-link" onclick="toggleTerm('b1')">ხამურაბის</span> დროს.</p>
                 <div id="b1" class="glossary-card"><b>ხამურაბი:</b> უდიდესი კანონმდებელი (ძვ.წ. XVIII ს.), 282 მუხლიანი კანონთა კრებულის ავტორი.</div>
+                <p>მოგვიანებით ნაბუქოდონოსორმა ააგო ბაბილონის გოდოლი და დაკიდული ბაღები. შუმერულ ტაძრებს <b>ზიკურატები</b> ეწოდება.</p>
             `,
             test: [
                 { q: "რომელ მდინარეებს შორის იყო მესოპოტამია?", a: ["ნილოსი/იორდანე", "ტიგროსი/ეფრატი", "ინდი/განგი", "მტკვარი/რიონი"], c: 1 },
                 { q: "რამდენი მუხლისგან შედგებოდა ხამურაბის კანონები?", a: ["100", "282", "300", "200"], c: 1 },
                 { q: "რა ეწოდება შუმერულ ტაძრებს?", a: ["პირამიდა", "ზიკურატი", "პანთეონი", "მეჩეთი"], c: 1 }
+            ]
+        },
+        3: {
+            title: "ძველი ეგვიპტე",
+            content: `
+                <p>ეგვიპტური ცივილიზაცია ჩამოყალიბდა მდინარე <span class="term-link" onclick="toggleTerm('e1')">ნილოსის</span> ნაპირებზე. 
+                ეგვიპტეს მართავდა <span class="term-link" onclick="toggleTerm('e2')">ფარაონი</span>.</p>
+                <div id="e1" class="glossary-card"><b>ნილოსი:</b> მდინარე აფრიკაში, რომელსაც ჰეროდოტემ "ნილოსის საჩუქარი" უწოდა.</div>
+                <div id="e2" class="glossary-card"><b>ფარაონი:</b> ძველი ეგვიპტის მმართველი, რომელიც ღვთაებად ითვლებოდა.</div>
+                <p>პირველი პირამიდა ააგო ფარაონმა <b>ჯოსერმა</b>, ხოლო ყველაზე დიდი - <b>ხეოფსმა</b>.</p>
+            `,
+            test: [
+                { q: "რომელ მდინარეზე იყო დამოკიდებული ეგვიპტე?", a: ["ევფრატი", "ტიგროსი", "ნილოსი", "ინდი"], c: 2 },
+                { q: "ვისი პირამიდაა ყველაზე დიდი?", a: ["ხეოფსის", "ჯოსერის", "ტუტანხამონის", "სეტის"], c: 0 },
+                { q: "რა ერქვა ეგვიპტის მმართველს?", a: ["მეფე", "იმპერატორი", "ფარაონი", "ხანი"], c: 2 }
             ]
         }
     };
@@ -138,15 +156,16 @@
         list.innerHTML = '';
         for (let i = 1; i <= 119; i++) {
             const isLocked = i > 1 && !completed.includes(i - 1) && !isAdmin;
+            const isDone = completed.includes(i);
             const l = lecturesData[i] || { title: `ლექცია №${i}` };
-            list.innerHTML += `<div class="lecture-card ${isLocked?'locked':''} ${completed.includes(i)?'completed':''}" onclick="${isLocked?'':'loadLecture('+i+')'}">
-                <span>#${i} ${l.title}</span> <span>${completed.includes(i)?'✅':(isLocked?'🔒':'▶️')}</span>
+            list.innerHTML += `<div class="lecture-card ${isLocked?'locked':''} ${isDone?'completed':''}" id="card-${i}" onclick="${isLocked?'':'loadLecture('+i+')'}">
+                <span>#${i} ${l.title}</span> <span>${isDone?'✅':(isLocked?'🔒':'▶️')}</span>
             </div>`;
         }
     }
 
     function loadLecture(id) {
-        const l = lecturesData[id] || { title: `ლექცია №${id}`, content: "მასალა მზადდება...", test: [] };
+        const l = lecturesData[id] || { title: `ლექცია №${id}`, content: "მასალა მალე დაემატება...", test: [] };
         let html = `<h1>${l.title}</h1><div style="line-height:1.7; font-size:18px;">${l.content}</div>`;
         
         if (l.test.length > 0) {
@@ -155,7 +174,7 @@
                 <div id="quiz-inner" style="opacity:0.3; pointer-events:none;">
                     <h3>📝 თვითშემოწმება</h3>`;
             l.test.forEach((t, i) => {
-                html += `<p><b>${t.q}</b></p>`;
+                html += `<p style="margin-top:20px;"><b>${i+1}. ${t.q}</b></p>`;
                 t.a.forEach((ans, ai) => {
                     html += `<label class="option-label"><input type="radio" name="q${i}" value="${ai}"> ${ans}</label>`;
                 });
@@ -175,18 +194,18 @@
                 document.getElementById('timer-msg').innerText = "ტესტი ხელმისაწვდომია!";
                 document.getElementById('timer-msg').style.color = "var(--green)";
             }
-        }, 10000); // 10 წამი
+        }, 10000); 
     }
 
     function checkTest(id) {
         const l = lecturesData[id];
-        let correct = 0;
+        let score = 0;
         l.test.forEach((t, i) => {
             const sel = document.querySelector(`input[name="q${i}"]:checked`);
-            if (sel && parseInt(sel.value) === t.c) correct++;
+            if (sel && parseInt(sel.value) === t.c) score++;
         });
 
-        if (correct === l.test.length) {
+        if (score === l.test.length) {
             alert("ყოჩაღ! ყველა პასუხი სწორია.");
             if (!completed.includes(id)) {
                 completed.push(id);
@@ -194,7 +213,7 @@
             }
             location.reload();
         } else {
-            alert(`თქვენ გაქვთ შეცდომები. სწორია მხოლოდ ${correct} პასუხი ${l.test.length}-დან. გადაიკითხეთ კონსპექტი და სცადეთ თავიდან!`);
+            alert(`სწორია მხოლოდ ${score} პასუხი ${l.test.length}-დან. გადაიკითხეთ მასალა და სცადეთ თავიდან!`);
             document.querySelectorAll('input[type="radio"]').forEach(el => el.checked = false);
         }
     }
@@ -206,19 +225,6 @@
 
     function updateUI() {
         document.getElementById('globalStats').innerText = `პროგრესი: ${completed.length}/119`;
-        let rank = "ნეოფიტი";
-        if(completed.length > 5) rank = "მკვლევარი";
-        document.getElementById('userRank').innerText = "რანგი: " + rank;
-    }
-
-    function startGlobalExam() {
-        const code = prompt("შეიყვანეთ საგამოცდო კოდი:");
-        if(code === EXAM_CODE) {
-            const name = localStorage.getItem('riot_user');
-            alert("გამარჯობა " + name + "! გამოცდა იწყება. თქვენ გაქვთ 60 წუთი.");
-            // აქ შეგვიძლია ჩავსვათ Google Forms ლინკი ან სხვა გვერდი
-            // window.location.href = "ლინკი";
-        } else { alert("კოდი არასწორია!"); }
     }
 </script>
 </body>
