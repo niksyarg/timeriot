@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TimeRiot | Pro Education</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+GO:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --red: #ff4d4d; --bg: #0d0d0d; --card: #1a1a1a; --gold: #ffd700; --text: #ffffff; --green: #2ecc71; }
+        body { font-family: 'Fira GO', sans-serif; background: var(--bg); color: var(--text); margin: 0; overflow-x: hidden; }
+        
+        #auth-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 5000; display: flex; align-items: center; justify-content: center; }
+        .auth-card { background: var(--card); padding: 40px; border-radius: 25px; border: 2px solid var(--gold); text-align: center; width: 320px; }
+        .input-riot { background: #111; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 12px; width: 100%; margin-bottom: 15px; box-sizing: border-box; font-family: 'Fira GO'; }
+
+        .navbar { display: flex; justify-content: space-between; align-items: center; padding: 15px 5%; background: var(--card); border-bottom: 2px solid #333; }
+        .logo { font-size: 24px; font-weight: bold; color: #fff; text-decoration: none; }
+        .logo span { color: var(--red); }
+
+        .container { display: flex; max-width: 1400px; margin: 30px auto; gap: 30px; padding: 0 20px; }
+        .sidebar { width: 350px; }
+        .sidebar-box { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid var(--gold); margin-bottom: 20px; }
+        
+        .lecture-card { background: var(--card); padding: 15px; border-radius: 12px; border: 1px solid #333; margin-bottom: 10px; cursor: pointer; display: flex; justify-content: space-between; transition: 0.3s; }
+        .lecture-card.completed { border-left: 5px solid var(--green); }
+        .lecture-card.active { border-left: 5px solid var(--red); background: #222; }
+        .lecture-card.locked { opacity: 0.4; cursor: not-allowed; }
+
+        .main-content { flex: 1; background: var(--card); border-radius: 20px; padding: 40px; border: 1px solid #333; min-height: 80vh; }
+        .btn-action { background: none; border: 2px solid var(--red); color: var(--red); padding: 10px 20px; border-radius: 25px; cursor: pointer; font-weight: bold; width: 100%; transition: 0.3s; font-family: 'Fira GO'; }
+        .btn-action:hover:not(:disabled) { background: var(--red); color: white; }
+        .btn-action:disabled { border-color: #444; color: #444; cursor: not-allowed; }
+
+        .term-link { color: var(--gold); border-bottom: 1px dotted var(--gold); cursor: pointer; font-weight: bold; }
+        .glossary-card { background: #000; border-left: 4px solid var(--gold); padding: 15px; margin: 15px 0; display: none; border-radius: 0 10px 10px 0; }
+        
+        .test-box { margin-top: 40px; padding: 30px; background: #111; border-radius: 15px; border-top: 3px solid var(--red); }
+        .option-label { display: block; padding: 12px; margin: 8px 0; background: rgba(255,255,255,0.05); border-radius: 10px; cursor: pointer; }
+    </style>
+</head>
+<body onload="checkAuth()">
+
+<div id="auth-overlay">
+    <div class="auth-card">
+        <h2 style="color:var(--gold);">Time<span>Riot</span></h2>
+        <input type="text" id="userNameInput" class="input-riot" placeholder="თქვენი სახელი">
+        <input type="password" id="userAccessKey" class="input-riot" placeholder="პაროლი">
+        <button class="btn-action" onclick="login()">შესვლა</button>
+    </div>
+</div>
+
+<div class="navbar">
+    <a href="#" class="logo">Time<span>Riot</span></a>
+    <div style="display:flex; gap:15px; align-items:center;">
+        <div id="adminBadge" style="display:none; color:var(--red); font-weight:bold; border:1px solid var(--red); padding:2px 10px; border-radius:20px; font-size:12px;">ADMIN</div>
+        <button class="btn-action" onclick="logout()" style="width: auto; padding: 5px 15px; border-color: #555; color: #555;">გამოსვლა 🚪</button>
+    </div>
+</div>
+
+<div class="container">
+    <div class="sidebar">
+        <div class="sidebar-box">
+            <p id="userNameDisplay" style="margin:0; font-weight:bold;"></p>
+            <div id="globalStats" style="font-size:12px; color:#888;">პროგრესი: 0/119</div>
+            <div id="userRank" style="color:var(--gold); font-size:12px; margin-top:5px;">რანგი: ნეოფიტი</div>
+        </div>
+        <div id="lectureList"></div>
+    </div>
+    <div class="main-content" id="display">
+        <h2 style="text-align:center; margin-top:100px; color:#555;">აირჩიეთ თემა სამუშაოდ</h2>
+    </div>
+</div>
+
+<script>
+    const ADMIN_PASS = "Master-2026";
+    const STUDENT_PASS = "STUDENT-2026";
+
+    const lecturesData = {
+        1: {
+            title: "ქვის ხანა საქართველოში",
+            content: `
+                <p><b>პალეოლითი</b> გრძელდებოდა 2,5 მილიონი წლიდან ძვ.წ. 10.000 წლამდე. 
+                საქართველოს ტერიტორიაზე ყველაზე ძველია <span class="term-link" onclick="toggleTerm('t1')">დმანისში</span> ნაპოვნი ნაშთები.</p>
+                <div id="t1" class="glossary-card"><b>დმანისი:</b> ადგილი, სადაც აღმოჩენილია 1.8 მლნ წლის წინანდელი ჰომინიდები - ზეზვა და მზია.</div>
+                <p>ნეოლითში კი მოხდა <span class="term-link" onclick="toggleTerm('t2')">ნეოლითური რევოლუცია</span>.</p>
+                <div id="t2" class="glossary-card"><b>ნეოლითური რევოლუცია:</b> გადასვლა მომპოვებლურიდან მწარმოებლურ მეურნეობაზე.</div>
+            `,
+            test: [
+                { q: "რამდენი წლისაა დმანისის ნაშთები?", a: ["1.2 მლნ", "1.5 მლნ", "1.8 მლნ", "2.0 მლნ"], c: 2 },
+                { q: "რა ეწოდება ადამიანთა მყარ ჯგუფებს?", a: ["ჯოგი", "გვარი", "ტომი", "სამეფო"], c: 1 },
+                { q: "რას ნიშნავს ნეოლითური რევოლუცია?", a: ["ომს", "წარმოებაზე გადასვლას", "ცეცხლს", "რკინას"], c: 1 }
+            ]
+        },
+        2: {
+            title: "შუმერი და ბაბილონი",
+            content: `
+                <p>მესოპოტამიაში შუმერებმა შექმნეს დიდი ცივილიზაცია. ბაბილონი აღზევდა მეფე <span class="term-link" onclick="toggleTerm('b1')">ხამურაბის</span> დროს.</p>
+                <div id="b1" class="glossary-card"><b>ხამურაბი:</b> უდიდესი კანონმდებელი (ძვ.წ. XVIII ს.), 282 მუხლიანი კანონთა კრებულის ავტორი.</div>
+                <p>მოგვიანებით ნაბუქოდონოსორმა ააგო ბაბილონის გოდოლი და დაკიდული ბაღები. შუმერულ ტაძრებს <b>ზიკურატები</b> ეწოდება.</p>
+            `,
+            test: [
+                { q: "რომელ მდინარეებს შორის იყო მესოპოტამია?", a: ["ნილოსი/იორდანე", "ტიგროსი/ეფრატი", "ინდი/განგი", "მტკვარი/რიონი"], c: 1 },
+                { q: "რამდენი მუხლისგან შედგებოდა ხამურაბის კანონები?", a: ["100", "282", "300", "200"], c: 1 },
+                { q: "რა ეწოდება შუმერულ ტაძრებს?", a: ["პირამიდა", "ზიკურატი", "პანთეონი", "მეჩეთი"], c: 1 }
+            ]
+        },
+        3: {
+            title: "ძველი ეგვიპტე",
+            content: `
+                <p>ეგვიპტური ცივილიზაცია ჩამოყალიბდა მდინარე <span class="term-link" onclick="toggleTerm('e1')">ნილოსის</span> ნაპირებზე. 
+                ეგვიპტეს მართავდა <span class="term-link" onclick="toggleTerm('e2')">ფარაონი</span>.</p>
+                <div id="e1" class="glossary-card"><b>ნილოსი:</b> მდინარე აფრიკაში, რომელსაც ჰეროდოტემ "ნილოსის საჩუქარი" უწოდა.</div>
+                <div id="e2" class="glossary-card"><b>ფარაონი:</b> ძველი ეგვიპტის მმართველი, რომელიც ღვთაებად ითვლებოდა.</div>
+                <p>პირველი პირამიდა ააგო ფარაონმა <b>ჯოსერმა</b>, ხოლო ყველაზე დიდი - <b>ხეოფსმა</b>.</p>
+            `,
+            test: [
+                { q: "რომელ მდინარეზე იყო დამოკიდებული ეგვიპტე?", a: ["ევფრატი", "ტიგროსი", "ნილოსი", "ინდი"], c: 2 },
+                { q: "ვისი პირამიდაა ყველაზე დიდი?", a: ["ხეოფსის", "ჯოსერის", "ტუტანხამონის", "სეტის"], c: 0 },
+                { q: "რა ერქვა ეგვიპტის მმართველს?", a: ["მეფე", "იმპერატორი", "ფარაონი", "ხანი"], c: 2 }
+            ]
+        }
+    };
+
+    let completed = JSON.parse(localStorage.getItem('riot_progress')) || [];
+    let studyTimer;
+
+    function login() {
+        const name = document.getElementById('userNameInput').value;
+        const pass = document.getElementById('userAccessKey').value;
+        if (pass === ADMIN_PASS || pass === STUDENT_PASS) {
+            localStorage.setItem('riot_user', name);
+            localStorage.setItem('riot_role', pass === ADMIN_PASS ? 'admin' : 'student');
+            location.reload();
+        } else { alert("არასწორი კოდი!"); }
+    }
+
+    function logout() { localStorage.clear(); location.reload(); }
+
+    function checkAuth() {
+        if (localStorage.getItem('riot_user')) {
+            document.getElementById('auth-overlay').style.display = 'none';
+            initApp();
+        }
+    }
+
+    function initApp() {
+        document.getElementById('userNameDisplay').innerText = localStorage.getItem('riot_user');
+        if (localStorage.getItem('riot_role') === 'admin') document.getElementById('adminBadge').style.display = 'block';
+        renderSidebar();
+        updateUI();
+    }
+
+    function renderSidebar() {
+        const list = document.getElementById('lectureList');
+        const isAdmin = localStorage.getItem('riot_role') === 'admin';
+        list.innerHTML = '';
+        for (let i = 1; i <= 119; i++) {
+            const isLocked = i > 1 && !completed.includes(i - 1) && !isAdmin;
+            const isDone = completed.includes(i);
+            const l = lecturesData[i] || { title: `ლექცია №${i}` };
+            list.innerHTML += `<div class="lecture-card ${isLocked?'locked':''} ${isDone?'completed':''}" id="card-${i}" onclick="${isLocked?'':'loadLecture('+i+')'}">
+                <span>#${i} ${l.title}</span> <span>${isDone?'✅':(isLocked?'🔒':'▶️')}</span>
+            </div>`;
+        }
+    }
+
+    function loadLecture(id) {
+        const l = lecturesData[id] || { title: `ლექცია №${id}`, content: "მასალა მალე დაემატება...", test: [] };
+        let html = `<h1>${l.title}</h1><div style="line-height:1.7; font-size:18px;">${l.content}</div>`;
+        
+        if (l.test.length > 0) {
+            html += `<div class="test-box">
+                <p id="timer-msg" style="color:var(--red); font-size:12px;">ტესტი გააქტიურდება 10 წამში (წაიკითხეთ მასალა)...</p>
+                <div id="quiz-inner" style="opacity:0.3; pointer-events:none;">
+                    <h3>📝 თვითშემოწმება</h3>`;
+            l.test.forEach((t, i) => {
+                html += `<p style="margin-top:20px;"><b>${i+1}. ${t.q}</b></p>`;
+                t.a.forEach((ans, ai) => {
+                    html += `<label class="option-label"><input type="radio" name="q${i}" value="${ai}"> ${ans}</label>`;
+                });
+            });
+            html += `<button id="check-btn" class="btn-action" disabled onclick="checkTest(${id})">შემოწმება</button></div></div>`;
+        }
+        document.getElementById('display').innerHTML = html;
+        window.scrollTo(0,0);
+
+        clearTimeout(studyTimer);
+        studyTimer = setTimeout(() => {
+            const quiz = document.getElementById('quiz-inner');
+            if(quiz) {
+                quiz.style.opacity = "1";
+                quiz.style.pointerEvents = "auto";
+                document.getElementById('check-btn').disabled = false;
+                document.getElementById('timer-msg').innerText = "ტესტი ხელმისაწვდომია!";
+                document.getElementById('timer-msg').style.color = "var(--green)";
+            }
+        }, 10000); 
+    }
+
+    function checkTest(id) {
+        const l = lecturesData[id];
+        let score = 0;
+        l.test.forEach((t, i) => {
+            const sel = document.querySelector(`input[name="q${i}"]:checked`);
+            if (sel && parseInt(sel.value) === t.c) score++;
+        });
+
+        if (score === l.test.length) {
+            alert("ყოჩაღ! ყველა პასუხი სწორია.");
+            if (!completed.includes(id)) {
+                completed.push(id);
+                localStorage.setItem('riot_progress', JSON.stringify(completed));
+            }
+            location.reload();
+        } else {
+            alert(`სწორია მხოლოდ ${score} პასუხი ${l.test.length}-დან. გადაიკითხეთ მასალა და სცადეთ თავიდან!`);
+            document.querySelectorAll('input[type="radio"]').forEach(el => el.checked = false);
+        }
+    }
+
+    function toggleTerm(id) {
+        const el = document.getElementById(id);
+        el.style.display = el.style.display === 'block' ? 'none' : 'block';
+    }
+
+    function updateUI() {
+        document.getElementById('globalStats').innerText = `პროგრესი: ${completed.length}/119`;
+    }
+</script>
+</body>
+</html>
