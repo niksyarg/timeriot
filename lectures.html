@@ -61,7 +61,7 @@
     <div class="sidebar">
         <div class="sidebar-box">
             <p id="userNameDisplay" style="margin:0; font-weight:bold;"></p>
-            <div id="globalStats" style="font-size:12px; color:#888;">პროგრესი: 0/119</div>
+            <div id="globalStats" style="font-size:12px; color:#888;">პროგრესი: 0/121</div>
             <div id="userRank" style="color:var(--gold); font-size:12px; margin-top:5px;">რანგი: ნეოფიტი</div>
         </div>
         <div id="lectureList"></div>
@@ -118,6 +118,54 @@
                 { q: "ვისი პირამიდაა ყველაზე დიდი?", a: ["ხეოფსის", "ჯოსერის", "ტუტანხამონის", "სეტის"], c: 0 },
                 { q: "რა ერქვა ეგვიპტის მმართველს?", a: ["მეფე", "იმპერატორი", "ფარაონი", "ხანი"], c: 2 }
             ]
+        },
+        4: {
+            title: "ხეთების სამეფო",
+        },
+        5:{
+            title:"ასურეთის სამეფო",
+        },
+        6:{
+            title:"ურარტუ"
+        },
+        7:{
+            title:"დიაოხი და კოლხა"
+        },
+        8:{
+            title:"ფინიკიური ქალაქ-სახელმწიფოები და კოლონიზაცია"
+        },
+        9:{
+            title:"აქემენიანთა ირანი"
+        },
+        10:{
+          title:"დიდი ბერძნული კოლონიზაცია"   
+        },
+        11:{
+         title:"ძვ. ათენი."
+        },
+        12:{
+         title:"სპარტა"
+        },
+        13:{
+            title:"ბერძენ-სპარსელთა ომები"
+        },
+        14:{
+            title:"პელონესის ომები."
+        },
+        15:{
+         title:"ალექსანდრე მაკედონელი და ელინისტური სახელმწიფო"
+        },
+        16:{
+        title:"რომი და მისი დაპყრობები."
+        },
+        17:{
+        title:"რესპუბლიკური მმართველობის  დასასრული რომში"
+        },
+        18:{
+            title:"ქართული სახელმწიფოები ელინისტურ სამყაროში"
+        },
+        19:{
+            title:"პომპეუსის ლაშქრობა ქართლში"
         }
     };
 
@@ -154,7 +202,7 @@
         const list = document.getElementById('lectureList');
         const isAdmin = localStorage.getItem('riot_role') === 'admin';
         list.innerHTML = '';
-        for (let i = 1; i <= 119; i++) {
+        for (let i = 1; i <= 121; i++) {
             const isLocked = i > 1 && !completed.includes(i - 1) && !isAdmin;
             const isDone = completed.includes(i);
             const l = lecturesData[i] || { title: `ლექცია №${i}` };
@@ -224,7 +272,7 @@
     }
 
     function updateUI() {
-        document.getElementById('globalStats').innerText = `პროგრესი: ${completed.length}/119`;
+        document.getElementById('globalStats').innerText = `პროგრესი: ${completed.length}/121`;
     }
 </script>
 </body>
